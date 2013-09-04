@@ -7,7 +7,8 @@ class Vimeo
 {
     const ROOT_ENDPOINT = 'https://api.vimeo.com';
     const AUTH_ENDPOINT = 'https://api.vimeo.com/oauth/authorize';
-    const ACCESS_TOKEN_ENDPOINT = 'https://api.vimeo.com/oauth/access_token';
+    const ACCESS_TOKEN_ENDPOINT = '/oauth/access_token';
+    const VERSION_STRING = 'application/vnd.vimeo.*+json; version=3.0';
 
     private $_client_id = null;
     private $_client_secret = null;
@@ -35,12 +36,24 @@ class Vimeo
      */
     public function request($url, $params = array(), $method = 'GET')
     {
+        // add accept header hardcoded to version 3.0
+        $headers[] = 'Accept: ' . self::VERSION_STRING;
+
+        // add bearer token, or client information
+        if (!empty($this->_access_token)) {
+            $headers[] = 'Authorization: Bearer ' . $this->_access_token;
+        } else if (!empty($this->_client_id) && !empty($this->_client_secret)) {
+            $headers[] = 'Authorization: Basic ' . base64_encode($this->_client_id . ':' . $this->_client_secret);
+        } else if (!empty($this->_client_id) && empty($this->_client_secret)) {
+	    $params['client_id'] = $this->_client_id;
+	}
+
         if (strtoupper($method) == 'GET') {
             $curl_url = self::ROOT_ENDPOINT . $url . '?' . http_build_query($params, '', '&');
             $curl_opts = array();
         }
         else if (strtoupper($method) == 'POST') {
-            $curl_url = self::API_REST_URL . $url;
+            $curl_url = self::ROOT_ENDPOINT . $url;
             $curl_opts = array(
                 CURLOPT_POST => true,
                 CURLOPT_POSTFIELDS => http_build_query($params, '', '&')
@@ -50,17 +63,6 @@ class Vimeo
         $curl_opts[CURLOPT_HEADER] = 1;
         $curl_opts[CURLOPT_RETURNTRANSFER] = true;
         $curl_opts[CURLOPT_TIMEOUT] = 10;
-
-        // add accept header hardcoded to version 3.0
-        $headers[] = 'Accept: application/vnd.vimeo.*+json; version=3.0';
-
-        // add bearer token, or client information
-        if (!empty($this->_access_token)) {
-            $headers[] = 'Authorization: Bearer ' . $this->_access_token;
-        } else if (!empty($this->_client_id) && !empty($this->_client_secret)) {
-            $headers[] = 'Authorization: Basic ' . base64_encode($this->_client_id . ':' . $this->_client_secret);
-        }
-
         $curl_opts[CURLOPT_HTTPHEADER] = $headers;
 
         // Call the API
