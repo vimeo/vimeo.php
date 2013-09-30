@@ -45,19 +45,25 @@ class Vimeo
         } else if (!empty($this->_client_id) && !empty($this->_client_secret)) {
             $headers[] = 'Authorization: Basic ' . base64_encode($this->_client_id . ':' . $this->_client_secret);
         } else if (!empty($this->_client_id) && empty($this->_client_secret)) {
-	    $params['client_id'] = $this->_client_id;
-	}
+	       $params['client_id'] = $this->_client_id;
+    	}
 
-        if (strtoupper($method) == 'GET') {
-            $curl_url = self::ROOT_ENDPOINT . $url . '?' . http_build_query($params, '', '&');
-            $curl_opts = array();
-        }
-        else if (strtoupper($method) == 'POST') {
-            $curl_url = self::ROOT_ENDPOINT . $url;
-            $curl_opts = array(
-                CURLOPT_POST => true,
-                CURLOPT_POSTFIELDS => http_build_query($params, '', '&')
-            );
+        $curl_opts = array();
+        switch (strtoupper($method)) {
+            case 'GET' :
+                $curl_url = self::ROOT_ENDPOINT . $url . '?' . http_build_query($params, '', '&');
+                break;
+
+            case 'POST' :
+            case 'PATCH' :
+            case 'DELETE' :
+                $curl_url = self::ROOT_ENDPOINT . $url;
+                $curl_opts = array(
+                    CURLOPT_POST => true,
+                    CURLOPT_CUSTOMREQUEST => $method,
+                    CURLOPT_POSTFIELDS => http_build_query($params, '', '&')
+                );
+                break;
         }
 
         $curl_opts[CURLOPT_HEADER] = 1;
@@ -152,7 +158,7 @@ class Vimeo
         if (empty($scope)) {
             $query['scope'] = 'public';
         } elseif (is_array($scope)) {
-            $query['scope'] = implode(',', $scope);
+            $query['scope'] = implode(' ', $scope);
         }
 
         if (!empty($state)) {
