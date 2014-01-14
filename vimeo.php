@@ -184,6 +184,7 @@ class Vimeo
             "redirect_uri" => $redirect_uri
         );
 
+        $query['scope'] = $scope;
         if (empty($scope)) {
             $query['scope'] = 'public';
         } elseif (is_array($scope)) {
