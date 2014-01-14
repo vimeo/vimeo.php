@@ -48,6 +48,7 @@ class Vimeo
 	       $params['client_id'] = $this->_client_id;
     	}
 
+        //  Set the methods, determine the URL that we should actually request and prep the body.
         $curl_opts = array();
         switch (strtoupper($method)) {
             case 'GET' :
@@ -66,26 +67,54 @@ class Vimeo
                 break;
         }
 
-        $curl_opts[CURLOPT_HEADER] = 1;
-        $curl_opts[CURLOPT_RETURNTRANSFER] = true;
-        $curl_opts[CURLOPT_TIMEOUT] = 10;
+        //  Set the headers
         $curl_opts[CURLOPT_HTTPHEADER] = $headers;
 
+        $response = $this->_request($curl_url, $curl_opts);
+
+        $response['body'] = json_decode($response['body']);
+        $response['headers'] = self::parse_headers($response['headers']);
+
+        return $response;
+    }
+
+    /**
+     *  Internal function to handle requests, both authenticated and by the upload function.
+     */
+    private function _request($url, $curl_opts = array()) {
+        //  Apply the defaults to the curl opts.
+        $curl_opt_defaults = array(
+            CURLOPT_HEADER => 1,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 30);
+
+        //  Can't use array_merge since it would reset the numbering to 0 and lose the CURLOPT constant values.
+        //  Insetad we find the overwritten ones and manually merge.
+        $overwritten_keys = array_intersect_assoc($curl_opts, $curl_opt_defaults);
+        foreach ($curl_opt_defaults as $setting => $value) {
+            if (in_array($setting, $overwritten_keys)) {
+                break;
+            }
+            $curl_opts[$setting] = $value;
+        }
+
         // Call the API
-        $curl = curl_init($curl_url);
+        $curl = curl_init($url);
         curl_setopt_array($curl, $curl_opts);
         $response = curl_exec($curl);
         $curl_info = curl_getinfo($curl);
         curl_close($curl);
 
+        //  Retrieve the info
         $header_size = $curl_info['header_size'];
         $headers = substr($response, 0, $header_size);
         $body = substr($response, $header_size);
 
+        //  Return it raw.
         return array(
-            'body' => json_decode($body),
+            'body' => $body,
             'status' => $curl_info['http_code'],
-            'headers' => self::parse_headers($headers)
+            'headers' => $headers
         );
     }
 
