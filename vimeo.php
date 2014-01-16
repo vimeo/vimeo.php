@@ -150,7 +150,7 @@ class Vimeo
 
         foreach ($list as $header) {
             $parts = explode(':', $header);
-            $final_headers[trim($parts[0])] = trim($parts[1]);
+            $final_headers[trim($parts[0])] = isset($parts[1]) ? trim($parts[1]) : '';
         }
 
         return $final_headers;
