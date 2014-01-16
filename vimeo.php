@@ -89,7 +89,7 @@ class Vimeo
 
         //  Can't use array_merge since it would reset the numbering to 0 and lose the CURLOPT constant values.
         //  Insetad we find the overwritten ones and manually merge.
-        $overwritten_keys = array_intersect_assoc($curl_opts, $curl_opt_defaults);
+        $overwritten_keys = array_intersect(array_keys($curl_opts), array_keys($curl_opt_defaults));
         foreach ($curl_opt_defaults as $setting => $value) {
             if (in_array($setting, $overwritten_keys)) {
                 break;
