@@ -73,7 +73,6 @@ class Vimeo
         $response = $this->_request($curl_url, $curl_opts);
 
         $response['body'] = json_decode($response['body']);
-        $response['headers'] = self::parse_headers($response['headers']);
 
         return $response;
     }
@@ -114,7 +113,7 @@ class Vimeo
         return array(
             'body' => $body,
             'status' => $curl_info['http_code'],
-            'headers' => $headers
+            'headers' => self::parse_headers($headers)
         );
     }
 
