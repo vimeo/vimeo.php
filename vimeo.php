@@ -196,4 +196,84 @@ class Vimeo
 
         return self::AUTH_ENDPOINT . '?' . http_build_query($query);
     }
+
+    /**
+     * Upload a file
+     *
+     * This should be used to upload a local file.  If you want a form for your site to upload direct to Vimeo, you should look at the POST /me/videos endpoint.
+     *
+     * @param string $file_path Path to the video file to upload.
+     * @return array Status
+     */
+    public function upload ($file_path, $machine_id = null) {
+        //  Validate that our file is real.
+        if (!is_file($file_path)) {
+            throw new VimeoUploadException('Unable to locate file to upload.');
+        }
+
+        //  Begin the upload request by getting a ticket
+        $ticket_args = array('type' => 'streaming');
+        if ($machine_id !== null) {
+            $ticket_args['machine_id'] = $machine_id;
+        }
+        $ticket = $this->request('/me/videos', $ticket_args, 'POST');
+        if ($ticket['status'] != 200) {
+            throw new VimeoUploadException('Unable to get an upload ticket.');
+        }
+
+        //  We are going to always target the secure upload URL.
+        $url = $ticket['body']->upload_uri_secure;
+
+        //  We need a handle on the input file since we may have to send segments multiple times.
+        $file = fopen($file_path, 'r');
+
+        //  PUTs a file in a POST....do for the streaming when we get there.
+        $curl_opts = array(
+            CURLOPT_PUT => true,
+            CURLOPT_INFILE => $file,
+            CURLOPT_INFILESIZE => filesize($file_path),
+            CURLOPT_UPLOAD => true,
+            CURLOPT_HTTPHEADER => array('Expect: ', 'Content-Range: replaced...')
+        );
+
+        //  These are the options that set up the validate call.
+        $curl_opts_check_progress = array(
+            CURLOPT_PUT => true,
+            CURLOPT_HTTPHEADER => array('Content-Length: 0', 'Content-Range: bytes */*')
+        );
+
+        //  Perform the upload by streaming as much to the server as possible and ending when we reach the filesize on the server.
+        $size = filesize($file_path);
+        $server_at = 0;
+        do {
+            //  The last HTTP header we set MUST be the Content-Range, since we need to remove it and replace it with a proper one.
+            array_pop($curl_opts[CURLOPT_HTTPHEADER]);
+            $curl_opts[CURLOPT_HTTPHEADER][] = 'Content-Range: bytes ' . $server_at . '-' . $size . '/' . $size;
+
+            fseek($file, $server_at);   //  Put the FP at the point where the server is.
+            $upload_response = $this->_request($url, $curl_opts);   //  Send what we can.
+            $progress_check = $this->_request($url, $curl_opts_check_progress); //  Check on what the server has.
+
+            //  Figure out how much is on the server.
+            list(, $server_at) = explode('-', $progress_check['headers']['Range']);
+            $server_at = (int)$server_at;
+        } while ($server_at < $size);
+
+        //  Complete the upload on the server.
+        $completion = $this->request($ticket['body']->complete_uri, array(), 'DELETE');
+
+        //  Validate that we got back 201 Created
+        $status = (int) $completion['status'];
+        if ($status != 201) {
+            throw new VimeoUploadException('Error completing the upload.');
+        }
+
+        //  Furnish the location for the new clip in the API via the Location header.
+        return $completion['headers']['Location'];
+    }
 }
+
+/**
+ * VimeoUploadException class for failure to upload to the server.
+ */
+class VimeoUploadException extends Exception {}
