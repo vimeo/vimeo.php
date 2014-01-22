@@ -148,7 +148,7 @@ class Vimeo
      */
     public function setToken($access_token)
     {
-        $this->_access_token = $token;
+        $this->_access_token = $access_token;
     }
 
     /**
