@@ -59,11 +59,7 @@ class Vimeo
         // add bearer token, or client information
         if (!empty($this->_access_token)) {
             $headers[] = 'Authorization: Bearer ' . $this->_access_token;
-        } else if (!empty($this->_client_id) && !empty($this->_client_secret)) {
-            $headers[] = 'Authorization: Basic ' . base64_encode($this->_client_id . ':' . $this->_client_secret);
-        } else if (!empty($this->_client_id) && empty($this->_client_secret)) {
-	       $params['client_id'] = $this->_client_id;
-    	}
+        }
 
         //  Set the methods, determine the URL that we should actually request and prep the body.
         $curl_opts = array();
