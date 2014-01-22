@@ -24,6 +24,7 @@ class Vimeo
     const ROOT_ENDPOINT = 'https://api.vimeo.com';
     const AUTH_ENDPOINT = 'https://api.vimeo.com/oauth/authorize';
     const ACCESS_TOKEN_ENDPOINT = '/oauth/access_token';
+    const CLIENT_CREDENTIALS_TOKEN_ENDPOINT = '/oauth/authorize/client';
     const VERSION_STRING = 'application/vnd.vimeo.*+json; version=3.0';
 
     private $_client_id = null;
@@ -183,6 +184,24 @@ class Vimeo
             'code' => $code,
             'redirect_uri' => $redirect_uri
         ), "POST");
+    }
+
+    /**
+     * Get client credentials for requests
+     * @param  string or array $scope Scopes to request for this token from the server.
+     * @return array               Response from the server with the tokens, we also set it into this object.
+     */
+    public function clientCredentials ($scope = 'public') {
+        if (is_array($scope)) {
+            $scope = implode(' ', $scope);
+        }
+
+        $token_response = $this->request(self::CLIENT_CREDENTIALS_TOKEN_ENDPOINT, array(
+            'grant_type' => 'client_credentials',
+            'scope' => $scope
+        ), "POST");
+
+        return $token_response;
     }
 
     /**
