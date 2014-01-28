@@ -11,6 +11,16 @@ To utilize the library in your code, you should include `vimeo.php`.
 ##### Making an API Request
 In the Vimeo API, all requests must be authenticated in some method.  For applications that only require access to public information, we offer oAuth2's client credentials grant.  For applications that reqiure users to authenticate, oAuth2's authorization code grant.
 
+An example of this usage is:
+
+```php
+//  Create a handle for the Vimeo API, with the access token.
+$vimeo = new Vimeo(YOU_APPLICATON_ID, YOUR_APPLCATION_SECRET, ACCESS_TOKEN);
+//  Request the authenticated user's information
+$user_data = $vimeo->request('/me');
+```
+
+
 ###### Application Only Access Token
 To get an application only token, you should run the following code (commented for clarity).
 
