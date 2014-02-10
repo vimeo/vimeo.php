@@ -60,6 +60,10 @@ class Vimeo
         if (!empty($this->_access_token)) {
             $headers[] = 'Authorization: Bearer ' . $this->_access_token;
         }
+        else {
+            //  this may be a call to get the tokens, so we add the client info.
+            $headers[] = 'Authorization: Basic ' . $this->_authHeader();
+        }
 
         //  Set the methods, determine the URL that we should actually request and prep the body.
         $curl_opts = array();
@@ -198,6 +202,15 @@ class Vimeo
         ), "POST");
 
         return $token_response;
+    }
+
+    /**
+     * Get authorization header for retrieving tokens/credentials.
+     *
+     * @return string
+     */
+    private function _authHeader() {
+        return base64_encode($this->_client_id . ':' . $this->_client_secret);
     }
 
     /**
