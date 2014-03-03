@@ -26,6 +26,7 @@ class Vimeo
     const ACCESS_TOKEN_ENDPOINT = '/oauth/access_token';
     const CLIENT_CREDENTIALS_TOKEN_ENDPOINT = '/oauth/authorize/client';
     const VERSION_STRING = 'application/vnd.vimeo.*+json; version=3.0';
+    const USER_AGENT = 'vimeo.php 0.1; (http://developer.vimeo.com/api/docs)';
 
     private $_client_id = null;
     private $_client_secret = null;
@@ -55,6 +56,7 @@ class Vimeo
     {
         // add accept header hardcoded to version 3.0
         $headers[] = 'Accept: ' . self::VERSION_STRING;
+        $headers[] = 'User-Agent: ' . self::USER_AGENT;
 
         // add bearer token, or client information
         if (!empty($this->_access_token)) {
