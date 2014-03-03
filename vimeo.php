@@ -268,7 +268,7 @@ class Vimeo
         }
 
         //  We are going to always target the secure upload URL.
-        $url = $ticket['body']['upload_uri_secure'];
+        $url = $ticket['body']['upload_link_secure'];
 
         //  We need a handle on the input file since we may have to send segments multiple times.
         $file = fopen($file_path, 'r');
