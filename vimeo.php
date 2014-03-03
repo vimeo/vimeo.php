@@ -268,7 +268,7 @@ class Vimeo
         }
 
         //  We are going to always target the secure upload URL.
-        $url = $ticket['body']->upload_uri_secure;
+        $url = $ticket['body']['upload_uri_secure'];
 
         //  We need a handle on the input file since we may have to send segments multiple times.
         $file = fopen($file_path, 'r');
@@ -306,7 +306,7 @@ class Vimeo
         } while ($server_at < $size);
 
         //  Complete the upload on the server.
-        $completion = $this->request($ticket['body']->complete_uri, array(), 'DELETE');
+        $completion = $this->request($ticket['body']['complete_uri'], array(), 'DELETE');
 
         //  Validate that we got back 201 Created
         $status = (int) $completion['status'];

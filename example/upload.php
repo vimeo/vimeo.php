@@ -49,7 +49,7 @@ foreach ($files as $file_name) {
         //  Pull the link out of successful data responses.
         $link = '';
         if($video_data['status'] == 200) {
-            $link = $video_data['body']->link;
+            $link = $video_data['body']['link'];
         }
 
         //  Store this in our array of complete videos.
