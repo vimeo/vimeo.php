@@ -1,4 +1,4 @@
-<?php
+<?php namespace Vimeo;
 
 /**
  *   Copyright 2013 Vimeo
@@ -319,8 +319,3 @@ class Vimeo
         return $completion['headers']['Location'];
     }
 }
-
-/**
- * VimeoUploadException class for failure to upload to the server.
- */
-class VimeoUploadException extends Exception {}

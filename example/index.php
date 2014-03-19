@@ -17,7 +17,10 @@
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
-require_once('../vimeo.php');
+require_once('vendor/autoload.php');
+
+use Vimeo;
+
 $config = json_decode(file_get_contents('./config.json'), true);
 
 $lib = new Vimeo($config['client_id'], $config['client_secret']);
