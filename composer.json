@@ -3,7 +3,7 @@
 	"description": "Official PHP library for the Vimeo API.",
 	"homepage": "https://github.com/vimeo/vimeo.php",
 	"keywords": ["vimeo", "video"],
-	"license": "MIT",
+	"license": "Apache-2.0",
 	"authors": [
 		{
 			"name": "Vimeo",
