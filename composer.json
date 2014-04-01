@@ -1,6 +1,6 @@
 {
 	"name": "vimeo/vimeo-api",
-	"description": "Official PHP library for the Vimeo API.",
+	"description": "Composer wrapper for: Official PHP library for the Vimeo API.",
 	"homepage": "https://github.com/vimeo/vimeo.php",
 	"keywords": ["vimeo", "video"],
 	"license": "Apache-2.0",
