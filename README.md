@@ -31,7 +31,7 @@ $vimeo = new Vimeo(YOU_APPLICATON_ID, YOUR_APPLCATION_SECRET);
 $token_response = $vimeo->clientCredentials();
 ```
 
-This response will contain the token you can add into this handle with `$vimeo->setAccessToken($token_from_response)`.  The token should be stored for later use, and you can save time in future runs by using it and skipping the request step.
+This response will contain the token you can add into this handle with `$vimeo->setToken($token_from_response)`.  The token should be stored for later use, and you can save time in future runs by using it and skipping the request step.
 
 ###### User authenticated Access Tokens
 Getting a user to authenticate with your application is a bit more complicated.  Your application will have to redirect the user to Vimeo where they log in and verify that they will grant your application the requested scopes.  The basic required steps are:
