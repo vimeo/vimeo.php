@@ -77,3 +77,8 @@ If you are developing a web application and would like to have the users upload 
 
 1. *todo* explain "curl not found" error
 2. If your api request returns with an empty array, it likely means you do not have the proper https certificates. You can find more information on how to solve the problem here : http://unitstep.net/blog/2009/05/05/using-curl-in-php-to-access-https-ssltls-protected-sites/ 
+
+# Contributors
+- dashron
+- sclm
+- sgmendez ([32e4d7753a66e71dd158bf55b8a4b30ed564ef30](https://github.com/vimeo/vimeo.php/commit/32e4d7753a66e71dd158bf55b8a4b30ed564ef30))
