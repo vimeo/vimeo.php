@@ -264,7 +264,7 @@ class Vimeo
             $ticket_args['machine_id'] = $machine_id;
         }
         $ticket = $this->request('/me/videos', $ticket_args, 'POST');
-        if ($ticket['status'] != 200) {
+        if ($ticket['status'] != 201) {
             throw new VimeoUploadException('Unable to get an upload ticket.');
         }
 
