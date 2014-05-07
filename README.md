@@ -1,4 +1,4 @@
-**This is a @composer fork of the [official PHP library for the Vimeo API](https://github.com/vimeo/vimeo.php).**
+**This is a fork of the [official PHP library for the Vimeo API](https://github.com/vimeo/vimeo.php) to use with [@composer](https://github.com/composer).**
 
 ---
 
