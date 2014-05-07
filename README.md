@@ -1,5 +1,7 @@
 **This is a Composer fork for the official Vimeo PHP API.**
 
+---
+
 vimeo.php
 =========
 **Vimeo.php** is a library for interacting with the latest version of the [Vimeo](https://vimeo.com) API.
