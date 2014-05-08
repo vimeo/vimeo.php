@@ -71,7 +71,13 @@ class Vimeo
         $curl_opts = array();
         switch (strtoupper($method)) {
             case 'GET' :
-                $curl_url = self::ROOT_ENDPOINT . $url . '?' . http_build_query($params, '', '&');
+                if (!empty($params)) {
+                    $query_component = '?' . http_build_query($params, '', '&');
+                } else {
+                    $query_component = '';
+                }
+
+                $curl_url = self::ROOT_ENDPOINT . $url . $query_component;
                 break;
 
             case 'POST' :

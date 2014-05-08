@@ -21,5 +21,12 @@ require_once('../vimeo.php');
 $config = json_decode(file_get_contents('./config.json'), true);
 
 $lib = new Vimeo($config['client_id'], $config['client_secret']);
-$user = $lib->request('/users/dashron');
+
+if (!empty($config['access_token'])) {
+    $lib->setToken($config['access_token']);
+    $user = $lib->request('/users/me');
+} else {
+    $user = $lib->request('/users/dashron');
+}
+
 print_r($user);
