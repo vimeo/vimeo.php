@@ -23,7 +23,7 @@ $config = json_decode(file_get_contents('./config.json'), true);
 
 $lib = new Vimeo($config['client_id'], $config['client_secret'], $config['access_token']);
 
-// Set the number of items to show on each page to 50
-$search_results = $lib->request('/videos', array('per_page' => 50, 'query' => urlencode($_GET['query'])));
+//Show first page of results, Set the number of items to show on each page to 50, Sort by relevance, Show results in descending order, and Filter only Creative Commons License videos
+$search_results = $lib->request('/videos', array('page' => 1, 'per_page' => 50, 'query' => urlencode($_GET['query']), 'sort' => 'relevant', 'direction' => 'desc', 'filter' => 'CC'));
 
 print_r($search_results);
