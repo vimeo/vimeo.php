@@ -25,7 +25,7 @@ class Vimeo
     const AUTH_ENDPOINT = 'https://api.vimeo.com/oauth/authorize';
     const ACCESS_TOKEN_ENDPOINT = '/oauth/access_token';
     const CLIENT_CREDENTIALS_TOKEN_ENDPOINT = '/oauth/authorize/client';
-    const VERSION_STRING = 'application/vnd.vimeo.*+json; version=3.0';
+    const VERSION_STRING = 'application/vnd.vimeo.*+json; version=3.2';
     const USER_AGENT = 'vimeo.php 0.1; (http://developer.vimeo.com/api/docs)';
 
     private $_client_id = null;
@@ -33,10 +33,11 @@ class Vimeo
     private $_access_token = null;
 
     /**
-     * [__construct description]
-     * @param [type] $client_id     [description]
-     * @param [type] $client_secret [description]
-     * @param [type] $access_token  [description]
+     * Creates the Vimeo library, and tracks the client and token information
+     * 
+     * @param string $client_id     Your applications client id. Can be found on developer.vimeo.com/apps
+     * @param string $client_secret Your applications client secret. Can be found on developer.vimeo.com/apps
+     * @param string $access_token  Your applications client id. Can be found on developer.vimeo.com/apps or generated using OAuth 2.
      */
     public function __construct($client_id, $client_secret, $access_token = null)
     {
@@ -46,13 +47,14 @@ class Vimeo
     }
 
     /**
-     * [request description]
-     * @param  [type] $url    [description]
-     * @param  array  $params [description]
-     * @param  string $method [description]
-     * @return [type]         [description]
+     * Make an API request to Vimeo
+     * 
+     * @param  string $url    A Vimeo API Endpoint. Should not include the host
+     * @param  array  $params An array of parameters to send to the endpoint. If the HTTP method is GET, they will be added to the url, otherwise they will be written to the body
+     * @param  string $method The HTTP Method of the request
+     * @return array          This array contains three keys, 'status' is the status code, 'body' is an object representation of the json response body, and headers are an associated array of response headers
      */
-    public function request($url, $params = array(), $method = 'GET')
+    public function request($url, $params = array(), $method = 'GET', $json_body = true)
     {
         // add accept header hardcoded to version 3.0
         $headers[] = 'Accept: ' . self::VERSION_STRING;
@@ -84,11 +86,18 @@ class Vimeo
             case 'PATCH' :
             case 'PUT' :
             case 'DELETE' :
+                if ($json_body && !empty($params)) {
+                    $headers[] = 'Content-Type: application/json';
+                    $body = json_encode($params);
+                } else {
+                    $body = http_build_query($params, '', '&');
+                }
+
                 $curl_url = self::ROOT_ENDPOINT . $url;
                 $curl_opts = array(
                     CURLOPT_POST => true,
                     CURLOPT_CUSTOMREQUEST => $method,
-                    CURLOPT_POSTFIELDS => http_build_query($params, '', '&')
+                    CURLOPT_POSTFIELDS => $body
                 );
                 break;
         }
@@ -144,8 +153,8 @@ class Vimeo
     }
 
     /**
-     * [getToken description]
-     * @return [type] [description]
+     * Request the access token associated with this lib
+     * @return string
      */
     public function getToken()
     {
@@ -153,8 +162,9 @@ class Vimeo
     }
 
     /**
-     * [setToken description]
-     * @param [type] $access_token [description]
+     * Assign a new access token to this lib
+     * 
+     * @param string $access_token the new access token
      */
     public function setToken($access_token)
     {
@@ -162,9 +172,10 @@ class Vimeo
     }
 
     /**
-     * [parse_headers description]
-     * @param  [type] $headers [description]
-     * @return [type]          [description]
+     * Convert the raw headers string into an associated array
+     * 
+     * @param  string $headers
+     * @return array
      */
     public static function parse_headers($headers)
     {
@@ -182,17 +193,18 @@ class Vimeo
     }
 
     /**
-     * [accessToken description]
-     * @param  [type] $code         [description]
-     * @param  [type] $redirect_uri [description]
-     * @return [type]               [description]
+     * Request an access token. This is the final step of the OAuth 2 workflow, and should be called from your redirect url.
+     * 
+     * @param  string $code         The authorization code that was provided to your redirect url
+     * @param  string $redirect_uri The redirect_uri that is configured on your app page, and was used in buildAuthorizationEndpoint
+     * @return array This array contains three keys, 'status' is the status code, 'body' is an object representation of the json response body, and headers are an associated array of response headers
      */
     public function accessToken ($code, $redirect_uri) {
         return $this->request(self::ACCESS_TOKEN_ENDPOINT, array(
             'grant_type' => 'authorization_code',
             'code' => $code,
             'redirect_uri' => $redirect_uri
-        ), "POST");
+        ), "POST", false);
     }
 
     /**
@@ -208,7 +220,7 @@ class Vimeo
         $token_response = $this->request(self::CLIENT_CREDENTIALS_TOKEN_ENDPOINT, array(
             'grant_type' => 'client_credentials',
             'scope' => $scope
-        ), "POST");
+        ), "POST", false);
 
         return $token_response;
     }
@@ -223,11 +235,12 @@ class Vimeo
     }
 
     /**
-     * [buildAuthorizationEndpoint description]
-     * @param  [type] $redirect_uri [description]
-     * @param  string $scope        [description]
-     * @param  [type] $state        [description]
-     * @return [type]               [description]
+     * Build the url that your user 
+     * 
+     * @param  string $redirect_uri The redirect url that you have configured on your app page
+     * @param  string $scope        An array of scopes that your final access token needs to access
+     * @param  string $state        A random variable that will be returned on your redirect url. You should validate that this matches
+     * @return string
      */
     public function buildAuthorizationEndpoint ($redirect_uri, $scope = 'public', $state = null) {
         $query = array(
@@ -323,6 +336,55 @@ class Vimeo
 
         //  Furnish the location for the new clip in the API via the Location header.
         return $completion['headers']['Location'];
+    }
+
+    /**
+     * Uploads an image to an individual picture response
+     * 
+     * @param  string $pictures_uri The pictures endpoint for a resource that allows picture uploads (eg videos and users)
+     * @param  string $file_path    The path to your image file
+     * @return string               The URI of the uploaded image. 
+     */
+    public function uploadImage ($pictures_uri, $file_path) {
+        //  Validate that our file is real.
+        if (!is_file($file_path)) {
+            throw new VimeoUploadException('Unable to locate file to upload.');
+        }
+
+        $pictures_response = $this->request($pictures_uri, array(), 'POST');
+        if ($pictures_response['status'] != 201) {
+            throw new VimeoUploadException('Unable to request an upload url from vimeo');
+        }
+
+        $upload_url = $pictures_response['body']['link'];
+
+        $image_resource = fopen($file_path, 'r');
+
+        $curl_opts = array(
+            CURLOPT_HEADER => 1,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 240,
+            CURLOPT_UPLOAD => true,
+            CURLOPT_CUSTOMREQUEST => 'PUT',
+            CURLOPT_READDATA => $image_resource
+        );
+
+        $curl = curl_init($upload_url);
+        curl_setopt_array($curl, $curl_opts);
+        $response = curl_exec($curl);
+        $curl_info = curl_getinfo($curl);
+
+        if (!$response) {
+            $error = curl_error($curl);
+            throw new VimeoUploadException($error);
+        }
+        curl_close($curl);
+
+        if ($curl_info['http_code'] != 200) {
+            throw new VimeoUploadException($response);
+        }
+        
+        return $pictures_response['body']['uri'];
     }
 }
 
