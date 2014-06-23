@@ -32,6 +32,8 @@ class Vimeo
     private $_client_secret = null;
     private $_access_token = null;
 
+    protected $custom_curl_opts = array();
+
     /**
      * [__construct description]
      * @param [type] $client_id     [description]
@@ -43,6 +45,24 @@ class Vimeo
         $this->_client_id = $client_id;
         $this->_client_secret = $client_secret;
         $this->_access_token = $access_token;
+    }
+
+    /**
+     * Set custom curl opts (like CURLOPT_SSL_VERIFYPEER=false or CURLOPT_CAPATH=...).
+     *
+     * @param array $custom_curl_opts
+     */
+    public function setCustomCurlOpts($custom_curl_opts) {
+        $this->custom_curl_opts = $custom_curl_opts;
+    }
+
+    /**
+     * Get custom curl opts.
+     *
+     * @return array
+     */
+    public function getCustomCurlOpts() {
+        return $this->custom_curl_opts;
     }
 
     /**
@@ -113,19 +133,21 @@ class Vimeo
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 30);
 
-        //  Can't use array_merge since it would reset the numbering to 0 and lose the CURLOPT constant values.
-        //  Insetad we find the overwritten ones and manually merge.
-        $overwritten_keys = array_intersect(array_keys($curl_opts), array_keys($curl_opt_defaults));
-        foreach ($curl_opt_defaults as $setting => $value) {
-            if (in_array($setting, $overwritten_keys)) {
-                break;
-            }
-            $curl_opts[$setting] = $value;
+        // Use the custom curl opts. Overwrite them with the defaults.
+        $curl_opts_merged_with_custom = $this->getCustomCurlOpts();
+        foreach ($curl_opt_defaults as $key => $value) {
+            $curl_opts_merged_with_custom[$key] = $value;
+        }
+
+        // Use the custom and default curl opts. Overwrite them with the specifics.
+        $curl_opts_merged_with_specific = $curl_opts_merged_with_custom;
+        foreach ($curl_opts as $key => $value) {
+            $curl_opts_merged_with_specific[$key] = $value;
         }
 
         // Call the API
         $curl = curl_init($url);
-        curl_setopt_array($curl, $curl_opts);
+        curl_setopt_array($curl, $curl_opts_merged_with_specific);
         $response = curl_exec($curl);
         $curl_info = curl_getinfo($curl);
         curl_close($curl);
