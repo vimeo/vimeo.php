@@ -305,26 +305,61 @@ class Vimeo
 
             fseek($file, $server_at);   //  Put the FP at the point where the server is.
             $upload_response = $this->_request($url, $curl_opts);   //  Send what we can.
-            $progress_check = $this->_request($url, $curl_opts_check_progress); //  Check on what the server has.
-
-            //  Figure out how much is on the server.
-            list(, $server_at) = explode('-', $progress_check['headers']['Range']);
-            $server_at = (int)$server_at;
+            
+            $server_at = $this->uploadedBytes($url);
         } while ($server_at < $size);
 
-        //  Complete the upload on the server.
-        $completion = $this->request($ticket['body']['complete_uri'], array(), 'DELETE');
+        return $this->completeUpload($ticket['body']['complete_uri']);
+    }
+    
+    /**
+     * Check the number of bytes received by the Vimeo server
+     * 
+     * @param string $upload_url The upload URL to which the file has/is been uploaded
+     * @return int The number of received bytes
+     */
+    public function uploadedBytes($upload_url) {
+        //  These are the options that set up the validate call.
+        $curl_opts_check_progress = array(
+            CURLOPT_PUT => true,
+            CURLOPT_HTTPHEADER => array('Content-Length: 0', 'Content-Range: bytes */*')
+        );
 
+        
+        $progress_check = $this->_request($upload_url, $curl_opts_check_progress); //  Check on what the server has.
+        
+        //  Figure out how much is on the server.
+        list(,$server_range) = explode('=', $progress_check['headers']['Range']);
+        $server_range = explode('-', $server_range);
+        
+        if ((int)$server_range[0] != 0) {
+            throw new VimeoUploadException('File start missing at the Vimeo server');
+        }
+        return (int)$server_range[1];
+    }
+    
+    /**
+     * Complete the upload and retrieve, if successful, the location of the uploaded video
+     * 
+     * @param string $complete_uri The URI of the upload ticket
+     * @return string The URI of the new clip
+     */
+    public function completeUpload($complete_uri) {
+        //  Complete the upload on the server.
+        $completion = $this->request($complete_uri, array(), 'DELETE');
+        
         //  Validate that we got back 201 Created
         $status = (int) $completion['status'];
         if ($status != 201) {
-            throw new VimeoUploadException('Error completing the upload.');
+            throw new VimeoUploadException('Vimeo server error completing the upload.');
         }
 
         //  Furnish the location for the new clip in the API via the Location header.
         return $completion['headers']['Location'];
     }
 }
+
+
 
 /**
  * VimeoUploadException class for failure to upload to the server.
