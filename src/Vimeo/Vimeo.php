@@ -71,7 +71,13 @@ class Vimeo
         $curl_opts = array();
         switch (strtoupper($method)) {
             case 'GET' :
-                $curl_url = self::ROOT_ENDPOINT . $url . '?' . http_build_query($params, '', '&');
+                if (!empty($params)) {
+                    $query_component = '?' . http_build_query($params, '', '&');
+                } else {
+                    $query_component = '';
+                }
+
+                $curl_url = self::ROOT_ENDPOINT . $url . $query_component;
                 break;
 
             case 'POST' :
@@ -264,7 +270,7 @@ class Vimeo
             $ticket_args['machine_id'] = $machine_id;
         }
         $ticket = $this->request('/me/videos', $ticket_args, 'POST');
-        if ($ticket['status'] != 200) {
+        if ($ticket['status'] != 201) {
             throw new VimeoUploadException('Unable to get an upload ticket.');
         }
 

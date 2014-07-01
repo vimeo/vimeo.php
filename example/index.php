@@ -23,4 +23,12 @@ $config = json_decode(file_get_contents('./config.json'), true);
 
 $lib = new Vimeo\Vimeo($config['client_id'], $config['client_secret']);
 $user = $lib->request('/users/dashron');
+
+if (!empty($config['access_token'])) {
+    $lib->setToken($config['access_token']);
+    $user = $lib->request('/me');
+} else {
+    $user = $lib->request('/users/dashron');
+}
+
 print_r($user);
