@@ -26,7 +26,7 @@ class Vimeo
     const ACCESS_TOKEN_ENDPOINT = '/oauth/access_token';
     const CLIENT_CREDENTIALS_TOKEN_ENDPOINT = '/oauth/authorize/client';
     const VERSION_STRING = 'application/vnd.vimeo.*+json; version=3.2';
-    const USER_AGENT = 'vimeo.php 0.1; (http://developer.vimeo.com/api/docs)';
+    const USER_AGENT = 'vimeo.php 1.0; (http://developer.vimeo.com/api/docs)';
 
     private $_client_id = null;
     private $_client_secret = null;
