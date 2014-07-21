@@ -40,7 +40,7 @@ $film_trailer = $lib->request('/ondemand/pages/myfilm'.$video_data['body']['uri'
 $check_video = $lib->request('/ondemand/pages/myfilm/videos', array('filter' => 'all', 'sort' => 'default'));
 print_r($check_video);
 
-// Add a picture to our vod page
+// Add a poster to our vod page
 $response = $lib->uploadImage('/ondemand/pages/myfilm/pictures', './test.png');
 $poster = $lib->request($response, array('active' => true), 'PATCH');
 
@@ -73,7 +73,7 @@ $series_trailer = $lib->request('/ondemand/pages/myseries/'.$video_data['body'][
 $check_series_video = $lib->request('/ondemand/pages/myseries/videos', array('filter' => 'all', 'sort' => 'default'));
 print_r($check_series_video);
 
-// Add a picture to our vod page
+// Add a poster to our vod page
 $response = $lib->uploadImage('/ondemand/pages/myseries/pictures', './test.png');
 $poster = $lib->request($response, array('active' => true), 'PATCH');
 
