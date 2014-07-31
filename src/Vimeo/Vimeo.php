@@ -1,5 +1,7 @@
 <?php namespace Vimeo;
 
+use Vimeo\Exception\VimeoUploadException;
+
 /**
  *   Copyright 2013 Vimeo
  *
@@ -34,7 +36,7 @@ class Vimeo
 
     /**
      * Creates the Vimeo library, and tracks the client and token information
-     * 
+     *
      * @param string $client_id     Your applications client id. Can be found on developer.vimeo.com/apps
      * @param string $client_secret Your applications client secret. Can be found on developer.vimeo.com/apps
      * @param string $access_token  Your applications client id. Can be found on developer.vimeo.com/apps or generated using OAuth 2.
@@ -48,7 +50,7 @@ class Vimeo
 
     /**
      * Make an API request to Vimeo
-     * 
+     *
      * @param  string $url    A Vimeo API Endpoint. Should not include the host
      * @param  array  $params An array of parameters to send to the endpoint. If the HTTP method is GET, they will be added to the url, otherwise they will be written to the body
      * @param  string $method The HTTP Method of the request
@@ -163,7 +165,7 @@ class Vimeo
 
     /**
      * Assign a new access token to this lib
-     * 
+     *
      * @param string $access_token the new access token
      */
     public function setToken($access_token)
@@ -173,7 +175,7 @@ class Vimeo
 
     /**
      * Convert the raw headers string into an associated array
-     * 
+     *
      * @param  string $headers
      * @return array
      */
@@ -194,7 +196,7 @@ class Vimeo
 
     /**
      * Request an access token. This is the final step of the OAuth 2 workflow, and should be called from your redirect url.
-     * 
+     *
      * @param  string $code         The authorization code that was provided to your redirect url
      * @param  string $redirect_uri The redirect_uri that is configured on your app page, and was used in buildAuthorizationEndpoint
      * @return array This array contains three keys, 'status' is the status code, 'body' is an object representation of the json response body, and headers are an associated array of response headers
@@ -235,8 +237,8 @@ class Vimeo
     }
 
     /**
-     * Build the url that your user 
-     * 
+     * Build the url that your user
+     *
      * @param  string $redirect_uri The redirect url that you have configured on your app page
      * @param  string $scope        An array of scopes that your final access token needs to access
      * @param  string $state        A random variable that will be returned on your redirect url. You should validate that this matches
@@ -340,10 +342,10 @@ class Vimeo
 
     /**
      * Uploads an image to an individual picture response
-     * 
+     *
      * @param  string $pictures_uri The pictures endpoint for a resource that allows picture uploads (eg videos and users)
      * @param  string $file_path    The path to your image file
-     * @return string               The URI of the uploaded image. 
+     * @return string               The URI of the uploaded image.
      */
     public function uploadImage ($pictures_uri, $file_path) {
         //  Validate that our file is real.
@@ -383,7 +385,7 @@ class Vimeo
         if ($curl_info['http_code'] != 200) {
             throw new VimeoUploadException($response);
         }
-        
+
         return $pictures_response['body']['uri'];
     }
 }

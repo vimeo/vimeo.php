@@ -1,10 +1,12 @@
 <?php
 
+use Vimeo\Vimeo;
+
 /**
  * VOD example using the Official PHP library for the Vimeo API
 */
 
-require_once('../vimeo.php');
+require_once('vendor/autoload.php');
 
 if (!function_exists('json_decode')) {
     throw new Exception('We could not find json_decode. json_decode is found in php 5.2 and up, but not found on many linux systems due to licensing conflicts. If you are running ubuntu try "sudo apt-get install php5-json".');
