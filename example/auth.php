@@ -1,4 +1,7 @@
 <?php
+
+use Vimeo\Vimeo;
+
 /**
  *   Copyright 2013 Vimeo
  *
@@ -24,7 +27,7 @@ error_reporting(E_ALL);
 session_start();
 const REDIRECT_URI = 'http://localhost:8080/callback';
 
-require_once('../vimeo.php');
+require_once('vendor/autoload.php');
 $config = json_decode(file_get_contents('./config.json'), true);
 
 if (preg_match('%^/callback%', $_SERVER["REQUEST_URI"])) {

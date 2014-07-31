@@ -1,4 +1,8 @@
 <?php
+
+use Vimeo\Vimeo;
+use Vimeo\Exception\VimeoUploadException;
+
 /**
  *   Copyright 2013 Vimeo
  *
@@ -14,7 +18,7 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-require_once('../vimeo.php');
+require_once('vendor/autoload.php');
 
 if (!function_exists('json_decode')) {
     throw new Exception('We could not find json_decode. json_decode is found in php 5.2 and up, but not found on many linux systems due to licensing conflicts. If you are running ubuntu try "sudo apt-get install php5-json".');
