@@ -37,7 +37,7 @@ class Vimeo
      * 
      * @param string $client_id     Your applications client id. Can be found on developer.vimeo.com/apps
      * @param string $client_secret Your applications client secret. Can be found on developer.vimeo.com/apps
-     * @param string $access_token  Your applications client id. Can be found on developer.vimeo.com/apps or generated using OAuth 2.
+     * @param string $access_token  Your applications access token. Can be found on developer.vimeo.com/apps or generated using OAuth 2.
      */
     public function __construct($client_id, $client_secret, $access_token = null)
     {
@@ -52,6 +52,7 @@ class Vimeo
      * @param  string $url    A Vimeo API Endpoint. Should not include the host
      * @param  array  $params An array of parameters to send to the endpoint. If the HTTP method is GET, they will be added to the url, otherwise they will be written to the body
      * @param  string $method The HTTP Method of the request
+     * @param  bool   $json_body Send request params as a JSON object
      * @return array          This array contains three keys, 'status' is the status code, 'body' is an object representation of the json response body, and headers are an associated array of response headers
      */
     public function request($url, $params = array(), $method = 'GET', $json_body = true)
@@ -123,7 +124,7 @@ class Vimeo
             CURLOPT_TIMEOUT => 30);
 
         //  Can't use array_merge since it would reset the numbering to 0 and lose the CURLOPT constant values.
-        //  Insetad we find the overwritten ones and manually merge.
+        //  Instead we find the overwritten ones and manually merge.
         $overwritten_keys = array_intersect(array_keys($curl_opts), array_keys($curl_opt_defaults));
         foreach ($curl_opt_defaults as $setting => $value) {
             if (in_array($setting, $overwritten_keys)) {
@@ -209,7 +210,7 @@ class Vimeo
 
     /**
      * Get client credentials for requests
-     * @param  string or array $scope Scopes to request for this token from the server.
+     * @param  string|array $scope Scopes to request for this token from the server.
      * @return array               Response from the server with the tokens, we also set it into this object.
      */
     public function clientCredentials ($scope = 'public') {
@@ -269,7 +270,9 @@ class Vimeo
      * This should be used to upload a local file.  If you want a form for your site to upload direct to Vimeo, you should look at the POST /me/videos endpoint.
      *
      * @param string $file_path Path to the video file to upload.
+     * @param string $machine_id Optional Vimeo upload server ID
      * @return array Status
+     * @throws VimeoUploadException
      */
     public function upload ($file_path, $machine_id = null) {
         //  Validate that our file is real.
@@ -343,7 +346,8 @@ class Vimeo
      * 
      * @param  string $pictures_uri The pictures endpoint for a resource that allows picture uploads (eg videos and users)
      * @param  string $file_path    The path to your image file
-     * @return string               The URI of the uploaded image. 
+     * @return string               The URI of the uploaded image.
+     * @throws VimeoUploadException
      */
     public function uploadImage ($pictures_uri, $file_path) {
         //  Validate that our file is real.

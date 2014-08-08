@@ -15,7 +15,7 @@ An example of this usage is:
 
 ```php
 //  Create a handle for the Vimeo API, with the access token.
-$vimeo = new Vimeo(YOUR_APPLICATION_ID, YOUR_APPLICATION_SECRET, ACCESS_TOKEN);
+$vimeo = new Vimeo(YOUR_CLIENT_IDENTIFIER, YOUR_CLIENT_SECRET, ACCESS_TOKEN);
 //  Request the authenticated user's information
 $user_data = $vimeo->request('/me');
 ```
@@ -26,7 +26,7 @@ To get an application only token, you should run the following code (commented f
 
 ```php
 //  Create a handle for the Vimeo API.
-$vimeo = new Vimeo(YOUR_APPLICATION_ID, YOUR_APPLICATION_SECRET);
+$vimeo = new Vimeo(YOUR_CLIENT_IDENTIFIER, YOUR_CLIENT_SECRET);
 //  Request the client credentials from the authentication server.
 $token_response = $vimeo->clientCredentials();
 ```
@@ -36,7 +36,7 @@ This response will contain the token you can add into this handle with `$vimeo->
 ###### User authenticated Access Tokens
 Getting a user to authenticate with your application is a bit more complicated.  Your application will have to redirect the user to Vimeo where they log in and verify that they will grant your application the requested scopes.  The basic required steps are:
 
-1. Initialize the Vimeo API handle, `$vimeo = new Vimeo(YOUR_APPLICATION_ID, YOUR_APPLICATION_SECRET);`
+1. Initialize the Vimeo API handle, `$vimeo = new Vimeo(YOUR_CLIENT_IDENTIFIER, YOUR_CLIENT_SECRET);`
 2. Send the user to the authorization page on Vimeo.  The link is given by `$vimeo->buildAuthorizationEndpoint($redirect_uri, $scopes);` (Note: if your application only requires public information, you can omit the scopes argument).
 3. The user authenticates and authorizes your app on the Vimeo site and is redirected back to the location provided in $redirect_uri. (Note: This URI must be registered with Vimeo on the [developer site](https://developer.vimeo.com/)).
 4. When the user is returned we will have a querystring parameter `code`.
