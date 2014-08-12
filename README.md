@@ -20,6 +20,14 @@ $vimeo = new Vimeo(YOUR_APPLICATION_ID, YOUR_APPLICATION_SECRET, ACCESS_TOKEN);
 $user_data = $vimeo->request('/me');
 ```
 
+###### Dot notation in the API docs
+
+The API docs often uses dot notation to represent a heirarchy of data (eg. privacy.view). Because this library sends all data using JSON, you must provide the actual heirarchy, not dot notation
+
+```php
+   // The following API call represents the privacy.view parameter
+   $lib->request($uri, array('privacy' => array('view' => 'disable')), 'PATCH');
+```
 
 ###### Application Only Access Token
 To get an application only token, you should run the following code (commented for clarity).
