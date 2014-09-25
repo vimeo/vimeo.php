@@ -81,6 +81,16 @@ If you are developing a web application and would like to have the users upload 
 6. When the user comes back to the redirect_url, you will have an additional query param (to any you may have included) called `video_uri`.  This can be used to load and edit the newly created clip via the standard API methods.
 7. 
 
+
+#### Replacing video source file
+
+If you want to replace the video source file of an existing video, you should follow these steps:
+
+1. Initialize a `Vimeo` class to interact with the server with the proper credentials. \*
+2. With the path to your file and video uri, call `$vimeo->replace($video_uri, $file_name);`.
+3. The response from that function will contain a `Location` header with the URI to the newly created resource.  You can call that to set metadata such as the title or check on the transcode status.
+
+
 # Troubleshooting
 
 1. *todo* explain "curl not found" error
