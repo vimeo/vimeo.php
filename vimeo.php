@@ -343,9 +343,10 @@ class Vimeo
      * 
      * @param  string $pictures_uri The pictures endpoint for a resource that allows picture uploads (eg videos and users)
      * @param  string $file_path    The path to your image file
+     * @param  boolean $activate    Activate image after upload
      * @return string               The URI of the uploaded image. 
      */
-    public function uploadImage ($pictures_uri, $file_path) {
+    public function uploadImage ($pictures_uri, $file_path, $activate = false) {
         //  Validate that our file is real.
         if (!is_file($file_path)) {
             throw new VimeoUploadException('Unable to locate file to upload.');
@@ -384,6 +385,11 @@ class Vimeo
             throw new VimeoUploadException($response);
         }
         
+        // Activate the uploaded image
+        if ($activate) {
+            $completion = $this->request($pictures_response['body']['uri'], array('active' => true), 'PATCH');
+        }
+
         return $pictures_response['body']['uri'];
     }
 }
