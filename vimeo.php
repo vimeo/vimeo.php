@@ -25,6 +25,7 @@ class Vimeo
     const AUTH_ENDPOINT = 'https://api.vimeo.com/oauth/authorize';
     const ACCESS_TOKEN_ENDPOINT = '/oauth/access_token';
     const CLIENT_CREDENTIALS_TOKEN_ENDPOINT = '/oauth/authorize/client';
+    const REPLACE_ENDPOINT = '/files';
     const VERSION_STRING = 'application/vnd.vimeo.*+json; version=3.2';
     const USER_AGENT = 'vimeo.php 1.0; (http://developer.vimeo.com/api/docs)';
 
@@ -269,20 +270,62 @@ class Vimeo
      * This should be used to upload a local file.  If you want a form for your site to upload direct to Vimeo, you should look at the POST /me/videos endpoint.
      *
      * @param string $file_path Path to the video file to upload.
+     * @param boolean $upgrade_to_1080 Should we automatically upgrade the video file to 1080p
      * @return array Status
      */
-    public function upload ($file_path, $machine_id = null) {
+    public function upload ($file_path, $upgrade_to_1080 = false, $machine_id = null)
+    {
         //  Validate that our file is real.
         if (!is_file($file_path)) {
             throw new VimeoUploadException('Unable to locate file to upload.');
         }
 
         //  Begin the upload request by getting a ticket
-        $ticket_args = array('type' => 'streaming');
+        $ticket_args = array('type' => 'streaming', 'upgrade_to_1080' => $upgrade_to_1080);
         if ($machine_id !== null) {
             $ticket_args['machine_id'] = $machine_id;
         }
         $ticket = $this->request('/me/videos', $ticket_args, 'POST');
+
+        return $this->perform_upload($file_path, $ticket);
+    }
+
+    /**
+     * Replace the source of a single Vimeo video
+     *
+     * @param string $video_uri Video uri of the video file to replace.
+     * @param string $file_path Path to the video file to upload.
+     * @param boolean $upgrade_to_1080 Should we automatically upgrade the video file to 1080p
+     * @return array Status
+     */
+    public function replace ($video_uri, $file_path, $upgrade_to_1080 = false, $machine_id = null)
+    {
+        //  Validate that our file is real.
+        if (!is_file($file_path)) {
+            throw new VimeoUploadException('Unable to locate file to upload.');
+        }
+
+        $uri = $video_uri . self::REPLACE_ENDPOINT;
+
+        //  Begin the upload request by getting a ticket
+        $ticket_args = array('type' => 'streaming', 'upgrade_to_1080' => $upgrade_to_1080);
+        if ($machine_id !== null) {
+            $ticket_args['machine_id'] = $machine_id;
+        }
+        $ticket = $this->request($uri, $ticket_args, 'PUT');
+
+        return $this->perform_upload($file_path, $ticket);
+    }
+
+    /**
+     * Take an upload ticket and perform the actual upload
+     *
+     * @param string $filename Path to the video file to upload.
+     * @param Ticket $ticket Upload ticket data.
+     * @return array Status
+    */
+    private function perform_upload($file_path, $ticket)
+    {
         if ($ticket['status'] != 201) {
             throw new VimeoUploadException('Unable to get an upload ticket.');
         }
