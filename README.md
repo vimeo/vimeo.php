@@ -89,7 +89,7 @@ The library provides a sample tool in `examples/upload_image.php`.
 If you want to integrate the upload functionality with an existing PHP application, you should follow these steps:
 
 1. Initialize a `Vimeo` class to interact with the server with the proper credentials. \*
-2. With the picture uri and path to your file, call `$vimeo->uploadImage($pictures_uri, $file_path)`.
+2. With the picture uri and path to your file, call `$vimeo->uploadImage($pictures_uri, $file_path, true)`.
 
 **\* Note**: Images uploaded are not set to active by default. If you would like to have your image set to active by default, simply pass in true as the third parameter in `uploadImage()`
 
