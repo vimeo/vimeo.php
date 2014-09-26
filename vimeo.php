@@ -25,7 +25,7 @@ class Vimeo
     const AUTH_ENDPOINT = 'https://api.vimeo.com/oauth/authorize';
     const ACCESS_TOKEN_ENDPOINT = '/oauth/access_token';
     const CLIENT_CREDENTIALS_TOKEN_ENDPOINT = '/oauth/authorize/client';
-    const REPLACE_ENDPOINT = '%s/files';
+    const REPLACE_ENDPOINT = '/files';
     const VERSION_STRING = 'application/vnd.vimeo.*+json; version=3.2';
     const USER_AGENT = 'vimeo.php 1.0; (http://developer.vimeo.com/api/docs)';
 
@@ -288,13 +288,10 @@ class Vimeo
         $ticket = $this->request('/me/videos', $ticket_args, 'POST');
 
         return $this->perform_upload($file_path, $ticket);
-
     }
 
     /**
-     * Replace a video source file
-     *
-     * This should be used to replace the source file for an existing video.
+     * Replace the source of a single Vimeo video
      *
      * @param string $video_uri Video uri of the video file to replace.
      * @param string $file_path Path to the video file to upload.
@@ -308,7 +305,7 @@ class Vimeo
             throw new VimeoUploadException('Unable to locate file to upload.');
         }
 
-        $uri = sprintf(self::REPLACE_ENDPOINT, $video_uri);
+        $uri = $video_uri . self::REPLACE_ENDPOINT;
 
         //  Begin the upload request by getting a ticket
         $ticket_args = array('type' => 'streaming', 'upgrade_to_1080' => $upgrade_to_1080);
@@ -318,7 +315,6 @@ class Vimeo
         $ticket = $this->request($uri, $ticket_args, 'PUT');
 
         return $this->perform_upload($file_path, $ticket);
-
     }
 
     /**
