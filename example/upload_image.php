@@ -38,5 +38,6 @@ if ($video['status'] != 200) {
 	die();
 }
 
-$response = $lib->uploadImage($video['body']['metadata']['connections']['pictures']['uri'], './test.png');
+// we are setting activate to true so that our image gets activated as soon as it's uploaded
+$response = $lib->uploadImage($video['body']['metadata']['connections']['pictures']['uri'], './test.png', true);
 var_dump($response);

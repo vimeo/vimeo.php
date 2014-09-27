@@ -24,6 +24,14 @@ $vimeo = new Vimeo(YOUR_APPLICATION_ID, YOUR_APPLICATION_SECRET, ACCESS_TOKEN);
 $user_data = $vimeo->request('/me');
 ```
 
+###### Dot notation in the API docs
+
+The API docs often uses dot notation to represent a heirarchy of data (eg. privacy.view). Because this library sends all data using JSON, you must provide the actual heirarchy, not dot notation
+
+```php
+   // The following API call represents the privacy.view parameter
+   $lib->request($uri, array('privacy' => array('view' => 'disable')), 'PATCH');
+```
 
 ###### Application Only Access Token
 To get an application only token, you should run the following code (commented for clarity).
@@ -76,6 +84,27 @@ If you are developing a web application and would like to have the users upload 
 5. The response body should contain a field called `form`, this can be accessed via `$response['body']->form`.  The contents of that should be printed into your page and sent to the end user.  Once they submit the form it will send the video to Vimeo's servers and we will complete the flow before sending them back to the provided redirect_url.
 6. When the user comes back to the redirect_url, you will have an additional query param (to any you may have included) called `video_uri`.  This can be used to load and edit the newly created clip via the standard API methods.
 7.
+
+#### Replacing video source file
+
+If you want to replace the video source file of an existing video, you should follow these steps:
+
+1. Initialize a `Vimeo` class to interact with the server with the proper credentials. \*
+2. With the path to your file and video uri, call `$vimeo->replace($video_uri, $file_name);`.
+3. The response from that function will contain a `Location` header with the URI to the newly created resource.  You can call that to set metadata such as the title or check on the transcode status.
+
+
+#### Uploading an image
+Uploading an image can only occur by PUTing the file to the Vimeo servers
+
+The library provides a sample tool in `examples/upload_image.php`.
+
+If you want to integrate the upload functionality with an existing PHP application, you should follow these steps:
+
+1. Initialize a `Vimeo` class to interact with the server with the proper credentials. \*
+2. With the picture uri and path to your file, call `$vimeo->uploadImage($pictures_uri, $file_path, true)`.
+
+**\* Note**: Images uploaded are not set to active by default. If you would like to have your image set to active by default, simply pass in true as the third parameter in `uploadImage()`
 
 # Troubleshooting
 
