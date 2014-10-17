@@ -1,4 +1,7 @@
 <?php
+
+use Vimeo\Vimeo;
+
 /**
  *   Copyright 2013 Vimeo
  *
@@ -18,11 +21,9 @@ ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
 require_once('vendor/autoload.php');
-
 $config = json_decode(file_get_contents('./config.json'), true);
 
-$lib = new Vimeo\Vimeo($config['client_id'], $config['client_secret']);
-$user = $lib->request('/users/dashron');
+$lib = new Vimeo($config['client_id'], $config['client_secret']);
 
 if (!empty($config['access_token'])) {
     $lib->setToken($config['access_token']);

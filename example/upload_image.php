@@ -1,4 +1,7 @@
 <?php
+
+use Vimeo\Vimeo;
+
 /**
  *   Copyright 2013 Vimeo
  *
@@ -17,13 +20,13 @@
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
-require_once('../vimeo.php');
+require_once('vendor/autoload.php');
 $config = json_decode(file_get_contents('./config.json'), true);
 
 $lib = new Vimeo($config['client_id'], $config['client_secret']);
 
 if (empty($config['access_token'])) {
-	throw new \Exception('You must be authenticated to upload images. Please set an access token in config.json');
+	throw new Exception('You must be authenticated to upload images. Please set an access token in config.json');
 }
 
 $lib->setToken($config['access_token']);
@@ -35,5 +38,6 @@ if ($video['status'] != 200) {
 	die();
 }
 
-$response = $lib->uploadImage($video['body']['metadata']['connections']['pictures']['uri'], './test.png');
+// we are setting activate to true so that our image gets activated as soon as it's uploaded
+$response = $lib->uploadImage($video['body']['metadata']['connections']['pictures']['uri'], './test.png', true);
 var_dump($response);

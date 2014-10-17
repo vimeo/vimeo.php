@@ -1,5 +1,7 @@
 <?php namespace Vimeo;
 
+use Vimeo\Exception\VimeoUploadException;
+
 /**
  *   Copyright 2013 Vimeo
  *
@@ -25,6 +27,7 @@ class Vimeo
     const AUTH_ENDPOINT = 'https://api.vimeo.com/oauth/authorize';
     const ACCESS_TOKEN_ENDPOINT = '/oauth/access_token';
     const CLIENT_CREDENTIALS_TOKEN_ENDPOINT = '/oauth/authorize/client';
+    const REPLACE_ENDPOINT = '/files';
     const VERSION_STRING = 'application/vnd.vimeo.*+json; version=3.2';
     const USER_AGENT = 'vimeo.php 1.0; (http://developer.vimeo.com/api/docs)';
 
@@ -34,7 +37,7 @@ class Vimeo
 
     /**
      * Creates the Vimeo library, and tracks the client and token information
-     * 
+     *
      * @param string $client_id     Your applications client id. Can be found on developer.vimeo.com/apps
      * @param string $client_secret Your applications client secret. Can be found on developer.vimeo.com/apps
      * @param string $access_token  Your applications client id. Can be found on developer.vimeo.com/apps or generated using OAuth 2.
@@ -48,7 +51,7 @@ class Vimeo
 
     /**
      * Make an API request to Vimeo
-     * 
+     *
      * @param  string $url    A Vimeo API Endpoint. Should not include the host
      * @param  array  $params An array of parameters to send to the endpoint. If the HTTP method is GET, they will be added to the url, otherwise they will be written to the body
      * @param  string $method The HTTP Method of the request
@@ -163,7 +166,7 @@ class Vimeo
 
     /**
      * Assign a new access token to this lib
-     * 
+     *
      * @param string $access_token the new access token
      */
     public function setToken($access_token)
@@ -173,7 +176,7 @@ class Vimeo
 
     /**
      * Convert the raw headers string into an associated array
-     * 
+     *
      * @param  string $headers
      * @return array
      */
@@ -194,7 +197,7 @@ class Vimeo
 
     /**
      * Request an access token. This is the final step of the OAuth 2 workflow, and should be called from your redirect url.
-     * 
+     *
      * @param  string $code         The authorization code that was provided to your redirect url
      * @param  string $redirect_uri The redirect_uri that is configured on your app page, and was used in buildAuthorizationEndpoint
      * @return array This array contains three keys, 'status' is the status code, 'body' is an object representation of the json response body, and headers are an associated array of response headers
@@ -235,8 +238,8 @@ class Vimeo
     }
 
     /**
-     * Build the url that your user 
-     * 
+     * Build the url that your user
+     *
      * @param  string $redirect_uri The redirect url that you have configured on your app page
      * @param  string $scope        An array of scopes that your final access token needs to access
      * @param  string $state        A random variable that will be returned on your redirect url. You should validate that this matches
@@ -269,20 +272,62 @@ class Vimeo
      * This should be used to upload a local file.  If you want a form for your site to upload direct to Vimeo, you should look at the POST /me/videos endpoint.
      *
      * @param string $file_path Path to the video file to upload.
+     * @param boolean $upgrade_to_1080 Should we automatically upgrade the video file to 1080p
      * @return array Status
      */
-    public function upload ($file_path, $machine_id = null) {
+    public function upload ($file_path, $upgrade_to_1080 = false, $machine_id = null)
+    {
         //  Validate that our file is real.
         if (!is_file($file_path)) {
             throw new VimeoUploadException('Unable to locate file to upload.');
         }
 
         //  Begin the upload request by getting a ticket
-        $ticket_args = array('type' => 'streaming');
+        $ticket_args = array('type' => 'streaming', 'upgrade_to_1080' => $upgrade_to_1080);
         if ($machine_id !== null) {
             $ticket_args['machine_id'] = $machine_id;
         }
         $ticket = $this->request('/me/videos', $ticket_args, 'POST');
+
+        return $this->perform_upload($file_path, $ticket);
+    }
+
+    /**
+     * Replace the source of a single Vimeo video
+     *
+     * @param string $video_uri Video uri of the video file to replace.
+     * @param string $file_path Path to the video file to upload.
+     * @param boolean $upgrade_to_1080 Should we automatically upgrade the video file to 1080p
+     * @return array Status
+     */
+    public function replace ($video_uri, $file_path, $upgrade_to_1080 = false, $machine_id = null)
+    {
+        //  Validate that our file is real.
+        if (!is_file($file_path)) {
+            throw new VimeoUploadException('Unable to locate file to upload.');
+        }
+
+        $uri = $video_uri . self::REPLACE_ENDPOINT;
+
+        //  Begin the upload request by getting a ticket
+        $ticket_args = array('type' => 'streaming', 'upgrade_to_1080' => $upgrade_to_1080);
+        if ($machine_id !== null) {
+            $ticket_args['machine_id'] = $machine_id;
+        }
+        $ticket = $this->request($uri, $ticket_args, 'PUT');
+
+        return $this->perform_upload($file_path, $ticket);
+    }
+
+    /**
+     * Take an upload ticket and perform the actual upload
+     *
+     * @param string $filename Path to the video file to upload.
+     * @param Ticket $ticket Upload ticket data.
+     * @return array Status
+    */
+    private function perform_upload($file_path, $ticket)
+    {
         if ($ticket['status'] != 201) {
             throw new VimeoUploadException('Unable to get an upload ticket.');
         }
@@ -340,12 +385,13 @@ class Vimeo
 
     /**
      * Uploads an image to an individual picture response
-     * 
+     *
      * @param  string $pictures_uri The pictures endpoint for a resource that allows picture uploads (eg videos and users)
      * @param  string $file_path    The path to your image file
-     * @return string               The URI of the uploaded image. 
+     * @param  boolean $activate    Activate image after upload
+     * @return string               The URI of the uploaded image.
      */
-    public function uploadImage ($pictures_uri, $file_path) {
+    public function uploadImage ($pictures_uri, $file_path, $activate = false) {
         //  Validate that our file is real.
         if (!is_file($file_path)) {
             throw new VimeoUploadException('Unable to locate file to upload.');
@@ -383,7 +429,12 @@ class Vimeo
         if ($curl_info['http_code'] != 200) {
             throw new VimeoUploadException($response);
         }
-        
+
+        // Activate the uploaded image
+        if ($activate) {
+            $completion = $this->request($pictures_response['body']['uri'], array('active' => true), 'PATCH');
+        }
+
         return $pictures_response['body']['uri'];
     }
 }
