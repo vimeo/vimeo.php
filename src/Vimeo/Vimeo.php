@@ -1,6 +1,6 @@
 <?php namespace Vimeo;
 
-use Vimeo\Exception\VimeoUploadException;
+use Vimeo\Exceptions\VimeoUploadException;
 
 /**
  *   Copyright 2013 Vimeo
