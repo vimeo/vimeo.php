@@ -1,7 +1,3 @@
-**This is a fork of the [official PHP library for the Vimeo API](https://github.com/vimeo/vimeo.php) to use with [@composer](https://github.com/composer).**
-
----
-
 vimeo.php
 =========
 **Vimeo.php** is a library for interacting with the latest version of the [Vimeo](https://vimeo.com) API.
