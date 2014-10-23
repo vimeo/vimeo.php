@@ -43,11 +43,13 @@ The API docs often uses dot notation to represent a hierarchy of data (eg. priva
 
 1. Add the vimeo library to your composer.json file's require field
 
+```
     {
         "require" : {
             "vimeo/vimeo-api" : "1.1.*"
         }
     }
+```
 
 2. Use the library `$lib = new \Vimeo\Vimeo($client_id, $client_secret)`
 
