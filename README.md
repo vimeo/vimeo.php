@@ -1,6 +1,22 @@
 vimeo.php
 =========
 
+## Index
+
+ - [Get Started](#get-started-with-the-vimeo-api)
+ - [Help](#direct-help)
+ - [Troubleshooting](#troubleshooting)
+ - [Installation](#installation)
+ - [Authentication/Access Tokens](#generate-your-access-token)
+  - [Unauthenticated tokens](#unauthenticated)
+  - [Authenticated tokens](#authenticated)
+ - [Make requests](#make-requests)
+ - [Upload videos from a server](#upload-videos-from-the-server)
+ - [Replace videos from a server](#replace-videos-from-the-server)
+ - [Client side uploads](#upload-or-replace-videos-from-the-client)
+ - [Upload images](#upload-images)
+ 
+
 ## Get started with the Vimeo API
 
 There is a lot of information about the Vimeo API at https://developer.vimeo.com/api/start. Most of your questions will be answered there!
