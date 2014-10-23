@@ -79,7 +79,7 @@ If you are developing a web application and would like to have the users upload 
 4. Call `$vimeo->request('/me/videos', array('type' => 'POST', 'redirect_url' => $redirect_target), 'POST')`
 5. The response body should contain a field called `form`, this can be accessed via `$response['body']->form`.  The contents of that should be printed into your page and sent to the end user.  Once they submit the form it will send the video to Vimeo's servers and we will complete the flow before sending them back to the provided redirect_url.
 6. When the user comes back to the redirect_url, you will have an additional query param (to any you may have included) called `video_uri`.  This can be used to load and edit the newly created clip via the standard API methods.
-7. 
+7.
 
 #### Replacing video source file
 
@@ -105,7 +105,7 @@ If you want to integrate the upload functionality with an existing PHP applicati
 # Troubleshooting
 
 1. *todo* explain "curl not found" error
-2. If your api request returns with an empty array, it likely means you do not have the proper https certificates. You can find more information on how to solve the problem here : http://unitstep.net/blog/2009/05/05/using-curl-in-php-to-access-https-ssltls-protected-sites/ 
+2. If your api request returns with an empty array, it likely means you do not have the proper https certificates. You can find more information on how to solve the problem here : http://unitstep.net/blog/2009/05/05/using-curl-in-php-to-access-https-ssltls-protected-sites/
 
 # Contributors
 - dashron

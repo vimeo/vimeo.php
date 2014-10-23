@@ -1,0 +1,22 @@
+{
+	"name": "vimeo/vimeo-api",
+	"description": "Official PHP library for the Vimeo API.",
+	"homepage": "https://github.com/vimeo/vimeo.php",
+	"keywords": ["vimeo", "video"],
+	"license": "Apache-2.0",
+	"authors": [
+		{
+			"name": "Vimeo",
+			"homepage": "http://vimeo.com"
+		}
+	],
+	"minimum-stability": "dev",
+	"require": {
+		"php": ">=5.3.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"Vimeo\\": "src/Vimeo"
+		}
+	}
+}
