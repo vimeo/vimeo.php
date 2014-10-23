@@ -1,7 +1,4 @@
-vimeo.php
-=========
-
-## Index
+# Index
 
  - [Get Started](#get-started-with-the-vimeo-api)
  - [Help](#direct-help)
@@ -17,11 +14,11 @@ vimeo.php
  - [Upload images](#upload-images)
  
 
-## Get started with the Vimeo API
+# Get started with the Vimeo API
 
 There is a lot of information about the Vimeo API at https://developer.vimeo.com/api/start. Most of your questions will be answered there!
 
-## Direct Help
+# Direct Help
 
  * [Stack Overflow](http://stackoverflow.com/questions/tagged/vimeo-api)
  * [Google Group](https://groups.google.com/forum/#!forum/vimeo-api)
@@ -37,7 +34,7 @@ The API docs often uses dot notation to represent a hierarchy of data (eg. priva
 ```
 
 
-## Installation
+# Installation
 
 ### Composer
 
@@ -61,7 +58,7 @@ The API docs often uses dot notation to represent a hierarchy of data (eg. priva
 3. Use the library `$lib = new \Vimeo\Vimeo($client_id, $client_secret)`
 
 
-## Generate your Access token
+# Generate your Access token
 
 All requests require access tokens. There are two types of access tokens.
  - [Unauthenticated](#unauthenticated) - Access tokens without a user. These tokens can only view public data
@@ -121,7 +118,7 @@ state        | string   | A value unique to this authorization request. You shou
 
 For additional information, check out the [example](https://github.com/vimeo/vimeo.php/blob/master/example/auth.php)
 
-## Make requests
+# Make requests
 
 The API library has a `request` method which takes three parameters. It returns an associative array containing all of the relvant request information.
 
@@ -153,7 +150,7 @@ headers     | assoc array | An associative array containing all of the response 
 ```
 
 
-## Upload videos from the Server
+# Upload videos from the Server
 
 To upload videos you must call the `upload` method. It accepts two parameters. It will return the URI of the new video.
 For more information check out the [example](https://github.com/vimeo/vimeo.php/blob/master/example/upload.php)
@@ -167,7 +164,7 @@ upgrade   | boolean  | (Optional) Defaults to false. Requests for a 1080p encode
     $response = $lib->upload('/home/aaron/Downloads/ada.mp4', false)
 ```
 
-## Replace videos from the Server
+# Replace videos from the Server
 
 To replace the source file of a video, you must call the `replace` method. It accepts three parameters. It will return the URI of the replaced video.
 
@@ -181,7 +178,7 @@ upgrade   | boolean  | (Optional) Defaults to false. Requests for a 1080p encode
     $response = $lib->upload('/videos/12345', '/home/aaron/Downloads/ada.mp4', false)
 ```
 
-## Upload or replace videos from the client
+# Upload or replace videos from the client
 
 To upload from the client, you will have to mix some server side, and client side API requests. We support two workflows, the first of which is much easier than the second.
 
@@ -195,7 +192,7 @@ This workflow is well documented on Vimeo's developer site. You can read more he
 Streaming uploads support progress bars, and resumable uploading. If you want to perform these uploads client side you will need to start with some server side requests.
 Read through the [Vimeo documentation](https://developer.vimeo.com/api/upload#http-put-uploading) first. Step 1 and 4 should be performed on the server, while step 2 and 3 can be performed on the client. With this workflow the video will never be transferred to your servers.
 
-## Upload images
+# Upload images
 
 To upload an image, call the `uploadImage` method. It takes three parameters.
 For more information check out the [example](https://github.com/vimeo/vimeo.php/blob/master/example/upload_image.php)
