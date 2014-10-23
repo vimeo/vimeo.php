@@ -1,9 +1,6 @@
 <?php
-
-use Vimeo\Vimeo;
-
 /**
- *   Copyright 2013 Vimeo
+ *   Copyright 2014 Vimeo
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -18,15 +15,15 @@ use Vimeo\Vimeo;
  *   limitations under the License.
  */
 
-$config = require(__DIR__ . '/init.php');
+spl_autoload_register(function ($class) {
+	// Make sure that the class being loaded is in the vimeo namespace
+    if (substr(strtolower($class), 0, 6) !== 'vimeo\\') {
+        return;
+    }
 
-$lib = new Vimeo($config['client_id'], $config['client_secret']);
-
-if (!empty($config['access_token'])) {
-    $lib->setToken($config['access_token']);
-    $user = $lib->request('/me');
-} else {
-    $user = $lib->request('/users/dashron');
-}
-
-print_r($user);
+    // Locate and load the file that contains the class
+    $path = __DIR__ . '/src/' . str_replace('\\', '/', $class) . '.php';
+    if (file_exists($path)) {
+    	require($path);
+    }
+});

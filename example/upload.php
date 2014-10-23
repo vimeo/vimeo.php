@@ -18,13 +18,8 @@ use Vimeo\Exceptions\VimeoUploadException;
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-require_once('vendor/autoload.php');
 
-if (!function_exists('json_decode')) {
-    throw new Exception('We could not find json_decode. json_decode is found in php 5.2 and up, but not found on many linux systems due to licensing conflicts. If you are running ubuntu try "sudo apt-get install php5-json".');
-}
-
-$config = json_decode(file_get_contents('./config.json'), true);
+$config = require(__DIR__ . '/init.php');
 
 if (empty($config['access_token'])) {
     throw new Exception('You can not upload a file without an access token. You can find this token on your app page, or generate one using auth.php');

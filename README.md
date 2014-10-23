@@ -1,113 +1,206 @@
 vimeo.php
 =========
-**Vimeo.php** is a library for interacting with the latest version of the [Vimeo](https://vimeo.com) API.
 
-### Installation
-To install vimeo.php, you can download the latest version from https://github.com/vimeo/vimeo.php.
+## Get started with the Vimeo API
 
-To utilize the library in your code, you should include `vimeo.php`.
+There is a lot of information about the Vimeo API at https://developer.vimeo.com/api/start. Most of your questions will be answered there!
 
-### Usage
-##### Making an API Request
-In the Vimeo API, all requests must be authenticated in some method.  For applications that only require access to public information, we offer oAuth2's client credentials grant.  For applications that require users to authenticate, oAuth2's authorization code grant.
+## Direct Help
 
-An example of this usage is:
+ * [Stack Overflow](http://stackoverflow.com/questions/tagged/vimeo-api)
+ * [Google Group](https://groups.google.com/forum/#!forum/vimeo-api)
+ * [Vimeo Support](https://vimeo.com/help/contact)
 
-```php
-//  Create a handle for the Vimeo API, with the access token.
-$vimeo = new Vimeo(YOUR_APPLICATION_ID, YOUR_APPLICATION_SECRET, ACCESS_TOKEN);
-//  Request the authenticated user's information
-$user_data = $vimeo->request('/me');
-```
+#### NOTE: How to use the PHP library with the Vimeo Docs.
 
-###### Dot notation in the API docs
-
-The API docs often uses dot notation to represent a heirarchy of data (eg. privacy.view). Because this library sends all data using JSON, you must provide the actual heirarchy, not dot notation
+The API docs often uses dot notation to represent a hierarchy of data (eg. privacy.view). Because this library sends all data using JSON, you must use nested associative arrays, not dot notation.
 
 ```php
-   // The following API call represents the privacy.view parameter
-   $lib->request($uri, array('privacy' => array('view' => 'disable')), 'PATCH');
+	// The docs refer to the following as "privacy.view"
+    array('privacy' => array('view' => 'disable'));
 ```
 
-###### Application Only Access Token
-To get an application only token, you should run the following code (commented for clarity).
 
-```php
-//  Create a handle for the Vimeo API.
-$vimeo = new Vimeo(YOUR_APPLICATION_ID, YOUR_APPLICATION_SECRET);
-//  Request the client credentials from the authentication server.
-$token_response = $vimeo->clientCredentials();
+## Installation
+
+### Composer
+
+1. Add the vimeo library to your composer.json file's require field
+
+    {
+        "require" : {
+            "vimeo/vimeo-api" : "1.1.*"
+        }
+    }
+
+2. Use the library `$lib = new \Vimeo\Vimeo($client_id, $client_secret)`
+
+
+### Manual
+    
+1. Download the latest release : [v1.1.0]
+2. Include the autoloader `require("/path/to/vimeo.php/autoload.php");`
+3. Use the library `$lib = new \Vimeo\Vimeo($client_id, $client_secret)`
+
+
+## Generate your Access token
+
+All requests require access tokens. There are two types of access tokens.
+ - [Unauthenticated](#unauthenticated) - Access tokens without a user. These tokens can only view public data
+ - [Authenticated](#authenticated) - Access tokens with a user. These tokens interact on behalf of the authenticated user.
+
+### Unauthenticated
+
+Unauthenticated API requests must generate an access token. You should not generate a new access token for each request, you should request an access token once and use it forever.
+
+```PHP
+    // scope is an array of permissions your token needs to access. You can read more at https://developer.vimeo.com/api/authentication#scopes
+    $token = $lib->clientCredentials(scope);
+
+    // usable access token
+    var_dump(access_token->access_token);
+    
+    // accepted scopes
+    var_dump(access_token->scope);
 ```
 
-This response will contain the token you can add into this handle with `$vimeo->setToken($token_from_response)`.  The token should be stored for later use, and you can save time in future runs by using it and skipping the request step.
 
-###### User authenticated Access Tokens
-Getting a user to authenticate with your application is a bit more complicated.  Your application will have to redirect the user to Vimeo where they log in and verify that they will grant your application the requested scopes.  The basic required steps are:
-
-1. Initialize the Vimeo API handle, `$vimeo = new Vimeo(YOUR_APPLICATION_ID, YOUR_APPLICATION_SECRET);`
-2. Send the user to the authorization page on Vimeo.  The link is given by `$vimeo->buildAuthorizationEndpoint($redirect_uri, $scopes);` (Note: if your application only requires public information, you can omit the scopes argument).
-3. The user authenticates and authorizes your app on the Vimeo site and is redirected back to the location provided in $redirect_uri. (Note: This URI must be registered with Vimeo on the [developer site](https://developer.vimeo.com/)).
-4. When the user is returned we will have a querystring parameter `code`.
-5. Now that we have the code, we need to exchange it for an access token.  We repeat step 1 to get ourselves a handle for the Vimeo API.
-6. The code can be exchanged by calling `$vimeo->accessToken($code, $redirect_uri);`
-
-An example of this can be seen in `examples/auth.php`.
+### Authenticated
 
 
-#### Uploading a file
-Uploading a file can occur in one of two ways:
+1. Build a link to Vimeo so your users can authorize your app.
 
-1. Streaming the file to the Vimeo servers
-2. POSTing the file from a client web browser
+```PHP
+        $url = $lib->buildAuthorizationEndpoint($redirect_uri, $scopes, $state)
+```
 
-The library provides a sample tool for method #1 in `examples/upload.php`.
+Name         | Type     | Description
+-------------|----------|------------
+redirect_uri | string   | The uri the user is redirected to in step 3. This value must be provided to every step of the authorization process including creating your app, building your authorization endpoint and exchanging your authorization code for an access token.
+scope        | array    | An array of permissions your token needs to access. You can read more at https://developer.vimeo.com/api/authentication#scopes.
+state        | string   | A value unique to this authorization request. You should generate it randomly, and validate it in step 3.
+        
+        
+2. Your user will need to access the authorization endpoint (either by clicking the link or through a redirect). On the authorization endpoint the user will have the option to deny your app any scopes you have requested. If they deny your app, they will be redirected back to your redirect_url with an ````error```` parameter.
 
-If you want to integrate the upload functionality with an existing PHP application, you should follow these steps:
+3. If the user accepts your app, they will be redirected back to your redirect\_uri with a ````code```` and ````state```` query parameter (eg. http://yourredirect.com?code=abc&state=xyz). 
+    1. You must validate that the ```state``` matches your state from step 1. 
+    2. If the state is valid, you can exchange your code and redirect\_uri for an access token.
 
-1. Initialize a `Vimeo` class to interact with the server with the proper credentials. \*
-2. With the path to your file, call `$vimeo->upload($file_path)`.
-3. The response from that function will contain a `Location` header with the URI to the newly created resource.  You can call that to set metadata such as the title or check on the transcode status.
+```PHP
+        // redirect_uri must be provided, and must match your configured uri
+        $token = $lib->accessToken(code, redirect_uri);
 
-**\* Note**: Vimeo requires applications that perform uploads to request and be granted special permissions.  This can be done on the [Vimeo developer site](https://developer.vimeo.com/).
+        // usable access token
+        var_dump($token->access_token);
+        
+        // accepted scopes
+        var_dump(token->scope);
+                    
+        // authenticated user
+        var_dump(access_token->user);
+```
+
+For additional information, check out the [example](https://github.com/vimeo/vimeo.php/blob/master/example/auth.php)
+
+## Make requests
+
+The API library has a `request` method which takes three parameters. It returns an associative array containing all of the relvant request information.
+
+**Usage**
+
+Name        | Type     | Description
+------------|----------|------------
+ url        | string   | The URL path (e.g.: `/users/dashron`).
+ params     | string   | An object containing all of your parameters (e.g.: `{ "per_page": 5, "filter" : "featured"}` ).
+ method     | string   | The HTTP method (e.g.: `GET`).
+
+```PHP
+    $response = $lib->request('/me/videos', array('per_page' => 2), 'GET');
+```
+
+**Response**
+
+The response array will contain three keys.
+
+Name        | Type        | Description
+------------|-------------|------------
+body        | assoc array | The parsed request body. All responses are JSON so we parse this for you, and give you the result.
+status      | number      | The HTTP status code of the response. This partially informs you about the success of your API request.
+headers     | assoc array | An associative array containing all of the response headers.
+
+```PHP
+    $response = $lib->request('/me/videos', array('per_page' => 2), 'GET');
+    var_dump($response['body']);
+```
 
 
-If you are developing a web application and would like to have the users upload directly to Vimeo's servers instead of relaying through yours, you can utilize the POST method.  The simplest implementation of this is as follows:
+## Upload videos from the Server
 
-1. Configure your redirect target with your app on the [Vimeo developer site](https://developer.vimeo.com).
-2. Make sure that your callback is functional, it will receive the data when Vimeo has finalized the upload.
-3. Initialize a `Vimeo` class to interact with the server with the proper credentials (requires the same special permission as the streaming API).
-4. Call `$vimeo->request('/me/videos', array('type' => 'POST', 'redirect_url' => $redirect_target), 'POST')`
-5. The response body should contain a field called `form`, this can be accessed via `$response['body']->form`.  The contents of that should be printed into your page and sent to the end user.  Once they submit the form it will send the video to Vimeo's servers and we will complete the flow before sending them back to the provided redirect_url.
-6. When the user comes back to the redirect_url, you will have an additional query param (to any you may have included) called `video_uri`.  This can be used to load and edit the newly created clip via the standard API methods.
-7.
+To upload videos you must call the `upload` method. It accepts two parameters. It will return the URI of the new video.
+For more information check out the [example](https://github.com/vimeo/vimeo.php/blob/master/example/upload.php)
 
-#### Replacing video source file
+Name      | Type     | Description
+----------|----------|------------
+file      | string   | Full path to the upload file on the local system.
+upgrade   | boolean  | (Optional) Defaults to false. Requests for a 1080p encode to be made from this video. This feature is only available to [Vimeo PRO](https://vimeo.com/pro) members. For more information, check out the [FAQ](https://vimeo.com/help/faq/uploading-to-vimeo/uploading-basics#does-vimeo-support-1080p-hd).
 
-If you want to replace the video source file of an existing video, you should follow these steps:
+```PHP
+    $response = $lib->upload('/home/aaron/Downloads/ada.mp4', false)
+```
 
-1. Initialize a `Vimeo` class to interact with the server with the proper credentials. \*
-2. With the path to your file and video uri, call `$vimeo->replace($video_uri, $file_name);`.
-3. The response from that function will contain a `Location` header with the URI to the newly created resource.  You can call that to set metadata such as the title or check on the transcode status.
+## Replace videos from the Server
+
+To replace the source file of a video, you must call the `replace` method. It accepts three parameters. It will return the URI of the replaced video.
+
+Name      | Type     | Description
+----------|----------|------------
+video_uri | string   | The URI of the original video. Once uploaded and successfully transcoded your source video file will be swapped with this new video file.
+file      | string   | Full path to the upload file on the local system.
+upgrade   | boolean  | (Optional) Defaults to false. Requests for a 1080p encode to be made from this video. This feature is only available to [Vimeo PRO](https://vimeo.com/pro) members. For more information, check out the [FAQ](https://vimeo.com/help/faq/uploading-to-vimeo/uploading-basics#does-vimeo-support-1080p-hd).
+
+```PHP
+    $response = $lib->upload('/videos/12345', '/home/aaron/Downloads/ada.mp4', false)
+```
+
+## Upload or replace videos from the client
+
+To upload from the client, you will have to mix some server side, and client side API requests. We support two workflows, the first of which is much easier than the second.
+
+### Simple POST uploads
+
+This workflow is well documented on Vimeo's developer site. You can read more here : https://developer.vimeo.com/api/upload#http-post-uploading.
 
 
-#### Uploading an image
-Uploading an image can only occur by PUTing the file to the Vimeo servers
+### Streaming uploads
 
-The library provides a sample tool in `examples/upload_image.php`.
+Streaming uploads support progress bars, and resumable uploading. If you want to perform these uploads client side you will need to start with some server side requests.
+Read through the [Vimeo documentation](https://developer.vimeo.com/api/upload#http-put-uploading) first. Step 1 and 4 should be performed on the server, while step 2 and 3 can be performed on the client. With this workflow the video will never be transferred to your servers.
 
-If you want to integrate the upload functionality with an existing PHP application, you should follow these steps:
+## Upload images
 
-1. Initialize a `Vimeo` class to interact with the server with the proper credentials. \*
-2. With the picture uri and path to your file, call `$vimeo->uploadImage($pictures_uri, $file_path, true)`.
+To upload an image, call the `uploadImage` method. It takes three parameters.
+For more information check out the [example](https://github.com/vimeo/vimeo.php/blob/master/example/upload_image.php)
 
-**\* Note**: Images uploaded are not set to active by default. If you would like to have your image set to active by default, simply pass in true as the third parameter in `uploadImage()`
+Name         | Type     | Description
+-------------|----------|------------
+pictures_uri | string   | The URI to the pictures collection for a single resource. eg. `/videos/12345/pictures`. You can always find this in the resource representation.
+file         | string   | Full path to the upload file on the local system.
+activate     | boolean  | (Optional) Defaults to false. If true this picture will become the default picture for the associated resource.
+
+```PHP
+    $response = $lib->uploadImage('/videos/12345/pictures', '/home/aaron/Downloads/ada.png', true)
+```
 
 # Troubleshooting
 
-1. *todo* explain "curl not found" error
-2. If your api request returns with an empty array, it likely means you do not have the proper https certificates. You can find more information on how to solve the problem here : http://unitstep.net/blog/2009/05/05/using-curl-in-php-to-access-https-ssltls-protected-sites/
+If your API request returns with an empty array, or a status code of 0 it likely means you do not have the proper https certificates. You can read more here : http://unitstep.net/blog/2009/05/05/using-curl-in-php-to-access-https-ssltls-protected-sites/. Note that we highly recommend the full solution. The quick fix will leave your tokens vulnerable.
+
+If you have any additional questions or problems, create a [ticket](https://github.com/vimeo/vimeo.php/issues) or [contact us](https://vimeo.com/help/contact)
 
 # Contributors
-- dashron
-- sclm
-- sgmendez ([32e4d7753a66e71dd158bf55b8a4b30ed564ef30](https://github.com/vimeo/vimeo.php/commit/32e4d7753a66e71dd158bf55b8a4b30ed564ef30))
+- [dashron](https://github.com/dashron)
+- [sclm](https://github.com/sclm)
+- [greedo](https://github.com/greedo)
+- [sgmendez](https://github.com/sgmendez) ([32e4d7753a66e71dd158bf55b8a4b30ed564ef30](https://github.com/vimeo/vimeo.php/commit/32e4d7753a66e71dd158bf55b8a4b30ed564ef30))
+- [vinkla](https://github.com/vinkla) ([033a43156d6adae9e5757aefbfcf67c9ecdc605c](https://github.com/vimeo/vimeo.php/commit/033a43156d6adae9e5757aefbfcf67c9ecdc605c))
