@@ -445,20 +445,20 @@ class Vimeo
     /**
      * Uploads an texttrack
      *
-     * @param  string $video_uri    The video uri that we are adding our texttrack to
-     * @param  string $file_path    The path to your text track file
-     * @param  string $track_type   The type of your text track
-     * @param  string $language     The language of your text track
-     * @return string               The URI of the uploaded text track.
+     * @param  string $texttracks_uri   The text tracks uri that we are adding our text track to
+     * @param  string $file_path        The path to your text track file
+     * @param  string $track_type       The type of your text track
+     * @param  string $language         The language of your text track
+     * @return string                   The URI of the uploaded text track.
      */
-    public function uploadTexttrack ($video_uri, $file_path, $track_type, $language) {
+    public function uploadTexttrack ($texttracks_uri, $file_path, $track_type, $language) {
         //  Validate that our file is real.
         if (!is_file($file_path)) {
             throw new VimeoUploadException('Unable to locate file to upload.');
         }
         $name = array_slice(explode("/", $file_path), -1)[0];
 
-        $texttrack_response = $this->request($video_uri . '/texttracks', array('type' => $track_type, 'language' => $language, 'name' => $name), 'POST');
+        $texttrack_response = $this->request($texttracks_uri, array('type' => $track_type, 'language' => $language, 'name' => $name), 'POST');
         if ($texttrack_response['status'] != 201) {
             throw new VimeoUploadException('Unable to request an upload url from vimeo');
         }

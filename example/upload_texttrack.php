@@ -3,7 +3,7 @@
 use Vimeo\Vimeo;
 
 /**
- *   Copyright 2013 Vimeo
+ *   Copyright 2014 Vimeo
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ use Vimeo\Vimeo;
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
 $config = require(__DIR__ . '/init.php');
@@ -25,7 +24,7 @@ $config = require(__DIR__ . '/init.php');
 $lib = new Vimeo($config['client_id'], $config['client_secret']);
 
 if (empty($config['access_token'])) {
-	throw new Exception('You must be authenticated to upload images. Please set an access token in config.json');
+	throw new Exception('You must be authenticated to upload text tracks. Please set an access token in config.json');
 }
 
 $lib->setToken($config['access_token']);
@@ -42,18 +41,18 @@ if (empty($resource_uri)) {
 }
 
 if (empty($texttrack_path)) {
-	throw new Exception('You must provide the full path to an image as the second argument to this script');
+	throw new Exception('You must provide the full path to a text track as the second argument to this script');
 }
 
-// Find the pictures URI. This is also the URI that you can query to view all pictures associated with this resource.
+// Find the text track URI. This is also the URI that you can query to view all text tracks associated with this resource.
 $resource = $lib->request($resource_uri);
 if ($resource['status'] != 200) {
 	var_dump($resource);
 	throw new Exception('Could not locate the requested resource uri [' . $resource_uri . ']');
 }
 
-if (empty($resource['body']['metadata']['connections']['pictures']['uri'])) {
-	throw new Exception('The resource you loaded does not have a pictures connection. This most likely means that picture uploads are not supported for this resource');
+if (empty($resource['body']['metadata']['connections']['texttracks']['uri'])) {
+	throw new Exception('The resource you loaded does not have a text track connection. This most likely means that text track uploads are not supported for this resource');
 }
 
 // You are always required to set a text track type and language as the 3rd and 4th parameters respectively.
