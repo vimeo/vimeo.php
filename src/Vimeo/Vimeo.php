@@ -456,6 +456,8 @@ class Vimeo
         if (!is_file($file_path)) {
             throw new VimeoUploadException('Unable to locate file to upload.');
         }
+
+        // To simplify the script we provide the filename as the text track name, but you can provide any value you want.
         $name = array_slice(explode("/", $file_path), -1)[0];
 
         $texttrack_response = $this->request($texttracks_uri, array('type' => $track_type, 'language' => $language, 'name' => $name), 'POST');
