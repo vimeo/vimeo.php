@@ -441,4 +441,58 @@ class Vimeo
 
         return $pictures_response['body']['uri'];
     }
+
+    /**
+     * Uploads an texttrack
+     *
+     * @param  string $texttracks_uri   The text tracks uri that we are adding our text track to
+     * @param  string $file_path        The path to your text track file
+     * @param  string $track_type       The type of your text track
+     * @param  string $language         The language of your text track
+     * @return string                   The URI of the uploaded text track.
+     */
+    public function uploadTexttrack ($texttracks_uri, $file_path, $track_type, $language) {
+        //  Validate that our file is real.
+        if (!is_file($file_path)) {
+            throw new VimeoUploadException('Unable to locate file to upload.');
+        }
+
+        // To simplify the script we provide the filename as the text track name, but you can provide any value you want.
+        $name = array_slice(explode("/", $file_path), -1)[0];
+
+        $texttrack_response = $this->request($texttracks_uri, array('type' => $track_type, 'language' => $language, 'name' => $name), 'POST');
+        if ($texttrack_response['status'] != 201) {
+            throw new VimeoUploadException('Unable to request an upload url from vimeo');
+        }
+
+        $upload_url = $texttrack_response['body']['link'];
+
+        $texttrack_resource = fopen($file_path, 'r');
+
+        $curl_opts = array(
+            CURLOPT_HEADER => 1,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 240,
+            CURLOPT_UPLOAD => true,
+            CURLOPT_CUSTOMREQUEST => 'PUT',
+            CURLOPT_READDATA => $texttrack_resource
+        );
+
+        $curl = curl_init($upload_url);
+        curl_setopt_array($curl, $curl_opts);
+        $response = curl_exec($curl);
+        $curl_info = curl_getinfo($curl);
+
+        if (!$response) {
+            $error = curl_error($curl);
+            throw new VimeoUploadException($error);
+        }
+        curl_close($curl);
+
+        if ($curl_info['http_code'] != 200) {
+            throw new VimeoUploadException($response);
+        }
+
+        return $texttrack_response['body']['uri'];
+    }
 }
