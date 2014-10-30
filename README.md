@@ -12,7 +12,7 @@
  - [Replace videos from a server](#replace-videos-from-the-server)
  - [Client side uploads](#upload-or-replace-videos-from-the-client)
  - [Upload images](#upload-images)
- 
+
 
 # Get started with the Vimeo API
 
@@ -29,8 +29,8 @@ There is a lot of information about the Vimeo API at https://developer.vimeo.com
 The API docs often uses dot notation to represent a hierarchy of data (eg. privacy.view). Because this library sends all data using JSON, you must use nested associative arrays, not dot notation.
 
 ```php
-	// The docs refer to the following as "privacy.view"
-    array('privacy' => array('view' => 'disable'));
+// The docs refer to the following as "privacy.view"
+array('privacy' => array('view' => 'disable'));
 ```
 
 
@@ -40,19 +40,19 @@ The API docs often uses dot notation to represent a hierarchy of data (eg. priva
 
 1. Add the vimeo library to your composer.json file's require field
 
-```
-    {
-        "require" : {
-            "vimeo/vimeo-api" : "1.1.*"
-        }
-    }
+```json
+{
+	"require" : {
+		"vimeo/vimeo-api" : "1.1.*"
+	}
+}
 ```
 
 2. Use the library `$lib = new \Vimeo\Vimeo($client_id, $client_secret)`
 
 
 ### Manual
-    
+
 1. Download the latest release : [v1.1.0](https://github.com/vimeo/vimeo.php/archive/v1.1.0.zip)
 2. Include the autoloader `require("/path/to/vimeo.php/autoload.php");`
 3. Use the library `$lib = new \Vimeo\Vimeo($client_id, $client_secret)`
@@ -68,15 +68,15 @@ All requests require access tokens. There are two types of access tokens.
 
 Unauthenticated API requests must generate an access token. You should not generate a new access token for each request, you should request an access token once and use it forever.
 
-```PHP
-    // scope is an array of permissions your token needs to access. You can read more at https://developer.vimeo.com/api/authentication#scopes
-    $token = $lib->clientCredentials(scope);
+```php
+// scope is an array of permissions your token needs to access. You can read more at https://developer.vimeo.com/api/authentication#scopes
+$token = $lib->clientCredentials(scope);
 
-    // usable access token
-    var_dump(access_token->access_token);
-    
-    // accepted scopes
-    var_dump(access_token->scope);
+// usable access token
+var_dump(access_token->access_token);
+
+// accepted scopes
+var_dump(access_token->scope);
 ```
 
 
@@ -85,8 +85,8 @@ Unauthenticated API requests must generate an access token. You should not gener
 
 1. Build a link to Vimeo so your users can authorize your app.
 
-```PHP
-        $url = $lib->buildAuthorizationEndpoint($redirect_uri, $scopes, $state)
+```php
+$url = $lib->buildAuthorizationEndpoint($redirect_uri, $scopes, $state)
 ```
 
 Name         | Type     | Description
@@ -94,26 +94,26 @@ Name         | Type     | Description
 redirect_uri | string   | The uri the user is redirected to in step 3. This value must be provided to every step of the authorization process including creating your app, building your authorization endpoint and exchanging your authorization code for an access token.
 scope        | array    | An array of permissions your token needs to access. You can read more at https://developer.vimeo.com/api/authentication#scopes.
 state        | string   | A value unique to this authorization request. You should generate it randomly, and validate it in step 3.
-        
-        
+
+
 2. Your user will need to access the authorization endpoint (either by clicking the link or through a redirect). On the authorization endpoint the user will have the option to deny your app any scopes you have requested. If they deny your app, they will be redirected back to your redirect_url with an ````error```` parameter.
 
-3. If the user accepts your app, they will be redirected back to your redirect\_uri with a ````code```` and ````state```` query parameter (eg. http://yourredirect.com?code=abc&state=xyz). 
-    1. You must validate that the ```state``` matches your state from step 1. 
+3. If the user accepts your app, they will be redirected back to your redirect\_uri with a ````code```` and ````state```` query parameter (eg. http://yourredirect.com?code=abc&state=xyz).
+    1. You must validate that the ```state``` matches your state from step 1.
     2. If the state is valid, you can exchange your code and redirect\_uri for an access token.
 
-```PHP
-        // redirect_uri must be provided, and must match your configured uri
-        $token = $lib->accessToken(code, redirect_uri);
+```php
+// redirect_uri must be provided, and must match your configured uri
+$token = $lib->accessToken(code, redirect_uri);
 
-        // usable access token
-        var_dump($token->access_token);
-        
-        // accepted scopes
-        var_dump(token->scope);
-                    
-        // authenticated user
-        var_dump(access_token->user);
+// usable access token
+var_dump($token->access_token);
+
+// accepted scopes
+var_dump(token->scope);
+
+// authenticated user
+var_dump(access_token->user);
 ```
 
 For additional information, check out the [example](https://github.com/vimeo/vimeo.php/blob/master/example/auth.php)
@@ -130,8 +130,8 @@ Name        | Type     | Description
  params     | string   | An object containing all of your parameters (e.g.: `{ "per_page": 5, "filter" : "featured"}` ).
  method     | string   | The HTTP method (e.g.: `GET`).
 
-```PHP
-    $response = $lib->request('/me/videos', array('per_page' => 2), 'GET');
+```php
+$response = $lib->request('/me/videos', array('per_page' => 2), 'GET');
 ```
 
 **Response**
@@ -144,11 +144,10 @@ body        | assoc array | The parsed request body. All responses are JSON so w
 status      | number      | The HTTP status code of the response. This partially informs you about the success of your API request.
 headers     | assoc array | An associative array containing all of the response headers.
 
-```PHP
-    $response = $lib->request('/me/videos', array('per_page' => 2), 'GET');
-    var_dump($response['body']);
+```php
+$response = $lib->request('/me/videos', array('per_page' => 2), 'GET');
+var_dump($response['body']);
 ```
-
 
 # Upload videos from the Server
 
@@ -160,8 +159,8 @@ Name      | Type     | Description
 file      | string   | Full path to the upload file on the local system.
 upgrade   | boolean  | (Optional) Defaults to false. Requests for a 1080p encode to be made from this video. This feature is only available to [Vimeo PRO](https://vimeo.com/pro) members. For more information, check out the [FAQ](https://vimeo.com/help/faq/uploading-to-vimeo/uploading-basics#does-vimeo-support-1080p-hd).
 
-```PHP
-    $response = $lib->upload('/home/aaron/Downloads/ada.mp4', false)
+```php
+$response = $lib->upload('/home/aaron/Downloads/ada.mp4', false)
 ```
 
 # Replace videos from the Server
@@ -174,8 +173,8 @@ video_uri | string   | The URI of the original video. Once uploaded and successf
 file      | string   | Full path to the upload file on the local system.
 upgrade   | boolean  | (Optional) Defaults to false. Requests for a 1080p encode to be made from this video. This feature is only available to [Vimeo PRO](https://vimeo.com/pro) members. For more information, check out the [FAQ](https://vimeo.com/help/faq/uploading-to-vimeo/uploading-basics#does-vimeo-support-1080p-hd).
 
-```PHP
-    $response = $lib->upload('/videos/12345', '/home/aaron/Downloads/ada.mp4', false)
+```php
+$response = $lib->upload('/videos/12345', '/home/aaron/Downloads/ada.mp4', false)
 ```
 
 # Upload or replace videos from the client
@@ -203,8 +202,8 @@ pictures_uri | string   | The URI to the pictures collection for a single resour
 file         | string   | Full path to the upload file on the local system.
 activate     | boolean  | (Optional) Defaults to false. If true this picture will become the default picture for the associated resource.
 
-```PHP
-    $response = $lib->uploadImage('/videos/12345/pictures', '/home/aaron/Downloads/ada.png', true)
+```php
+$response = $lib->uploadImage('/videos/12345/pictures', '/home/aaron/Downloads/ada.png', true)
 ```
 
 # Troubleshooting
