@@ -468,7 +468,8 @@ class Vimeo
         }
 
         // To simplify the script we provide the filename as the text track name, but you can provide any value you want.
-        $name = array_slice(explode("/", $file_path), -1)[0];
+        $name = array_slice(explode("/", $file_path), -1);
+        $name = $name[0];
 
         $texttrack_response = $this->request($texttracks_uri, array('type' => $track_type, 'language' => $language, 'name' => $name), 'POST');
         if ($texttrack_response['status'] != 201) {
