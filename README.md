@@ -220,3 +220,4 @@ If you have any additional questions or problems, create a [ticket](https://gith
 - [vinkla](https://github.com/vinkla) ([033a43156d6adae9e5757aefbfcf67c9ecdc605c](https://github.com/vimeo/vimeo.php/commit/033a43156d6adae9e5757aefbfcf67c9ecdc605c))
 - [majna](https://github.com/majna) (documentation improvements)
 - [videoMonkey](https://github.com/videoMonkey) ([759e81a664e90d1f5249cea0eda843b1a6619090](https://github.com/vimeo/vimeo.php/commit/759e81a664e90d1f5249cea0eda843b1a6619090))
+- [dstelljes](https://github.com/dstelljes) ([935f304ed7ba87a4d6b4239f6d50c633227a9d18](https://github.com/vimeo/vimeo.php/commit/935f304ed7ba87a4d6b4239f6d50c633227a9d18))
