@@ -36,6 +36,8 @@ class Vimeo
     private $_client_secret = null;
     private $_access_token = null;
 
+    protected $_curl_opts = array();
+
     /**
      * Creates the Vimeo library, and tracks the client and token information.
      *
@@ -126,22 +128,16 @@ class Vimeo
      */
     private function _request($url, $curl_opts = array()) {
         // Apply the defaults to the curl opts.
-        $curl_opt_defaults = array(
+        $curl_defaults = array(
             CURLOPT_HEADER => 1,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 30);
+            CURLOPT_TIMEOUT => 30
+        );
 
-        // Can't use array_merge since it would reset the numbering to 0 and lose the CURLOPT constant values.
-        // Insetad we find the overwritten ones and manually merge.
-        $overwritten_keys = array_intersect(array_keys($curl_opts), array_keys($curl_opt_defaults));
-        foreach ($curl_opt_defaults as $setting => $value) {
-            if (in_array($setting, $overwritten_keys)) {
-                break;
-            }
-            $curl_opts[$setting] = $value;
-        }
+        // Merge the options (custom options take precedence).
+        $curl_opts = $this->_curl_opts + $curl_opts + $curl_defaults;
 
-        // Call the API
+        // Call the API.
         $curl = curl_init($url);
         curl_setopt_array($curl, $curl_opts);
         $response = curl_exec($curl);
@@ -179,6 +175,16 @@ class Vimeo
     public function setToken($access_token)
     {
         $this->_access_token = $access_token;
+    }
+
+    /**
+     * Sets custom cURL options.
+     *
+     * @param array $curl_opts An associative array of cURL options.
+     */
+    public function setCURLOptions($curl_opts = array())
+    {
+        $this->_curl_opts = $curl_opts;
     }
 
     /**
