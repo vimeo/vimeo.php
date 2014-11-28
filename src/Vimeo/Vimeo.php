@@ -141,6 +141,13 @@ class Vimeo
         $curl = curl_init($url);
         curl_setopt_array($curl, $curl_opts);
         $response = curl_exec($curl);
+
+        // Provide a CA certificate if needed.
+        if (curl_errno($curl) == 60) {
+            curl_setopt($curl, CURLOPT_CAINFO, dirname(__FILE__) . '/ca.crt');
+            $response = curl_exec($curl);
+        }
+
         $curl_info = curl_getinfo($curl);
         curl_close($curl);
 
