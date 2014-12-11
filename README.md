@@ -12,6 +12,7 @@
  - [Replace videos from a server](#replace-videos-from-the-server)
  - [Client side uploads](#upload-or-replace-videos-from-the-client)
  - [Upload images](#upload-images)
+ - [Framework Integrations](#framework-integrations)
 
 
 # Get started with the Vimeo API
@@ -211,6 +212,13 @@ $response = $lib->uploadImage('/videos/12345/pictures', '/home/aaron/Downloads/a
 If your API request returns with an empty array, or a status code of 0 it likely means you do not have the proper https certificates. You can read more here : http://unitstep.net/blog/2009/05/05/using-curl-in-php-to-access-https-ssltls-protected-sites/. Note that we highly recommend the full solution. The quick fix will leave your tokens vulnerable.
 
 If you have any additional questions or problems, create a [ticket](https://github.com/vimeo/vimeo.php/issues) or [contact us](https://vimeo.com/help/contact)
+
+# Framework Integrations
+ - **Wordpress** - http://vimeography.com/
+ - **Laravel** - https://github.com/vinkla/vimeo
+
+If you have integrated Vimeo into a popular PHP framework let us know!
+
 
 # Contributors
 - [dashron](https://github.com/dashron)
