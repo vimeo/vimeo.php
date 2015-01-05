@@ -74,10 +74,13 @@ Unauthenticated API requests must generate an access token. You should not gener
 $token = $lib->clientCredentials(scope);
 
 // usable access token
-var_dump(access_token->access_token);
+var_dump($token->access_token);
 
 // accepted scopes
-var_dump(access_token->scope);
+var_dump($token->scope);
+
+// use the token
+$lib->setToken($token->access_token)
 ```
 
 
@@ -111,10 +114,13 @@ $token = $lib->accessToken(code, redirect_uri);
 var_dump($token->access_token);
 
 // accepted scopes
-var_dump(token->scope);
+var_dump($token->scope);
 
 // authenticated user
-var_dump(access_token->user);
+var_dump($token->user);
+
+// use the token
+$lib->setToken($token->access_token)
 ```
 
 For additional information, check out the [example](https://github.com/vimeo/vimeo.php/blob/master/example/auth.php)
