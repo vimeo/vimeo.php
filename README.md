@@ -89,9 +89,7 @@ $lib->setToken($token->access_token)
 
 #### Single User Applications
 
-If you only ever plan on interacting with a single user account feel free to hard code your access tokens into your app. This token should follow the spec described under authenticated requests.
-
-If this user is also the app owner, you can generate a token on your app page.
+If you only ever plan on interacting with a single user account, feel free to hard code (or preferably configure) your access tokens into your app.
 
 ```php
 $lib->setToken($access_token);
