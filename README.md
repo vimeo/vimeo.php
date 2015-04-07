@@ -216,7 +216,7 @@ If your API request returns with an empty array, or a status code of 0 it likely
 If you have any additional questions or problems, create a [ticket](https://github.com/vimeo/vimeo.php/issues) or [contact us](https://vimeo.com/help/contact)
 
 # Framework Integrations
- - **Wordpress** - http://vimeography.com/
+ - **WordPress** - http://vimeography.com/
  - **Laravel** - https://github.com/vinkla/vimeo
 
 If you have integrated Vimeo into a popular PHP framework let us know!
