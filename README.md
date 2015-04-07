@@ -87,6 +87,18 @@ $lib->setToken($token->access_token)
 ### Authenticated
 
 
+#### Single User Applications
+
+If you only ever plan on interacting with a single user account feel free to hard code your access tokens into your app. This token should follow the spec described under authenticated requests.
+
+If this user is also the app owner, you can generate a token on your app page.
+
+```php
+$lib->setToken($access_token);
+```
+
+#### Multi-User Applications
+
 1. Build a link to Vimeo so your users can authorize your app.
 
 ```php
