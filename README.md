@@ -39,14 +39,10 @@ array('privacy' => array('view' => 'disable'));
 
 ### Composer
 
-1. Add the vimeo library to your composer.json file's require field
+1. Require this package, with [Composer](https://getcomposer.org/), in the root directory of your project.
 
-```json
-{
-	"require" : {
-		"vimeo/vimeo-api" : "1.1.*"
-	}
-}
+```bash
+composer require vimeo/vimeo-api
 ```
 
 2. Use the library `$lib = new \Vimeo\Vimeo($client_id, $client_secret)`
