@@ -235,3 +235,7 @@ If you have integrated Vimeo into a popular PHP framework let us know!
 - [majna](https://github.com/majna) (documentation improvements)
 - [videoMonkey](https://github.com/videoMonkey) ([759e81a664e90d1f5249cea0eda843b1a6619090](https://github.com/vimeo/vimeo.php/commit/759e81a664e90d1f5249cea0eda843b1a6619090))
 - [dstelljes](https://github.com/dstelljes) ([935f304ed7ba87a4d6b4239f6d50c633227a9d18](https://github.com/vimeo/vimeo.php/commit/935f304ed7ba87a4d6b4239f6d50c633227a9d18))
+
+## License
+
+Vimeo API is licensed under [The Apache-2.0 License](LICENSE).
