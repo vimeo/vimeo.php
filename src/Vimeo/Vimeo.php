@@ -347,7 +347,8 @@ class Vimeo
     private function perform_upload($file_path, $ticket)
     {
         if ($ticket['status'] != 201) {
-            throw new VimeoUploadException('Unable to get an upload ticket.');
+            $ticket_error = !empty($ticket['body']['error']) ? '[' . $ticket['body']['error'] . ']' : '';
+            throw new VimeoUploadException('Unable to get an upload ticket.' . $ticket_error);
         }
 
         // We are going to always target the secure upload URL.
