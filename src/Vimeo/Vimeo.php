@@ -348,7 +348,7 @@ class Vimeo
     {
         if ($ticket['status'] != 201) {
             $ticket_error = $ticket['body']['error'];
-            $ticket_error = !empty($ticket_error) ? "[" . $ticket_error . "]" : '';
+            $ticket_error = !empty($ticket_error) ? '[' . $ticket_error . ']' : '';
             throw new VimeoUploadException('Unable to get an upload ticket.' . $ticket_error);
         }
 
