@@ -348,8 +348,8 @@ class Vimeo
     {
         if ($ticket['status'] != 201) {
             $ticket_error = $ticket['body']['error'];
-            $ticket_error = isset($ticket_error) && $ticket_error !='undefined' ? "[" . $ticket_error . "]" : '';
- 	        throw new VimeoUploadException('Unable to get an upload ticket.' . $ticket_error);
+            $ticket_error = isset($ticket_error) && $ticket_error !='undefined' ? "[" . $ticket_error . "]" : ''
+            throw new VimeoUploadException('Unable to get an upload ticket.' . $ticket_error);
         }
 
         // We are going to always target the secure upload URL.
