@@ -146,7 +146,7 @@ class Vimeo
 
         if(isset($curl_info['http_code']) && $curl_info['http_code'] === 0){
             $curl_error = curl_error($curl);
-            $curl_error = !empty($curl_error) ? '[' . $curl_error .']' : $curl_error;
+            $curl_error = !empty($curl_error) ? '[' . $curl_error .']' : '';
             throw new VimeoRequestException('Unable to complete request.' . $curl_error);
         }
 
