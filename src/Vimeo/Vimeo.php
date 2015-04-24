@@ -1,6 +1,7 @@
 <?php namespace Vimeo;
 
 use Vimeo\Exceptions\VimeoUploadException;
+use Vimeo\Exceptions\VimeoRequestException;
 
 /**
  *   Copyright 2013 Vimeo
@@ -142,6 +143,13 @@ class Vimeo
         curl_setopt_array($curl, $curl_opts);
         $response = curl_exec($curl);
         $curl_info = curl_getinfo($curl);
+
+        if(isset($curl_info['http_code']) && $curl_info['http_code'] === 0){
+            $curl_error = curl_error($curl);
+            $curl_error = !empty($curl_error) ? '[' . $curl_error .']' : '';
+            throw new VimeoRequestException('Unable to complete request.' . $curl_error);
+        }
+
         curl_close($curl);
 
         // Retrieve the info
