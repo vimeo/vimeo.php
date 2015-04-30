@@ -60,7 +60,7 @@ class Vimeo
             CURLOPT_SSL_VERIFYPEER => true,
             //Certificate must indicate that the server is the server to which you meant to connect.
             CURLOPT_SSL_VERIFYHOST => 2,
-            CURLOPT_CAINFO => dirname(__DIR__) . self::CERTIFICATE_PATH
+            CURLOPT_CAINFO => dirname(getcwd()) . self::CERTIFICATE_PATH
         );
     }
 
@@ -145,7 +145,6 @@ class Vimeo
         // Call the API.
         $curl = curl_init($url);
         curl_setopt_array($curl, $curl_opts);
-
         $response = curl_exec($curl);
         $curl_info = curl_getinfo($curl);
 
@@ -448,8 +447,7 @@ class Vimeo
         $curl = curl_init($upload_url);
 
         // Merge the options
-        $curl_opts = $curl_opts + $this->CURL_DEFAULTS;
-        curl_setopt_array($curl, $curl_opts);
+        curl_setopt_array($curl, $curl_opts + $this->CURL_DEFAULTS);
         $response = curl_exec($curl);
         $curl_info = curl_getinfo($curl);
 
@@ -511,9 +509,7 @@ class Vimeo
         $curl = curl_init($upload_url);
 
         // Merge the options
-        $curl_opts = $curl_opts + $this->CURL_DEFAULTS;
-        
-        curl_setopt_array($curl, $curl_opts);
+        curl_setopt_array($curl, $curl_opts + $this->CURL_DEFAULTS);
         $response = curl_exec($curl);
         $curl_info = curl_getinfo($curl);
 
