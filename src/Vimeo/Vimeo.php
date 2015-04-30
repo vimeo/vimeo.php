@@ -50,6 +50,8 @@ class Vimeo
      */
     public function __construct($client_id, $client_secret, $access_token = null)
     {
+        //change directory to /vimeo.php
+        chdir("../../");
         $this->_client_id = $client_id;
         $this->_client_secret = $client_secret;
         $this->_access_token = $access_token;
