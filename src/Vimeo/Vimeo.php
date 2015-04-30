@@ -32,12 +32,14 @@ class Vimeo
     const REPLACE_ENDPOINT = '/files';
     const VERSION_STRING = 'application/vnd.vimeo.*+json; version=3.2';
     const USER_AGENT = 'vimeo.php 1.0; (http://developer.vimeo.com/api/docs)';
+    const CERTIFICATE_PATH = '/certificates/vimeo-api.cer';
 
     private $_client_id = null;
     private $_client_secret = null;
     private $_access_token = null;
 
     protected $_curl_opts = array();
+    protected $CURL_DEFAULTS = array();
 
     /**
      * Creates the Vimeo library, and tracks the client and token information.
@@ -51,6 +53,15 @@ class Vimeo
         $this->_client_id = $client_id;
         $this->_client_secret = $client_secret;
         $this->_access_token = $access_token;
+        $this->CURL_DEFAULTS = array(
+            CURLOPT_HEADER => 1,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_SSL_VERIFYPEER => true,
+            //Certificate must indicate that the server is the server to which you meant to connect.
+            CURLOPT_SSL_VERIFYHOST => 2,
+            CURLOPT_CAINFO => dirname(__DIR__) . self::CERTIFICATE_PATH
+        );
     }
 
     /**
@@ -128,19 +139,13 @@ class Vimeo
      * @return array
      */
     private function _request($url, $curl_opts = array()) {
-        // Apply the defaults to the curl opts.
-        $curl_defaults = array(
-            CURLOPT_HEADER => 1,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 30
-        );
-
         // Merge the options (custom options take precedence).
-        $curl_opts = $this->_curl_opts + $curl_opts + $curl_defaults;
+        $curl_opts = $this->_curl_opts + $curl_opts + $this->CURL_DEFAULTS;
 
         // Call the API.
         $curl = curl_init($url);
         curl_setopt_array($curl, $curl_opts);
+
         $response = curl_exec($curl);
         $curl_info = curl_getinfo($curl);
 
@@ -389,7 +394,6 @@ class Vimeo
             $curl_opts[CURLOPT_HTTPHEADER][] = 'Content-Range: bytes ' . $server_at . '-' . $size . '/' . $size;
 
             fseek($file, $server_at);   //  Put the FP at the point where the server is.
-            $upload_response = $this->_request($url, $curl_opts);   //  Send what we can.
             $progress_check = $this->_request($url, $curl_opts_check_progress); //  Check on what the server has.
 
             // Figure out how much is on the server.
@@ -435,8 +439,6 @@ class Vimeo
         $image_resource = fopen($file_path, 'r');
 
         $curl_opts = array(
-            CURLOPT_HEADER => 1,
-            CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 240,
             CURLOPT_UPLOAD => true,
             CURLOPT_CUSTOMREQUEST => 'PUT',
@@ -444,6 +446,9 @@ class Vimeo
         );
 
         $curl = curl_init($upload_url);
+
+        // Merge the options
+        $curl_opts = $curl_opts + $this->CURL_DEFAULTS;
         curl_setopt_array($curl, $curl_opts);
         $response = curl_exec($curl);
         $curl_info = curl_getinfo($curl);
@@ -487,6 +492,7 @@ class Vimeo
         $name = $name[0];
 
         $texttrack_response = $this->request($texttracks_uri, array('type' => $track_type, 'language' => $language, 'name' => $name), 'POST');
+
         if ($texttrack_response['status'] != 201) {
             throw new VimeoUploadException('Unable to request an upload url from vimeo');
         }
@@ -496,8 +502,6 @@ class Vimeo
         $texttrack_resource = fopen($file_path, 'r');
 
         $curl_opts = array(
-            CURLOPT_HEADER => 1,
-            CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 240,
             CURLOPT_UPLOAD => true,
             CURLOPT_CUSTOMREQUEST => 'PUT',
@@ -505,6 +509,10 @@ class Vimeo
         );
 
         $curl = curl_init($upload_url);
+
+        // Merge the options
+        $curl_opts = $curl_opts + $this->CURL_DEFAULTS;
+        
         curl_setopt_array($curl, $curl_opts);
         $response = curl_exec($curl);
         $curl_info = curl_getinfo($curl);
