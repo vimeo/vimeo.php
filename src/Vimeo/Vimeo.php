@@ -32,7 +32,7 @@ class Vimeo
     const REPLACE_ENDPOINT = '/files';
     const VERSION_STRING = 'application/vnd.vimeo.*+json; version=3.2';
     const USER_AGENT = 'vimeo.php 1.0; (http://developer.vimeo.com/api/docs)';
-    const CERTIFICATE_PATH = '/certificates/vimeo-api.cer';
+    const CERTIFICATE_PATH = 'certificates/vimeo-api.cer';
 
     private $_client_id = null;
     private $_client_secret = null;
@@ -50,8 +50,6 @@ class Vimeo
      */
     public function __construct($client_id, $client_secret, $access_token = null)
     {
-        //change directory to /vimeo.php
-        chdir("../../");
         $this->_client_id = $client_id;
         $this->_client_secret = $client_secret;
         $this->_access_token = $access_token;
@@ -62,7 +60,7 @@ class Vimeo
             CURLOPT_SSL_VERIFYPEER => true,
             //Certificate must indicate that the server is the server to which you meant to connect.
             CURLOPT_SSL_VERIFYHOST => 2,
-            CURLOPT_CAINFO => dirname(getcwd()) . self::CERTIFICATE_PATH
+            CURLOPT_CAINFO => realpath(__DIR__ .'/../..') . '/' . self::CERTIFICATE_PATH
         );
     }
 
