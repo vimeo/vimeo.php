@@ -47,6 +47,7 @@ if (empty($texttrack_path)) {
 // Find the text track URI. This is also the URI that you can query to view all text tracks associated with this resource.
 $resource = $lib->request($resource_uri);
 if ($resource['status'] != 200) {
+    var_dump($resource);
 	throw new Exception('Could not locate the requested resource uri [' . $resource_uri . ']');
 }
 
@@ -55,4 +56,5 @@ if (empty($resource['body']['metadata']['connections']['texttracks']['uri'])) {
 }
 
 // You are always required to set a text track type and language as the 3rd and 4th parameters respectively.
+var_dump($resource);
 $response = $lib->uploadTexttrack($resource['body']['metadata']['connections']['texttracks']['uri'], $texttrack_path, "captions", "en-US");
