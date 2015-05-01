@@ -56,5 +56,5 @@ if (empty($resource['body']['metadata']['connections']['texttracks']['uri'])) {
 }
 
 // You are always required to set a text track type and language as the 3rd and 4th parameters respectively.
-$response = $lib->uploadTexttrack($resource_uri, $texttrack_path, "captions", "en-US");
 var_dump($response);
+$response = $lib->uploadTexttrack($resource['body']['metadata']['connections']['texttracks']['uri'], $texttrack_path, "captions", "en-US");
