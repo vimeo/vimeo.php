@@ -393,6 +393,7 @@ class Vimeo
             $curl_opts[CURLOPT_HTTPHEADER][] = 'Content-Range: bytes ' . $server_at . '-' . $size . '/' . $size;
 
             fseek($file, $server_at);   //  Put the FP at the point where the server is.
+            $this->_request($url, $curl_opts);   //Send what we can.
             $progress_check = $this->_request($url, $curl_opts_check_progress); //  Check on what the server has.
 
             // Figure out how much is on the server.
@@ -402,11 +403,12 @@ class Vimeo
 
         // Complete the upload on the server.
         $completion = $this->request($ticket['body']['complete_uri'], array(), 'DELETE');
-
+        
         // Validate that we got back 201 Created
         $status = (int) $completion['status'];
         if ($status != 201) {
-            throw new VimeoUploadException('Error completing the upload.');
+            $error = !empty($completion['body']['error']) ? '[' . $completion['body']['error'] . ']' : '';
+            throw new VimeoUploadException('Error completing the upload.'. $error);
         }
 
         // Furnish the location for the new clip in the API via the Location header.
