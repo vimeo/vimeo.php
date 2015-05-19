@@ -211,7 +211,9 @@ $response = $lib->uploadImage('/videos/12345/pictures', '/home/aaron/Downloads/a
 
 # Troubleshooting
 
-If your API request returns with an empty array, or a status code of 0 it likely means you do not have the proper https certificates. You can read more here : http://unitstep.net/blog/2009/05/05/using-curl-in-php-to-access-https-ssltls-protected-sites/. Note that we highly recommend the full solution. The quick fix will leave your tokens vulnerable.
+If you receive a curl error mentioning SSL (such as `SSL certificate problem: unable to get local issuer certificate`) it likely means your curl library does not have the DigiCert root certificate. You will need to configure this manually by using the `setCURLOptions` method (which behaves like [curl_setopt_array](http://php.net/manual/en/function.curl-setopt-array.php)) and the `CURLOPT_CAINFO` constant. You can also configure this in php.ini by setting `curl.cainfo=` to the full path of your `.pem` cert file.
+
+You can read more about locating the root certificate here : http://unitstep.net/blog/2009/05/05/using-curl-in-php-to-access-https-ssltls-protected-sites/. Do not use the quick fix, it will leave your application vulnerable to man in the middle attacks.
 
 If you have any additional questions or problems, create a [ticket](https://github.com/vimeo/vimeo.php/issues) or [contact us](https://vimeo.com/help/contact)
 
