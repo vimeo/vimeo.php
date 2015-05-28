@@ -211,9 +211,19 @@ $response = $lib->uploadImage('/videos/12345/pictures', '/home/aaron/Downloads/a
 
 # Troubleshooting
 
-If you receive a curl error mentioning SSL (such as `SSL certificate problem: unable to get local issuer certificate`) it likely means your curl library does not have the DigiCert root certificate. You will need to configure this manually by using the `setCURLOptions` method (which behaves like [curl_setopt_array](http://php.net/manual/en/function.curl-setopt-array.php)) and the `CURLOPT_CAINFO` constant. You can also configure this in php.ini by setting `curl.cainfo=` to the full path of your `.pem` cert file.
+If you receive a curl error mentioning SSL (such as `SSL certificate problem: unable to get local issuer certificate`) it likely means your curl library does not have the DigiCert root certificate. There are a couple of steps you must take to fix this issue.
 
-You can read more about locating the root certificate here : http://unitstep.net/blog/2009/05/05/using-curl-in-php-to-access-https-ssltls-protected-sites/. Do not use the quick fix, it will leave your application vulnerable to man in the middle attacks.
+1. Download the root certificate. You can learn more here: http://unitstep.net/blog/2009/05/05/using-curl-in-php-to-access-https-ssltls-protected-sites
+
+2. Open up the root certificate in a text editor, and copy the entire contents to your clip board
+3. In the vimeo.php code, open up the file `certificates/vimeo-api.pem` and paste the root certificate into this file. It should looks something like the example below
+
+ ```
+ -----BEGIN CERTIFICATE-----<cert contents, very long string>-----END CERTIFICATE-----
+ 
+ -----BEGIN CERTIFICATE-----<cert contents, very long string>-----END CERTIFICATE-----
+ ```
+4. Save the file, and try your script again. Your request should work as expected. 
 
 If you have any additional questions or problems, create a [ticket](https://github.com/vimeo/vimeo.php/issues) or [contact us](https://vimeo.com/help/contact)
 
