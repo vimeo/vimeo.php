@@ -393,7 +393,13 @@ class Vimeo
             $curl_opts[CURLOPT_HTTPHEADER][] = 'Content-Range: bytes ' . $server_at . '-' . $size . '/' . $size;
 
             fseek($file, $server_at);   //  Put the FP at the point where the server is.
-            $this->_request($url, $curl_opts);   //Send what we can.
+
+            try {
+                $this->_request($url, $curl_opts);   //Send what we can.
+            } catch (\Vimeo\Exceptions\VimeoRequestException $exception) {
+                // ignored, it's likely a timeout, and we should only consider a failure from the progress check as a legit failure
+            }
+
             $progress_check = $this->_request($url, $curl_opts_check_progress); //  Check on what the server has.
 
             // Figure out how much is on the server.
