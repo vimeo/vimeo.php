@@ -33,7 +33,7 @@ $lib = new Vimeo($config['client_id'], $config['client_secret'], $config['access
 // VOD film example
 
 // Create a new vod page
-$create_vod_film = $lib->request('/me/ondemand/pages', array('name' => 'myfilm', 'type' => 'film', 'content_rating' => 'safe', 'link' => 'myfilm', 'dommain_link' => 'myfilm', 'rent' => array('active' => true, 'price' => array('USD' => 5.0), 'period' => '24 hour'), 'buy' => array('active' => true, 'price' => array('USD' => 10.0))), 'POST');
+$create_vod_film = $lib->request('/me/ondemand/pages', array('name' => 'myfilm', 'type' => 'film', 'description' => 'my first film', 'content_rating' => 'safe', 'link' => 'myfilm', 'dommain_link' => 'myfilm', 'rent' => array('active' => true, 'price' => array('USD' => 5.0), 'period' => '24 hour'), 'buy' => array('active' => true, 'price' => array('USD' => 10.0))), 'POST');
 
 // Set a Genre
 $genre = $lib->request('/ondemand/pages/myfilm/genres/art', array(), 'PUT');
@@ -63,7 +63,7 @@ $poster = $lib->request($response, array('active' => true), 'PATCH');
 // VOD series example
 
 // Create a new vod series
-$create_vod_series = $lib->request('/me/ondemand/pages', array('name' => 'myseries', 'type' => 'series', 'content_rating' => 'safe', 'link' => 'myseries', 'dommain_link' => 'myseries', 'rent' => array('active' => true, 'price' => array('USD' => 5.0), 'period' => '24 hour'), 'buy' => array('active' => true, 'price' => array('USD' => 10.0)), 'episodes' => array('rent' => array('active' => true, 'price' => array('USD' => 1.0), 'period' => '48 hour'), 'buy' => array('active' => true, 'price' => array('USD' => 2.0)))), 'POST');
+$create_vod_series = $lib->request('/me/ondemand/pages', array('name' => 'myseries', 'type' => 'series', 'description' => 'my first series', 'content_rating' => 'safe', 'link' => 'myseries', 'dommain_link' => 'myseries', 'rent' => array('active' => true, 'price' => array('USD' => 5.0), 'period' => '24 hour'), 'buy' => array('active' => true, 'price' => array('USD' => 10.0)), 'episodes' => array('rent' => array('active' => true, 'price' => array('USD' => 1.0), 'period' => '48 hour'), 'buy' => array('active' => true, 'price' => array('USD' => 2.0)))), 'POST');
 
 // Set a Genre
 $genre = $lib->request('/ondemand/pages/myseries/genres/art', array(), 'PUT');
