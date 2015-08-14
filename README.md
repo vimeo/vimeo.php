@@ -11,6 +11,7 @@
  - [Upload videos from a server](#upload-videos-from-the-server)
  - [Replace videos from a server](#replace-videos-from-the-server)
  - [Client side uploads](#upload-or-replace-videos-from-the-client)
+ - [Upload videos from a URL](#upload-videos-from-a-url)
  - [Upload images](#upload-images)
  - [Framework Integrations](#framework-integrations)
 
@@ -193,6 +194,14 @@ This workflow is well documented on Vimeo's developer site. You can read more he
 
 Streaming uploads support progress bars, and resumable uploading. If you want to perform these uploads client side you will need to start with some server side requests.
 Read through the [Vimeo documentation](https://developer.vimeo.com/api/upload#http-put-uploading) first. Step 1 and 4 should be performed on the server, while step 2 and 3 can be performed on the client. With this workflow the video will never be transferred to your servers.
+
+# Upload videos from a url
+
+Uploading videos from a public url (also called "pull uploads") uses a single, simple API call.
+
+```php
+$video_response = $lib->request('/me/videos', array('type' => 'pull', 'link' => $url), 'POST');
+```
 
 # Upload images
 
