@@ -51,7 +51,7 @@ composer require vimeo/vimeo-api
 
 ### Manual
 
-1. Download the latest release : [v1.2.2](https://github.com/vimeo/vimeo.php/archive/v1.2.2.zip)
+1. Download the latest release : [v1.2.3](https://github.com/vimeo/vimeo.php/archive/1.2.3.zip)
 2. Include the autoloader `require("/path/to/vimeo.php/autoload.php");`
 3. Use the library `$lib = new \Vimeo\Vimeo($client_id, $client_secret)`
 
@@ -71,13 +71,13 @@ Unauthenticated API requests must generate an access token. You should not gener
 $token = $lib->clientCredentials(scope);
 
 // usable access token
-var_dump($token->access_token);
+var_dump($token->body->access_token);
 
 // accepted scopes
-var_dump($token->scope);
+var_dump($token->body->scope);
 
 // use the token
-$lib->setToken($token->access_token)
+$lib->setToken($token->body->access_token)
 ```
 
 
@@ -108,16 +108,16 @@ state        | string   | A value unique to this authorization request. You shou
 $token = $lib->accessToken(code, redirect_uri);
 
 // usable access token
-var_dump($token->access_token);
+var_dump($token->body->access_token);
 
 // accepted scopes
-var_dump($token->scope);
+var_dump($token->body->scope);
 
 // authenticated user
-var_dump($token->user);
+var_dump($token->body->user);
 
 // use the token
-$lib->setToken($token->access_token)
+$lib->setToken($token->body->access_token)
 ```
 
 For additional information, check out the [example](https://github.com/vimeo/vimeo.php/blob/master/example/auth.php)
