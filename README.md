@@ -175,7 +175,7 @@ file      | string   | Full path to the upload file on the local system.
 upgrade   | boolean  | (Optional) Defaults to false. Requests for a 1080p encode to be made from this video. This feature is only available to [Vimeo PRO](https://vimeo.com/pro) members. For more information, check out the [FAQ](https://vimeo.com/help/faq/uploading-to-vimeo/uploading-basics#does-vimeo-support-1080p-hd).
 
 ```php
-$response = $lib->upload('/videos/12345', '/home/aaron/Downloads/ada.mp4', false)
+$response = $lib->replace('/videos/12345', '/home/aaron/Downloads/ada.mp4', false)
 ```
 
 # Upload or replace videos from the client
