@@ -293,6 +293,10 @@ class Vimeo
         return self::AUTH_ENDPOINT . '?' . http_build_query($query);
     }
 
+    public function uploadv2(){
+
+    }
+
     /**
      * Upload a file. This should be used to upload a local file.
      * If you want a form for your site to upload direct to Vimeo,
