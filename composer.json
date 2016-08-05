@@ -1,5 +1,5 @@
 {
-	"name": "vimeo/vimeo-api",
+	"name": "coolshop/vimeo-api",
 	"description": "Official PHP library for the Vimeo API.",
 	"homepage": "https://github.com/vimeo/vimeo.php",
 	"keywords": ["vimeo", "video"],
