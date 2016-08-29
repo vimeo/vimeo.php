@@ -213,7 +213,7 @@ class Vimeo
         $http = array_shift($list);
 
         foreach ($list as $header) {
-            $parts = explode(':', $header);
+            $parts = explode(':', $header, 2);
             $final_headers[trim($parts[0])] = isset($parts[1]) ? trim($parts[1]) : '';
         }
 
