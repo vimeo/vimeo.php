@@ -115,7 +115,7 @@ class Vimeo
                 $curl_url = self::ROOT_ENDPOINT . $url;
                 $curl_opts = array(
                     CURLOPT_POST => true,
-                    CURLOPT_CUSTOMREQUEST => $method,
+                    CURLOPT_CUSTOMREQUEST => strtoupper($method),
                     CURLOPT_POSTFIELDS => $body
                 );
                 break;
