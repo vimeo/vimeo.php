@@ -293,8 +293,18 @@ class Vimeo
         return self::AUTH_ENDPOINT . '?' . http_build_query($query);
     }
 
-    public function uploadv2(){
+    public function pullUpload($url, $upgrade_to_1080 = false,$machine_id = null){
 
+        // Begin the upload request by getting a ticket
+        $ticket_args = array('type' => "pull", 'upgrade_to_1080' => $upgrade_to_1080, "link" => $url);
+        if ($machine_id !== null) {
+            $ticket_args['machine_id'] = $machine_id;
+        }
+        $response = $this->request('/me/videos', $ticket_args, 'POST');
+        if($response["status"] != 200){
+            throw new VimeoUploadException('Unable to upload.');
+        }
+        return $response["body"];
     }
 
     /**
