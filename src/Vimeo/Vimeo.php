@@ -1,4 +1,5 @@
-<?php namespace Vimeo;
+<?php
+namespace Vimeo;
 
 use Vimeo\Exceptions\VimeoUploadException;
 use Vimeo\Exceptions\VimeoRequestException;
@@ -20,7 +21,7 @@ use Vimeo\Exceptions\VimeoRequestException;
  */
 
 if (!function_exists('json_decode')) {
-    throw new Exception('We could not find json_decode. json_decode is found in php 5.2 and up, but not found on many linux systems due to licensing conflicts. If you are running ubuntu try "sudo apt-get install php5-json".');
+    throw new \Exception('We could not find json_decode. json_decode is found in php 5.2 and up, but may be missing on some Linux systems due to licensing conflicts. If you are running ubuntu try "sudo apt-get install php5-json".');
 }
 
 class Vimeo
@@ -397,7 +398,7 @@ class Vimeo
 
             try {
                 $this->_request($url, $curl_opts);   //Send what we can.
-            } catch (\Vimeo\Exceptions\VimeoRequestException $exception) {
+            } catch (VimeoRequestException $exception) {
                 // ignored, it's likely a timeout, and we should only consider a failure from the progress check as a legit failure
             }
 
