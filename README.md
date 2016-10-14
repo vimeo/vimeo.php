@@ -1,26 +1,28 @@
-# Index
+# Vimeo
 
- - [Get Started](#get-started-with-the-vimeo-api)
- - [Help](#direct-help)
- - [Troubleshooting](#troubleshooting)
- - [Installation](#installation)
- - [Authentication/Access Tokens](#generate-your-access-token)
-  - [Unauthenticated tokens](#unauthenticated)
-  - [Authenticated tokens](#authenticated)
- - [Make requests](#make-requests)
- - [Upload videos from a server](#upload-videos-from-the-server)
- - [Replace videos from a server](#replace-videos-from-the-server)
- - [Client side uploads](#upload-or-replace-videos-from-the-client)
- - [Upload videos from a URL](#upload-videos-from-a-url)
- - [Upload images](#upload-images)
- - [Framework Integrations](#framework-integrations)
+[![License](https://img.shields.io/packagist/l/vimeo/vimeo-api.svg?style=flat-square)](https://packagist.org/packages/vimeo/vimeo-api)
+[![Development Version](https://img.shields.io/packagist/v/vimeo/vimeo-api.svg?style=flat-square)](https://packagist.org/packages/vimeo/vimeo-api)
 
+- [Get Started](#get-started-with-the-vimeo-api)
+- [Help](#direct-help)
+- [Troubleshooting](#troubleshooting)
+- [Installation](#installation)
+- [Authentication/Access Tokens](#generate-your-access-token)
+    - [Unauthenticated tokens](#unauthenticated)
+    - [Authenticated tokens](#authenticated)
+- [Make requests](#make-requests)
+- [Upload videos from a server](#upload-videos-from-the-server)
+- [Replace videos from a server](#replace-videos-from-the-server)
+- [Client side uploads](#upload-or-replace-videos-from-the-client)
+- [Upload videos from a URL](#upload-videos-from-a-url)
+- [Upload images](#upload-images)
+- [Framework Integrations](#framework-integrations)
 
-# Get started with the Vimeo API
+## Get started with the Vimeo API
 
-There is a lot of information about the Vimeo API at https://developer.vimeo.com/api/start. Most of your questions will be answered there!
+There is a lot of information about the Vimeo API at <https://developer.vimeo.com/api/start>. Most of your questions will be answered there!
 
-# Direct Help
+## Direct Help
 
  * [Stack Overflow](http://stackoverflow.com/questions/tagged/vimeo-api)
  * [Google Group](https://groups.google.com/forum/#!forum/vimeo-api)
@@ -35,8 +37,7 @@ The API docs often uses dot notation to represent a hierarchy of data (eg. priva
 array('privacy' => array('view' => 'disable'));
 ```
 
-
-# Installation
+## Installation
 
 ### Composer
 
@@ -48,19 +49,18 @@ composer require vimeo/vimeo-api
 
 2. Use the library `$lib = new \Vimeo\Vimeo($client_id, $client_secret)`
 
-
 ### Manual
 
 1. Download the latest release : [v1.2.5](https://github.com/vimeo/vimeo.php/archive/1.2.5.zip)
 2. Include the autoloader `require("/path/to/vimeo.php/autoload.php");`
 3. Use the library `$lib = new \Vimeo\Vimeo($client_id, $client_secret)`
 
-
-# Generate your Access token
+## Generate your Access token
 
 All requests require access tokens. There are two types of access tokens.
- - [Unauthenticated](#unauthenticated) - Access tokens without a user. These tokens can only view public data
- - [Authenticated](#authenticated) - Access tokens with a user. These tokens interact on behalf of the authenticated user.
+
+- [Unauthenticated](#unauthenticated) - Access tokens without a user. These tokens can only view public data
+- [Authenticated](#authenticated) - Access tokens with a user. These tokens interact on behalf of the authenticated user.
 
 ### Unauthenticated
 
@@ -80,9 +80,7 @@ var_dump($token['body']['scope']);
 $lib->setToken($token['body']['access_token']);
 ```
 
-
 ### Authenticated
-
 
 1. Build a link to Vimeo so your users can authorize your app.
 
@@ -119,7 +117,7 @@ $lib->setToken($token['body']['access_token']);
 
 For additional information, check out the [example](https://github.com/vimeo/vimeo.php/blob/master/example/auth.php)
 
-# Make requests
+## Make requests
 
 The API library has a `request` method which takes three parameters. It returns an associative array containing all of the relvant request information.
 
@@ -150,9 +148,10 @@ $response = $lib->request('/me/videos', array('per_page' => 2), 'GET');
 var_dump($response['body']);
 ```
 
-# Upload videos from the Server
+## Upload videos from the Server
 
 To upload videos you must call the `upload` method. It accepts two parameters. It will return the URI of the new video.
+
 For more information check out the [example](https://github.com/vimeo/vimeo.php/blob/master/example/upload.php)
 
 Name      | Type     | Description
@@ -164,7 +163,7 @@ upgrade   | boolean  | (Optional) Defaults to false. Requests for a 1080p encode
 $response = $lib->upload('/home/aaron/Downloads/ada.mp4', false)
 ```
 
-# Replace videos from the Server
+## Replace videos from the Server
 
 To replace the source file of a video, you must call the `replace` method. It accepts three parameters. It will return the URI of the replaced video.
 
@@ -178,21 +177,21 @@ upgrade   | boolean  | (Optional) Defaults to false. Requests for a 1080p encode
 $response = $lib->replace('/videos/12345', '/home/aaron/Downloads/ada.mp4', false)
 ```
 
-# Upload or replace videos from the client
+## Upload or replace videos from the client
 
 To upload from the client, you will have to mix some server side, and client side API requests. We support two workflows, the first of which is much easier than the second.
 
 ### Simple POST uploads
 
-This workflow is well documented on Vimeo's developer site. You can read more here : https://developer.vimeo.com/api/upload#http-post-uploading.
-
+This workflow is well documented on Vimeo's developer site. You can read more here: <https://developer.vimeo.com/api/upload#http-post-uploading>
 
 ### Streaming uploads
 
 Streaming uploads support progress bars, and resumable uploading. If you want to perform these uploads client side you will need to start with some server side requests.
+
 Read through the [Vimeo documentation](https://developer.vimeo.com/api/upload#http-put-uploading) first. Step 1 and 4 should be performed on the server, while step 2 and 3 can be performed on the client. With this workflow the video will never be transferred to your servers.
 
-# Upload videos from a url
+## Upload videos from a url
 
 Uploading videos from a public url (also called "pull uploads") uses a single, simple API call.
 
@@ -200,9 +199,10 @@ Uploading videos from a public url (also called "pull uploads") uses a single, s
 $video_response = $lib->request('/me/videos', array('type' => 'pull', 'link' => $url), 'POST');
 ```
 
-# Upload images
+## Upload images
 
 To upload an image, call the `uploadImage` method. It takes three parameters.
+
 For more information check out the [example](https://github.com/vimeo/vimeo.php/blob/master/example/upload_image.php)
 
 Name         | Type     | Description
@@ -215,17 +215,18 @@ activate     | boolean  | (Optional) Defaults to false. If true this picture wil
 $response = $lib->uploadImage('/videos/12345/pictures', '/home/aaron/Downloads/ada.png', true)
 ```
 
-# Troubleshooting
+## Troubleshooting
 
 We are not aware of any issues with the latest version (1.2.5). If you have any questions or problems, create a [ticket](https://github.com/vimeo/vimeo.php/issues) or [contact us](https://vimeo.com/help/contact)
 
-# Framework Integrations
- - **WordPress** - http://vimeography.com/
- - **Laravel** - https://github.com/vinkla/vimeo
+## Framework Integrations
+
+- **WordPress** - <http://vimeography.com/>
+- **Laravel** - <https://github.com/vinkla/vimeo>
 
 If you have integrated Vimeo into a popular PHP framework let us know!
 
-# Contributors
+## Contributors
 
 To see the contributors please visit the [contributors graph](https://github.com/vimeo/vimeo.php/graphs/contributors).
 
