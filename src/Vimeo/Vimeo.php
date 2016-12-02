@@ -32,7 +32,7 @@ class Vimeo
     const CLIENT_CREDENTIALS_TOKEN_ENDPOINT = '/oauth/authorize/client';
     const REPLACE_ENDPOINT = '/files';
     const VERSION_STRING = 'application/vnd.vimeo.*+json; version=3.2';
-    const USER_AGENT = 'vimeo.php 1.0; (http://developer.vimeo.com/api/docs)';
+    const USER_AGENT = 'vimeo.php 1.2.5; (http://developer.vimeo.com/api/docs)';
     const CERTIFICATE_PATH = '/certificates/vimeo-api.pem';
 
     private $_client_id = null;
@@ -411,7 +411,7 @@ class Vimeo
 
         // Complete the upload on the server.
         $completion = $this->request($ticket['body']['complete_uri'], array(), 'DELETE');
-        
+
         // Validate that we got back 201 Created
         $status = (int) $completion['status'];
         if ($status != 201) {
