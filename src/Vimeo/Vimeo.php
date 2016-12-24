@@ -1,8 +1,8 @@
 <?php
 namespace Vimeo;
 
-use Vimeo\Exceptions\VimeoUploadException;
 use Vimeo\Exceptions\VimeoRequestException;
+use Vimeo\Exceptions\VimeoUploadException;
 
 /**
  *   Copyright 2013 Vimeo
@@ -20,8 +20,7 @@ use Vimeo\Exceptions\VimeoRequestException;
  *   limitations under the License.
  */
 
-if (!function_exists('json_decode'))
-{
+if (!function_exists('json_decode')) {
     throw new \Exception('We could not find json_decode. json_decode is found in php 5.2 and up, but may be missing on some Linux systems due to licensing conflicts. If you are running ubuntu try "sudo apt-get install php5-json".');
 }
 
@@ -36,12 +35,12 @@ class Vimeo
     const USER_AGENT = 'vimeo.php 1.2.6; (http://developer.vimeo.com/api/docs)';
     const CERTIFICATE_PATH = '/certificates/vimeo-api.pem';
 
+    protected $curlOpts = array();
+    protected $curlDefaults = array();
+
     private $clientId = null;
     private $clientSecret = null;
     private $accessToken = null;
-
-    protected $curlOpts = array();
-    protected $curlDefaults = array();
 
     /**
      * Creates the Vimeo library, and tracks the client and token information.
@@ -85,8 +84,7 @@ class Vimeo
         // add bearer token, or client information
         if (!empty($this->accessToken)) {
             $headers[] = 'Authorization: Bearer ' . $this->accessToken;
-        }
-        else {
+        } else {
             //  this may be a call to get the tokens, so we add the client info.
             $headers[] = 'Authorization: Basic ' . $this->authHeader();
         }
@@ -94,7 +92,8 @@ class Vimeo
         //  Set the methods, determine the URL that we should actually request and prep the body.
         $curlOpts = array();
         switch ($method) {
-            case 'GET' :
+            
+            case 'GET':
                 if (!empty($params)) {
                     $queryComponent = '?' . http_build_query($params, '', '&');
                 } else {
@@ -104,10 +103,10 @@ class Vimeo
                 $curlUrl = self::rootEndPoint . $url . $queryComponent;
                 break;
 
-            case 'POST' :
-            case 'PATCH' :
-            case 'PUT' :
-            case 'DELETE' :
+            case 'POST':
+            case 'PATCH':
+            case 'PUT':
+            case 'DELETE':
                 if ($jsonBody && !empty($params)) {
                     $headers[] = 'Content-Type: application/json';
                     $body = json_encode($params);
