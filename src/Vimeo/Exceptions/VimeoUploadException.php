@@ -6,5 +6,4 @@ namespace Vimeo\Exceptions;
  */
 class VimeoUploadException extends \Exception implements ExceptionInterface
 {
-
 }

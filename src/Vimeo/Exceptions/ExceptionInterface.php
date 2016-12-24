@@ -6,5 +6,4 @@ namespace Vimeo\Exceptions;
  */
 interface ExceptionInterface
 {
-
 }

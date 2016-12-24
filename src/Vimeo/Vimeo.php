@@ -134,44 +134,6 @@ class Vimeo
     }
 
     /**
-     * Internal function to handle requests, both authenticated and by the upload function.
-     *
-     * @param string $url
-     * @param array $curlOpts
-     * @return array
-     */
-    private function request($url, $curlOpts = array()) {
-        // Merge the options (custom options take precedence).
-        $curlOpts = $this->curlOpts + $curlOpts + $this->curlDefaults;
-
-        // Call the API.
-        $curl = curl_init($url);
-        curl_setopt_array($curl, $curlOpts);
-        $response = curl_exec($curl);
-        $curlInfo = curl_getinfo($curl);
-
-        if(isset($curlInfo['http_code']) && $curlInfo['http_code'] === 0){
-            $curlError = curl_error($curl);
-            $curlError = !empty($curlError) ? '[' . $curlError .']' : '';
-            throw new VimeoRequestException('Unable to complete request.' . $curlError);
-        }
-
-        curl_close($curl);
-
-        // Retrieve the info
-        $headerSize = $curlInfo['header_size'];
-        $headers = substr($response, 0, $headerSize);
-        $body = substr($response, $headerSize);
-
-        // Return it raw.
-        return array(
-            'body' => $body,
-            'status' => $curlInfo['http_code'],
-            'headers' => self::parseHeaders($headers)
-        );
-    }
-
-    /**
      * Request the access token associated with this library.
      *
      * @return string
@@ -240,7 +202,8 @@ class Vimeo
      * @param string $redirectUri The redirectUri that is configured on your app page, and was used in buildAuthorizationEndpoint
      * @return array This array contains three keys, 'status' is the status code, 'body' is an object representation of the json response body, and headers are an associated array of response headers
      */
-    public function accessToken($code, $redirectUri) {
+    public function accessToken($code, $redirectUri)
+    {
         return $this->doRequest(self::accessTokenEndPoint, array(
             'grant_type' => 'authorization_code',
             'code' => $code,
@@ -254,7 +217,8 @@ class Vimeo
      * @param mixed $scope Scopes to request for this token from the server.
      * @return array Response from the server with the tokens, we also set it into this object.
      */
-    public function clientCredentials($scope = 'public') {
+    public function clientCredentials($scope = 'public')
+    {
         if (is_array($scope)) {
             $scope = implode(' ', $scope);
         }
@@ -268,15 +232,6 @@ class Vimeo
     }
 
     /**
-     * Get authorization header for retrieving tokens/credentials.
-     *
-     * @return string
-     */
-    private function authHeader() {
-        return base64_encode($this->clientId . ':' . $this->clientSecret);
-    }
-
-    /**
      * Build the url that your user.
      *
      * @param string $redirectUri The redirect url that you have configured on your app page
@@ -284,7 +239,8 @@ class Vimeo
      * @param string $state A random variable that will be returned on your redirect url. You should validate that this matches
      * @return string
      */
-    public function buildAuthorizationEndpoint($redirectUri, $scope = 'public', $state = null) {
+    public function buildAuthorizationEndpoint($redirectUri, $scope = 'public', $state = null)
+    {
         $query = array(
             "response_type" => 'code',
             "cleintId" => $this->clientId,
@@ -294,7 +250,7 @@ class Vimeo
         $query['scope'] = $scope;
         if (empty($scope)) {
             $query['scope'] = 'public';
-        } else if (is_array($scope)) {
+        } elseif (is_array($scope)) {
             $query['scope'] = implode(' ', $scope);
         }
 
@@ -361,6 +317,170 @@ class Vimeo
     }
 
     /**
+     * Uploads an image to an individual picture response.
+     *
+     * @param string $picturesUri The pictures endpoint for a resource that allows picture uploads (eg videos and users)
+     * @param string $filePath The path to your image file
+     * @param boolean $activate Activate image after upload
+     * @throws VimeoUploadException
+     * @return string The URI of the uploaded image.
+     */
+    public function uploadImage($picturesUri, $filePath, $activate = false)
+    {
+        // Validate that our file is real.
+        if (!is_file($filePath)) {
+            throw new VimeoUploadException('Unable to locate file to upload.');
+        }
+
+        $picturesResponse = $this->doRequest($picturesUri, array(), 'POST');
+        if ($picturesResponse['status'] !== 201) {
+            throw new VimeoUploadException('Unable to request an upload url from vimeo');
+        }
+
+        $uploadUrl = $picturesResponse['body']['link'];
+
+        $imageResource = fopen($filePath, 'r');
+
+        $curlOpts = array(
+            CURLOPT_TIMEOUT => 240,
+            CURLOPT_UPLOAD => true,
+            CURLOPT_CUSTOMREQUEST => 'PUT',
+            CURLOPT_READDATA => $imageResource
+        );
+
+        $curl = curl_init($uploadUrl);
+
+        // Merge the options
+        curl_setopt_array($curl, $curlOpts + $this->curlDefaults);
+        $response = curl_exec($curl);
+        $curlInfo = curl_getinfo($curl);
+
+        if (!$response) {
+            $error = curl_error($curl);
+            throw new VimeoUploadException($error);
+        }
+        curl_close($curl);
+
+        if ($curlInfo['http_code'] !== 200) {
+            throw new VimeoUploadException($response);
+        }
+
+        // Activate the uploaded image
+        if ($activate) {
+            $completion = $this->doRequest($picturesResponse['body']['uri'], array('active' => true), 'PATCH');
+        }
+
+        return $picturesResponse['body']['uri'];
+    }
+
+    /**
+     * Uploads a text track.
+     *
+     * @param string $textTracksUri The text tracks uri that we are adding our text track to
+     * @param string $filePath The path to your text track file
+     * @param string $trackType The type of your text track
+     * @param string $language The language of your text track
+     * @throws VimeoUploadException
+     * @return string The URI of the uploaded text track.
+     */
+    public function uploadTextTrack($textTracksUri, $filePath, $trackType, $language)
+    {
+        // Validate that our file is real.
+        if (!is_file($filePath)) {
+            throw new VimeoUploadException('Unable to locate file to upload.');
+        }
+
+        // To simplify the script we provide the filename as the text track name, but you can provide any value you want.
+        $name = array_slice(explode("/", $filePath), -1);
+        $name = $name[0];
+
+        $textTrackResponse = $this->doRequest($textTracksUri, array('type' => $trackType, 'language' => $language, 'name' => $name), 'POST');
+
+        if ($textTrackResponse['status'] !== 201) {
+            throw new VimeoUploadException('Unable to request an upload url from vimeo');
+        }
+
+        $uploadUrl = $textTrackResponse['body']['link'];
+
+        $textTrackResource = fopen($filePath, 'r');
+
+        $curlOpts = array(
+            CURLOPT_TIMEOUT => 240,
+            CURLOPT_UPLOAD => true,
+            CURLOPT_CUSTOMREQUEST => 'PUT',
+            CURLOPT_READDATA => $textTrackResource
+        );
+
+        $curl = curl_init($uploadUrl);
+
+        // Merge the options
+        curl_setopt_array($curl, $curlOpts + $this->curlDefaults);
+        $response = curl_exec($curl);
+        $curlInfo = curl_getinfo($curl);
+
+        if (!$response) {
+            $error = curl_error($curl);
+            throw new VimeoUploadException($error);
+        }
+        curl_close($curl);
+
+        if ($curlInfo['http_code'] !== 200) {
+            throw new VimeoUploadException($response);
+        }
+
+        return $textTrackResponse['body']['uri'];
+    }
+
+    /**
+     * Internal function to handle requests, both authenticated and by the upload function.
+     *
+     * @param string $url
+     * @param array $curlOpts
+     * @return array
+     */
+    private function request($url, $curlOpts = array())
+    {
+        // Merge the options (custom options take precedence).
+        $curlOpts = $this->curlOpts + $curlOpts + $this->curlDefaults;
+
+        // Call the API.
+        $curl = curl_init($url);
+        curl_setopt_array($curl, $curlOpts);
+        $response = curl_exec($curl);
+        $curlInfo = curl_getinfo($curl);
+
+        if (isset($curlInfo['http_code']) && $curlInfo['http_code'] === 0) {
+            $curlError = curl_error($curl);
+            $curlError = !empty($curlError) ? '[' . $curlError .']' : '';
+            throw new VimeoRequestException('Unable to complete request.' . $curlError);
+        }
+
+        curl_close($curl);
+
+        // Retrieve the info
+        $headerSize = $curlInfo['header_size'];
+        $headers = substr($response, 0, $headerSize);
+        $body = substr($response, $headerSize);
+
+        // Return it raw.
+        return array(
+            'body' => $body,
+            'status' => $curlInfo['http_code'],
+            'headers' => self::parseHeaders($headers)
+        );
+    }
+
+    /**
+     * Get authorization header for retrieving tokens/credentials.
+     *
+     * @return string
+     */
+    private function authHeader()
+    {
+        return base64_encode($this->clientId . ':' . $this->clientSecret);
+    }
+
+    /**
      * Take an upload ticket and perform the actual upload
      *
      * @param string $filePath Path to the video file to upload.
@@ -370,7 +490,7 @@ class Vimeo
      */
     private function performUpload($filePath, $ticket)
     {
-        if ($ticket['status'] != 201) {
+        if ($ticket['status'] !== 201) {
             $ticketError = !empty($ticket['body']['error']) ? '[' . $ticket['body']['error'] . ']' : '';
             throw new VimeoUploadException('Unable to get an upload ticket.' . $ticketError);
         }
@@ -424,7 +544,7 @@ class Vimeo
 
         // Validate that we got back 201 Created
         $status = (int) $completion['status'];
-        if ($status != 201) {
+        if ($status !== 201) {
             $error = !empty($completion['body']['error']) ? '[' . $completion['body']['error'] . ']' : '';
             throw new VimeoUploadException('Error completing the upload.'. $error);
         }
@@ -432,118 +552,4 @@ class Vimeo
         // Furnish the location for the new clip in the API via the Location header.
         return $completion['headers']['Location'];
     }
-
-    /**
-     * Uploads an image to an individual picture response.
-     *
-     * @param string $picturesUri The pictures endpoint for a resource that allows picture uploads (eg videos and users)
-     * @param string $filePath The path to your image file
-     * @param boolean $activate Activate image after upload
-     * @throws VimeoUploadException
-     * @return string The URI of the uploaded image.
-     */
-    public function uploadImage($picturesUri, $filePath, $activate = false) {
-        // Validate that our file is real.
-        if (!is_file($filePath)) {
-            throw new VimeoUploadException('Unable to locate file to upload.');
-        }
-
-        $picturesResponse = $this->doRequest($picturesUri, array(), 'POST');
-        if ($picturesResponse['status'] != 201) {
-            throw new VimeoUploadException('Unable to request an upload url from vimeo');
-        }
-
-        $uploadUrl = $picturesResponse['body']['link'];
-
-        $imageResource = fopen($filePath, 'r');
-
-        $curlOpts = array(
-            CURLOPT_TIMEOUT => 240,
-            CURLOPT_UPLOAD => true,
-            CURLOPT_CUSTOMREQUEST => 'PUT',
-            CURLOPT_READDATA => $imageResource
-        );
-
-        $curl = curl_init($uploadUrl);
-
-        // Merge the options
-        curl_setopt_array($curl, $curlOpts + $this->curlDefaults);
-        $response = curl_exec($curl);
-        $curlInfo = curl_getinfo($curl);
-
-        if (!$response) {
-            $error = curl_error($curl);
-            throw new VimeoUploadException($error);
-        }
-        curl_close($curl);
-
-        if ($curlInfo['http_code'] != 200) {
-            throw new VimeoUploadException($response);
-        }
-
-        // Activate the uploaded image
-        if ($activate) {
-            $completion = $this->doRequest($picturesResponse['body']['uri'], array('active' => true), 'PATCH');
-        }
-
-        return $picturesResponse['body']['uri'];
-    }
-
-    /**
-     * Uploads a text track.
-     *
-     * @param string $textTracksUri The text tracks uri that we are adding our text track to
-     * @param string $filePath The path to your text track file
-     * @param string $trackType The type of your text track
-     * @param string $language The language of your text track
-     * @throws VimeoUploadException
-     * @return string The URI of the uploaded text track.
-     */
-    public function uploadTextTrack ($textTracksUri, $filePath, $trackType, $language) {
-        // Validate that our file is real.
-        if (!is_file($filePath)) {
-            throw new VimeoUploadException('Unable to locate file to upload.');
-        }
-
-        // To simplify the script we provide the filename as the text track name, but you can provide any value you want.
-        $name = array_slice(explode("/", $filePath), -1);
-        $name = $name[0];
-
-        $textTrackResponse = $this->doRequest($textTracksUri, array('type' => $trackType, 'language' => $language, 'name' => $name), 'POST');
-
-        if ($textTrackResponse['status'] != 201) {
-            throw new VimeoUploadException('Unable to request an upload url from vimeo');
-        }
-
-        $uploadUrl = $textTrackResponse['body']['link'];
-
-        $textTrackResource = fopen($filePath, 'r');
-
-        $curlOpts = array(
-            CURLOPT_TIMEOUT => 240,
-            CURLOPT_UPLOAD => true,
-            CURLOPT_CUSTOMREQUEST => 'PUT',
-            CURLOPT_READDATA => $textTrackResource
-        );
-
-        $curl = curl_init($uploadUrl);
-
-        // Merge the options
-        curl_setopt_array($curl, $curlOpts + $this->curlDefaults);
-        $response = curl_exec($curl);
-        $curlInfo = curl_getinfo($curl);
-
-        if (!$response) {
-            $error = curl_error($curl);
-            throw new VimeoUploadException($error);
-        }
-        curl_close($curl);
-
-        if ($curlInfo['http_code'] != 200) {
-            throw new VimeoUploadException($response);
-        }
-
-        return $textTrackResponse['body']['uri'];
-    }
-
 }
