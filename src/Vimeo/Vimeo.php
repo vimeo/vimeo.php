@@ -27,14 +27,14 @@ if (!function_exists('json_decode'))
 
 class Vimeo
 {
-    const rootEndPoint = 'https://api.vimeo.com';
-    const authEndPoint = 'https://api.vimeo.com/oauth/authorize';
-    const accessTokenEndPoint = '/oauth/access_token';
-    const clientCredentialsTokenEndPoint = '/oauth/authorize/client';
-    const replaceEndPoint = '/files';
-    const versionString = 'application/vnd.vimeo.*+json; version=3.2';
-    const userAgent = 'vimeo.php 1.2.6; (http://developer.vimeo.com/api/docs)';
-    const certificatePath = '/certificates/vimeo-api.pem';
+    const ROOT_ENDPOINT = 'https://api.vimeo.com';
+    const AUTH_ENDPOINT = 'https://api.vimeo.com/oauth/authorize';
+    const ACCESS_TOKEN_ENDPOINT = '/oauth/access_token';
+    const CLIENT_CREDENTIALS_TOKEN_ENDPOINT = '/oauth/authorize/client';
+    const REPLACE_ENDPOINT = '/files';
+    const VERSION_STRING = 'application/vnd.vimeo.*+json; version=3.2';
+    const USER_AGENT = 'vimeo.php 1.2.6; (http://developer.vimeo.com/api/docs)';
+    const CERTIFICATE_PATH = '/certificates/vimeo-api.pem';
 
     private $clientId = null;
     private $clientSecret = null;
@@ -46,13 +46,13 @@ class Vimeo
     /**
      * Creates the Vimeo library, and tracks the client and token information.
      *
-     * @param string $cleintId Your applications client id. Can be found on developer.vimeo.com/apps
+     * @param string $clientId Your applications client id. Can be found on developer.vimeo.com/apps
      * @param string $clientSecret Your applications client secret. Can be found on developer.vimeo.com/apps
      * @param string $accessToken Your applications client id. Can be found on developer.vimeo.com/apps or generated using OAuth 2.
      */
-    public function __construct($cleintId, $clientSecret, $accessToken = null)
+    public function __construct($clientId, $clientSecret, $accessToken = null)
     {
-        $this->clientId = $cleintId;
+        $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
         $this->accessToken = $accessToken;
         $this->curlDefaults = array(
