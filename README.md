@@ -67,7 +67,7 @@ All requests require access tokens. There are two types of access tokens.
 Unauthenticated API requests must generate an access token. You should not generate a new access token for each request, you should request an access token once and use it forever.
 
 ```php
-// scope is an array of permissions your token needs to access. You can read more at https://developer.vimeo.com/api/authentication#scopes
+// scope is an array of permissions your token needs to access. You can read more at https://developer.vimeo.com/api/authentication#supported-scopes
 $token = $lib->clientCredentials(scope);
 
 // usable access token
@@ -183,7 +183,7 @@ To upload from the client, you will have to mix some server side, and client sid
 
 ### Simple POST uploads
 
-This workflow is well documented on Vimeo's developer site. You can read more here: <https://developer.vimeo.com/api/upload#http-post-uploading>
+This workflow is well documented on Vimeo's developer site. You can read more here: <https://developer.vimeo.com/api/upload#simple-http-post-uploading>
 
 ### Streaming uploads
 
