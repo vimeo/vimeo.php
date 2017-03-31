@@ -12,7 +12,9 @@
 	],
 	"minimum-stability": "stable",
 	"require": {
-		"php": ">=5.3.0"
+		"php": ">=5.3.0",
+		"ext-curl": "*",
+		"ext-json":"*"
 	},
 	"autoload": {
 		"psr-4": {

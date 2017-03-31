@@ -1,9 +1,9 @@
-<?php namespace Vimeo\Exceptions;
+<?php
+namespace Vimeo\Exceptions;
 
 /**
  * ExceptionInterface
  */
 interface ExceptionInterface
 {
-
 }
