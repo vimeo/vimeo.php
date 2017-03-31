@@ -11,8 +11,9 @@ enabled:
   - strict_param
   - php_unit_construct
   - php_unit_strict
+
 finder:
   exclude:
-    - "example"
+    - 'example'
   name:
-    - "*.php"
+    - '*.php'
