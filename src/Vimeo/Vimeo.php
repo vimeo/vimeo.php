@@ -260,7 +260,7 @@ class Vimeo
      * @throws VimeoUploadException
      * @return array Status
      */
-    public function upload($file_path, $upgrade_to_1080 = false, $machine_id = null)
+    public function upload($file_path, $upgrade_to_1080 = false)
     {
         // Validate that our file is real.
         if (!is_file($file_path)) {
@@ -269,9 +269,6 @@ class Vimeo
 
         // Begin the upload request by getting a ticket
         $ticket_args = array('type' => 'streaming', 'upgrade_to_1080' => $upgrade_to_1080);
-        if ($machine_id !== null) {
-            $ticket_args['machine_id'] = $machine_id;
-        }
         $ticket = $this->request('/me/videos', $ticket_args, 'POST');
 
         return $this->perform_upload($file_path, $ticket);
@@ -286,7 +283,7 @@ class Vimeo
      * @throws VimeoUploadException
      * @return array Status
      */
-    public function replace($video_uri, $file_path, $upgrade_to_1080 = false, $machine_id = null)
+    public function replace($video_uri, $file_path, $upgrade_to_1080 = false
     {
         //  Validate that our file is real.
         if (!is_file($file_path)) {
@@ -297,9 +294,6 @@ class Vimeo
 
         // Begin the upload request by getting a ticket
         $ticket_args = array('type' => 'streaming', 'upgrade_to_1080' => $upgrade_to_1080);
-        if ($machine_id !== null) {
-            $ticket_args['machine_id'] = $machine_id;
-        }
         $ticket = $this->request($uri, $ticket_args, 'PUT');
 
         return $this->perform_upload($file_path, $ticket);
