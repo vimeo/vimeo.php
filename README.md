@@ -2,6 +2,8 @@
 
 [![License](https://img.shields.io/packagist/l/vimeo/vimeo-api.svg?style=flat-square)](https://packagist.org/packages/vimeo/vimeo-api)
 [![Development Version](https://img.shields.io/packagist/v/vimeo/vimeo-api.svg?style=flat-square)](https://packagist.org/packages/vimeo/vimeo-api)
+[![Travis CI](http://img.shields.io/travis/vimeo/vimeo.php.svg?style=flat-square)](https://travis-ci.org/vimeo/vimeo.php)
+[![StyleCI](https://styleci.io/repos/9654006/shield?style=flat-square)](https://styleci.io/repos/9654006/)
 
 - [Get Started](#get-started-with-the-vimeo-api)
 - [Help](#direct-help)
@@ -51,7 +53,7 @@ composer require vimeo/vimeo-api
 
 ### Manual
 
-1. Download the latest release : [v1.2.5](https://github.com/vimeo/vimeo.php/archive/1.2.5.zip)
+1. Download the latest release : [v1.2.6](https://github.com/vimeo/vimeo.php/archive/1.2.6.zip)
 2. Include the autoloader `require("/path/to/vimeo.php/autoload.php");`
 3. Use the library `$lib = new \Vimeo\Vimeo($client_id, $client_secret)`
 
@@ -217,7 +219,7 @@ $response = $lib->uploadImage('/videos/12345/pictures', '/home/aaron/Downloads/a
 
 ## Troubleshooting
 
-We are not aware of any issues with the latest version (1.2.5). If you have any questions or problems, create a [ticket](https://github.com/vimeo/vimeo.php/issues) or [contact us](https://vimeo.com/help/contact)
+We are not aware of any issues with the latest version (1.2.6). If you have any questions or problems, create a [ticket](https://github.com/vimeo/vimeo.php/issues) or [contact us](https://vimeo.com/help/contact)
 
 ## Framework Integrations
 
