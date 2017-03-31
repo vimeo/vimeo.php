@@ -74,7 +74,7 @@ class Vimeo
      * @param bool $json_body
      * @return array This array contains three keys, 'status' is the status code, 'body' is an object representation of the json response body, and headers are an associated array of response headers
      */
-    public function request($url, $params = array(), $method = 'GET', $json_body = true)
+    public function request($url, $params = array(), $method = 'GET', $json_body = true, $last_modified = null)
     {
         // add accept header hardcoded to version 3.0
         $headers[] = 'Accept: ' . self::VERSION_STRING;
@@ -87,6 +87,10 @@ class Vimeo
         } else {
             //  this may be a call to get the tokens, so we add the client info.
             $headers[] = 'Authorization: Basic ' . $this->_authHeader();
+        }
+
+        if ($last_modified) {
+            $headers[] = 'If-Modified-Since: ' . $last_modified;
         }
 
         //  Set the methods, determine the URL that we should actually request and prep the body.
