@@ -258,7 +258,7 @@ class Vimeo
      * @param string $file_path Path to the video file to upload.
      * @param boolean $upgrade_to_1080 Should we automatically upgrade the video file to 1080p
      * @throws VimeoUploadException
-     * @return array Status
+     * @return string Video URI
      */
     public function upload($file_path, $upgrade_to_1080 = false, $machine_id = null)
     {
@@ -284,7 +284,7 @@ class Vimeo
      * @param string $file_path Path to the video file to upload.
      * @param boolean $upgrade_to_1080 Should we automatically upgrade the video file to 1080p
      * @throws VimeoUploadException
-     * @return array Status
+     * @return string Status
      */
     public function replace($video_uri, $file_path, $upgrade_to_1080 = false, $machine_id = null)
     {
@@ -473,9 +473,9 @@ class Vimeo
      * Take an upload ticket and perform the actual upload
      *
      * @param string $file_path Path to the video file to upload.
-     * @param Ticket $ticket Upload ticket data.
+     * @param array $ticket Upload ticket data.
      * @throws VimeoUploadException
-     * @return array Status
+     * @return string Video URI
      */
     private function perform_upload($file_path, $ticket)
     {
