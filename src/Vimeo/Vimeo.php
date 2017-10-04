@@ -72,6 +72,7 @@ class Vimeo
      * @param array $params An array of parameters to send to the endpoint. If the HTTP method is GET, they will be added to the url, otherwise they will be written to the body
      * @param string $method The HTTP Method of the request
      * @param bool $json_body
+     * @param array $headers An array of HTTP headers to pass along with the request.
      * @return array This array contains three keys, 'status' is the status code, 'body' is an object representation of the json response body, and headers are an associated array of response headers
      */
     public function request($url, $params = array(), $method = 'GET', $json_body = true, array $headers = array())
