@@ -74,19 +74,21 @@ class Vimeo
      * @param bool $json_body
      * @return array This array contains three keys, 'status' is the status code, 'body' is an object representation of the json response body, and headers are an associated array of response headers
      */
-    public function request($url, $params = array(), $method = 'GET', $json_body = true)
+    public function request($url, $params = array(), $method = 'GET', $json_body = true, array $headers = array())
     {
-        // add accept header hardcoded to version 3.0
-        $headers[] = 'Accept: ' . self::VERSION_STRING;
-        $headers[] = 'User-Agent: ' . self::USER_AGENT;
+        $headers = array_merge(array(
+            'Accept' => self::VERSION_STRING,
+            'User-Agent' => self::USER_AGENT,
+        ), $headers);
+
         $method = strtoupper($method);
 
         // add bearer token, or client information
         if (!empty($this->_access_token)) {
-            $headers[] = 'Authorization: Bearer ' . $this->_access_token;
+            $headers['Authorization'] = 'Bearer ' . $this->_access_token;
         } else {
             //  this may be a call to get the tokens, so we add the client info.
-            $headers[] = 'Authorization: Basic ' . $this->_authHeader();
+            $headers['Authorization'] = 'Basic ' . $this->_authHeader();
         }
 
         //  Set the methods, determine the URL that we should actually request and prep the body.
@@ -107,7 +109,7 @@ class Vimeo
             case 'PUT':
             case 'DELETE':
                 if ($json_body && !empty($params)) {
-                    $headers[] = 'Content-Type: application/json';
+                    $headers['Content-Type'] = 'application/json';
                     $body = json_encode($params);
                 } else {
                     $body = http_build_query($params, '', '&');
@@ -123,7 +125,9 @@ class Vimeo
         }
 
         // Set the headers
-        $curl_opts[CURLOPT_HTTPHEADER] = $headers;
+        foreach ($headers as $key => $value) {
+            $curl_opts[CURLOPT_HTTPHEADER][] = sprintf('%s: %s', $key, $value);
+        }
 
         $response = $this->_request($curl_url, $curl_opts);
 
