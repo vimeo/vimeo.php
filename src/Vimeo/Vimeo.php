@@ -261,11 +261,11 @@ class Vimeo
      * you should look at the POST /me/videos endpoint.
      *
      * @param string $file_path Path to the video file to upload.
-     * @param boolean $upgrade_to_1080 Should we automatically upgrade the video file to 1080p
+     * @param string|null $machine_id
      * @throws VimeoUploadException
      * @return string Video URI
      */
-    public function upload($file_path, $upgrade_to_1080 = false, $machine_id = null)
+    public function upload($file_path, $machine_id = null)
     {
         // Validate that our file is real.
         if (!is_file($file_path)) {
@@ -273,7 +273,7 @@ class Vimeo
         }
 
         // Begin the upload request by getting a ticket
-        $ticket_args = array('type' => 'streaming', 'upgrade_to_1080' => $upgrade_to_1080);
+        $ticket_args = array('type' => 'streaming');
         if ($machine_id !== null) {
             $ticket_args['machine_id'] = $machine_id;
         }
@@ -287,11 +287,11 @@ class Vimeo
      *
      * @param string $video_uri Video uri of the video file to replace.
      * @param string $file_path Path to the video file to upload.
-     * @param boolean $upgrade_to_1080 Should we automatically upgrade the video file to 1080p
+     * @param string|null $machine_id
      * @throws VimeoUploadException
      * @return string Status
      */
-    public function replace($video_uri, $file_path, $upgrade_to_1080 = false, $machine_id = null)
+    public function replace($video_uri, $file_path, $machine_id = null)
     {
         //  Validate that our file is real.
         if (!is_file($file_path)) {
@@ -301,7 +301,7 @@ class Vimeo
         $uri = $video_uri . self::REPLACE_ENDPOINT;
 
         // Begin the upload request by getting a ticket
-        $ticket_args = array('type' => 'streaming', 'upgrade_to_1080' => $upgrade_to_1080);
+        $ticket_args = array('type' => 'streaming');
         if ($machine_id !== null) {
             $ticket_args['machine_id'] = $machine_id;
         }
