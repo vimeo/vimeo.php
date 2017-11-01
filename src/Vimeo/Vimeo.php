@@ -106,8 +106,40 @@ class Vimeo
                 break;
 
             case 'POST':
+                if ($json_body && !empty($params)) {
+                    $headers['Content-Type'] = 'application/json';
+                    $body = json_encode($params);
+                } else {
+                    $body = http_build_query($params, '', '&');
+                }
+
+                $curl_url = self::ROOT_ENDPOINT . $url;
+                $curl_opts = array(
+                    CURLOPT_POST => true,
+                    CURLOPT_CUSTOMREQUEST => $method,
+                    CURLOPT_POSTFIELDS => $body
+                );
+                break;
+
             case 'PATCH':
+                if ($json_body && !empty($params)) {
+                    $headers['Content-Type'] = 'application/json';
+                    $body = json_encode($params);
+                } else {
+                    $body = http_build_query($params, '', '&');
+                }
+
+                $curl_url = self::ROOT_ENDPOINT . $url;
+                $curl_opts = array(
+                    CURLOPT_POST => true,
+                    CURLOPT_CUSTOMREQUEST => $method,
+                    CURLOPT_POSTFIELDS => $body
+                );
+                break;
+
             case 'PUT':
+                break;
+                
             case 'DELETE':
                 if ($json_body && !empty($params)) {
                     $headers['Content-Type'] = 'application/json';
