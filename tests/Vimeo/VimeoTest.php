@@ -101,7 +101,7 @@ class VimeoTest extends TestCase
         $vimeo = new Vimeo($this->clientId, $this->clientSecret);
 
         // Act
-        $result = $vimeo->clientCredentials(['public']);
+        $result = $vimeo->clientCredentials(array('public'));
 
         // Assert
         $this->assertSame('You must provide a valid authenticated access token.', $result['body']['error']);
@@ -137,7 +137,7 @@ class VimeoTest extends TestCase
         $vimeo = new Vimeo($this->clientId, $this->clientSecret);
 
         // Act
-        $result = $vimeo->buildAuthorizationEndpoint('https://fake.redirect.uri', ['public', 'private']);
+        $result = $vimeo->buildAuthorizationEndpoint('https://fake.redirect.uri', array('public', 'private'));
 
         // Assert
         $this->assertSame('https://api.vimeo.com/oauth/authorize?response_type=code&client_id=client_id&redirect_uri=https%3A%2F%2Ffake.redirect.uri&scope=public+private', $result);
@@ -149,7 +149,7 @@ class VimeoTest extends TestCase
         $vimeo = new Vimeo($this->clientId, $this->clientSecret);
 
         // Act
-        $result = $vimeo->buildAuthorizationEndpoint('https://fake.redirect.uri', ['public'], 'fake_state');
+        $result = $vimeo->buildAuthorizationEndpoint('https://fake.redirect.uri', array('public'), 'fake_state');
 
         // Assert
         $this->assertSame('https://api.vimeo.com/oauth/authorize?response_type=code&client_id=client_id&redirect_uri=https%3A%2F%2Ffake.redirect.uri&scope=public&state=fake_state', $result);
