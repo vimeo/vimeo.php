@@ -64,10 +64,11 @@ class VimeoTest extends TestCase
 
         // Act
         $vimeo->setCurlOptions(array('custom_name' => 'custom_value'));
+        $result = $vimeo->getCurlOptions();
 
         // Assert
-        $this->assertInternalType('array', $vimeo->getCurlOptions());
-        $this->assertSame('custom_value', $vimeo->getCurlOptions()['custom_name']);
+        $this->assertInternalType('array', $result);
+        $this->assertSame('custom_value', $result['custom_name']);
     }
 
     public function testAccessTokenWithCallingFakeRedirectUri()
