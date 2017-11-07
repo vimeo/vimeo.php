@@ -1,8 +1,8 @@
 <?php
 namespace Vimeo\VimeoTest;
 
-use Vimeo\Vimeo;
 use PHPUnit\Framework\TestCase;
+use Vimeo\Vimeo;
 
 class VimeoTest extends TestCase
 {
@@ -18,7 +18,7 @@ class VimeoTest extends TestCase
         $result = $vimeo->request('/users/userwillnotbefound');
 
         // Assert
-        $this->assertSame('You must provide a valid authenticated access token.', $result['body']['error']); 
+        $this->assertSame('You must provide a valid authenticated access token.', $result['body']['error']);
     }
 
     public function testRequestGetUserInformationWithAccessToken()
