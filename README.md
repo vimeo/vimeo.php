@@ -159,10 +159,9 @@ For more information check out the [example](https://github.com/vimeo/vimeo.php/
 Name      | Type     | Description
 ----------|----------|------------
 file      | string   | Full path to the upload file on the local system.
-upgrade   | boolean  | (Optional) Defaults to false. Requests for a 1080p encode to be made from this video. This feature is only available to [Vimeo PRO](https://vimeo.com/pro) members. For more information, check out the [FAQ](https://vimeo.com/help/faq/uploading-to-vimeo/uploading-basics#does-vimeo-support-1080p-hd).
 
 ```php
-$response = $lib->upload('/home/aaron/Downloads/ada.mp4', false)
+$response = $lib->upload('/home/aaron/Downloads/ada.mp4')
 ```
 
 ## Replace videos from the Server
@@ -173,10 +172,9 @@ Name      | Type     | Description
 ----------|----------|------------
 video_uri | string   | The URI of the original video. Once uploaded and successfully transcoded your source video file will be swapped with this new video file.
 file      | string   | Full path to the upload file on the local system.
-upgrade   | boolean  | (Optional) Defaults to false. Requests for a 1080p encode to be made from this video. This feature is only available to [Vimeo PRO](https://vimeo.com/pro) members. For more information, check out the [FAQ](https://vimeo.com/help/faq/uploading-to-vimeo/uploading-basics#does-vimeo-support-1080p-hd).
 
 ```php
-$response = $lib->replace('/videos/12345', '/home/aaron/Downloads/ada.mp4', false)
+$response = $lib->replace('/videos/12345', '/home/aaron/Downloads/ada.mp4')
 ```
 
 ## Upload or replace videos from the client
