@@ -229,4 +229,3 @@ If you have integrated Vimeo into a popular PHP framework let us know!
 ## Contributors
 
 To see the contributors please visit the [contributors graph](https://github.com/vimeo/vimeo.php/graphs/contributors).
-
