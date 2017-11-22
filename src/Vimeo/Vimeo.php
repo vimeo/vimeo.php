@@ -520,7 +520,6 @@ class Vimeo
      */
     private function perform_upload($file_path, $file_size, $ticket)
     {
-        // We are going to always target the secure upload URL.
         $url = $ticket['body']['upload_link'];
 
         // We need a handle on the input file since we may have to send segments multiple times.
@@ -632,7 +631,7 @@ class Vimeo
                 if ($response['status'] === 204) {
                     // If the `Upload-Offset` returned is equal to the size of the video we want to upload, then we've
                     // fully uploaded the video. If not, continue uploading.
-                    if ($response['headers']['Upload-Offset'] == $file_size) {
+                    if ($response['headers']['Upload-Offset'] === $file_size) {
                         break;
                     }
 
@@ -648,7 +647,7 @@ class Vimeo
                     throw new VimeoUploadException('Unable to verify upload' . $verify_error);
                 }
 
-                if ($verify_response['headers']['Upload-Offset'] == $file_size) {
+                if ($verify_response['headers']['Upload-Offset'] === $file_size) {
                     break;
                 }
 
@@ -661,6 +660,7 @@ class Vimeo
                 }
 
                 $failures++;
+                sleep(pow(4, $failures)); // sleep 4, 16, 64 seconds (based on failure count)
             } catch (VimeoUploadException $exception) {
                 throw $exception;
             }
