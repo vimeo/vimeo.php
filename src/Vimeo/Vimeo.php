@@ -295,7 +295,7 @@ class Vimeo
         $attempt = $this->request($uri, $params, 'POST');
         if ($attempt['status'] !== 200) {
             $attempt_error = !empty($attempt['body']['error']) ? ' [' . $attempt['body']['error'] . ']' : '';
-            throw new VimeoUploadException('Unable to initiate an upload attempt.' . $attempt_error);
+            throw new VimeoUploadException('Unable to initiate an upload.' . $attempt_error);
         }
 
         return $this->perform_upload_tus($file_path, $file_size, $attempt);
@@ -317,8 +317,6 @@ class Vimeo
             throw new VimeoUploadException('Unable to locate file to upload.');
         }
 
-        // There's some complicated business logic surrounding upload quotas and replacing files so we can't check
-        // quotas here like we are in `->upload`.
         $file_size = filesize($file_path);
 
         $uri = $video_uri . self::REPLACE_ENDPOINT;
