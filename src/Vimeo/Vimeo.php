@@ -263,10 +263,11 @@ class Vimeo
      *
      * @link https://developer.vimeo.com/api/endpoints/videos#POST/users/{user_id}/videos
      * @param string $file_path Path to the video file to upload.
+     * @param array $params Parameters to send when creating a new video (name, privacy restrictions, etc.).
      * @throws VimeoUploadException
      * @return string Video URI
      */
-    public function upload($file_path)
+    public function upload($file_path, array $params = [])
     {
         // Validate that our file is real.
         if (!is_file($file_path)) {
@@ -284,19 +285,15 @@ class Vimeo
             throw new VimeoUploadException('User does not have any more free space to upload this video.');
         }
 
-        // Begin the upload request by creating an attempt
-        $args = array(
-            'type' => 'tus',
-            'filename' => basename($file_path),
-            'size' => $file_size
-        );
+        // Ignore any specified upload approach and size.
+        $params['upload']['approach'] = 'tus';
+        $params['upload']['size'] = $file_size;
 
         // Use JSON filtering so we only receive the data that we need to make an upload happen.
-        $uri = '/me/videos?fields=uri,upload_link';
-        // @todo switch `upload_link` to `upload` to this when kenyas 2step PR is in prod.
+        $uri = '/me/videos?fields=uri,upload';
 
-        $attempt = $this->request($uri, $args, 'POST');
-        if ($attempt['status'] !== 201) {
+        $attempt = $this->request($uri, $params, 'POST');
+        if ($attempt['status'] !== 200) {
             $attempt_error = !empty($attempt['body']['error']) ? ' [' . $attempt['body']['error'] . ']' : '';
             throw new VimeoUploadException('Unable to initiate an upload attempt.' . $attempt_error);
         }
@@ -330,11 +327,11 @@ class Vimeo
         $uri .= '?fields=upload_link,complete_uri';
 
         // Begin the upload request by getting a ticket
-        $args = array(
+        $params = array(
             'type' => 'streaming'
         );
 
-        $ticket = $this->request($uri, $args, 'PUT');
+        $ticket = $this->request($uri, $params, 'PUT');
         if ($ticket['status'] !== 201) {
             $ticket_error = !empty($ticket['body']['error']) ? ' [' . $ticket['body']['error'] . ']' : '';
             throw new VimeoUploadException('Unable to get an upload ticket.' . $ticket_error);
@@ -591,7 +588,7 @@ class Vimeo
      */
     private function perform_upload_tus($file_path, $file_size, $attempt)
     {
-        $url = $attempt['body']['upload_link'];
+        $url = $attempt['body']['upload']['upload_link'];
 
         // We need a handle on the input file since we may have to send segments multiple times.
         $file = fopen($file_path, 'r');
