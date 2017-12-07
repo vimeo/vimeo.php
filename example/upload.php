@@ -22,7 +22,10 @@ use Vimeo\Exceptions\VimeoUploadException;
 $config = require(__DIR__ . '/init.php');
 
 if (empty($config['access_token'])) {
-    throw new Exception('You can not upload a file without an access token. You can find this token on your app page, or generate one using auth.php');
+    throw new Exception(
+        'You can not upload a file without an access token. You can find this token on your app page, or generate ' .
+        'one using `auth.php`.'
+    );
 }
 
 $lib = new Vimeo($config['client_id'], $config['client_secret'], $config['access_token']);
@@ -30,38 +33,51 @@ $lib = new Vimeo($config['client_id'], $config['client_secret'], $config['access
 //  Get the args from the command line to see what files to upload.
 $files = $argv;
 array_shift($files);
+$files = [
+    //'/Users/ursenbachj/Desktop/Untitled.mp4'
+    //'/Users/ursenbachj/Desktop/VID_20171118_163815.mp4'
+    '/Users/ursenbachj/Desktop/VID_20171203_091848.mp4'
+];
 
-//   Keep track of what we have uploaded.
+// Keep track of what we have uploaded.
 $uploaded = array();
 
-//  Send the files to the upload script.
+// Send the files to the upload script.
 foreach ($files as $file_name) {
-    //  Update progress.
+    // Update progress.
     print 'Uploading ' . $file_name . "\n";
     try {
-        //  Send this to the API library.
-        $uri = $lib->upload($file_name);
+        // Send this to the API library.
+        $uri = $lib->upload($file_name, array(
+            'name' => 'Test upload from the PHP SDK',
+            'privacy' => [
+                'view' => 'nobody'
+            ]
+        ));
 
-        //  Now that we know where it is in the API, let's get the info about it so we can find the link.
+        // Now that we know where it is in the API, let's get the info about it so we can find the link.
         $video_data = $lib->request($uri);
 
-        //  Pull the link out of successful data responses.
+        // Pull the link out of successful data responses.
         $link = '';
         if($video_data['status'] == 200) {
             $link = $video_data['body']['link'];
         }
 
-        //  Store this in our array of complete videos.
-        $uploaded[] = array('file' => $file_name, 'api_video_uri' => $uri, 'link' => $link);
-    }
-    catch (VimeoUploadException $e) {
-        //  We may have had an error.  We can't resolve it here necessarily, so report it to the user.
+        // Store this in our array of complete videos.
+        $uploaded[] = array(
+            'file' => $file_name,
+            'api_video_uri' => $uri,
+            'link' => $link
+        );
+    } catch (VimeoUploadException $e) {
+        // We may have had an error.  We can't resolve it here necessarily, so report it to the user.
         print 'Error uploading ' . $file_name . "\n";
         print 'Server reported: ' . $e->getMessage() . "\n";
     }
 }
 
-//  Provide a summary on completion with links to the videos on the site.
+// Provide a summary on completion with links to the videos on the site.
 print 'Uploaded ' . count($uploaded) . " files.\n\n";
 foreach ($uploaded as $site_video) {
     extract($site_video);

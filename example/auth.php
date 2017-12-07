@@ -35,7 +35,7 @@ if (preg_match('%^/callback%', $_SERVER["REQUEST_URI"])) {
 	handleDefault($config);
 }
 
-// This is the default page view. 
+// This is the default page view.
 // If the user is authenticated we make an API request to /me, and dump out the details
 // If the user is not authenticated we display the authorization endpoint, so the user can authenticate
 function handleDefault($config)

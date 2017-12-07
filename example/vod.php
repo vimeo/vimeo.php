@@ -18,14 +18,13 @@ use Vimeo\Vimeo;
  *   limitations under the License.
  */
 
-/**
- * VOD example using the Official PHP library for the Vimeo API
-*/
-
+// VOD example using the official PHP library for the Vimeo API.
 $config = require(__DIR__ . '/init.php');
-
 if (empty($config['access_token'])) {
-    throw new Exception('You can not upload a file without an access token. You can find this token on your app page, or generate one using auth.php');
+    throw new Exception(
+        'You can not upload a file without an access token. You can find this token on your app page, or generate ' .
+        'one using `auth.php`.'
+    );
 }
 
 $lib = new Vimeo($config['client_id'], $config['client_secret'], $config['access_token']);
@@ -33,7 +32,23 @@ $lib = new Vimeo($config['client_id'], $config['client_secret'], $config['access
 // VOD film example
 
 // Create a new vod page
-$create_vod_film = $lib->request('/me/ondemand/pages', array('name' => 'myfilm', 'type' => 'film', 'description' => 'my first film', 'content_rating' => 'safe', 'link' => 'myfilm', 'dommain_link' => 'myfilm', 'rent' => array('active' => true, 'price' => array('USD' => 5.0), 'period' => '24 hour'), 'buy' => array('active' => true, 'price' => array('USD' => 10.0))), 'POST');
+$create_vod_film = $lib->request('/me/ondemand/pages', array(
+    'name' => 'myfilm',
+    'type' => 'film',
+    'description' => 'my first film',
+    'content_rating' => 'safe',
+    'link' => 'myfilm',
+    'dommain_link' => 'myfilm',
+    'rent' => array(
+        'active' => true,
+        'price' => array('USD' => 5.0),
+        'period' => '24 hour'
+    ),
+    'buy' => array(
+        'active' => true,
+        'price' => array('USD' => 10.0)
+    )
+), 'POST');
 
 // Set a Genre
 $genre = $lib->request('/ondemand/pages/myfilm/genres/art', array(), 'PUT');
@@ -63,7 +78,34 @@ $poster = $lib->request($response, array('active' => true), 'PATCH');
 // VOD series example
 
 // Create a new vod series
-$create_vod_series = $lib->request('/me/ondemand/pages', array('name' => 'myseries', 'type' => 'series', 'description' => 'my first series', 'content_rating' => 'safe', 'link' => 'myseries', 'dommain_link' => 'myseries', 'rent' => array('active' => true, 'price' => array('USD' => 5.0), 'period' => '24 hour'), 'buy' => array('active' => true, 'price' => array('USD' => 10.0)), 'episodes' => array('rent' => array('active' => true, 'price' => array('USD' => 1.0), 'period' => '48 hour'), 'buy' => array('active' => true, 'price' => array('USD' => 2.0)))), 'POST');
+$create_vod_series = $lib->request('/me/ondemand/pages', array(
+    'name' => 'myseries',
+    'type' => 'series',
+    'description' => 'my first series',
+    'content_rating' => 'safe',
+    'link' => 'myseries',
+    'dommain_link' => 'myseries',
+    'rent' => array(
+        'active' => true,
+        'price' => array('USD' => 5.0),
+        'period' => '24 hour'
+    ),
+    'buy' => array(
+        'active' => true,
+        'price' => array('USD' => 10.0)
+    ),
+    'episodes' => array(
+        'rent' => array(
+            'active' => true,
+            'price' => array('USD' => 1.0),
+            'period' => '48 hour'
+        ),
+        'buy' => array(
+            'active' => true,
+            'price' => array('USD' => 2.0)
+        )
+    )
+), 'POST');
 
 // Set a Genre
 $genre = $lib->request('/ondemand/pages/myseries/genres/art', array(), 'PUT');
@@ -74,7 +116,17 @@ $video_data = $lib->request($uri);
 $series_video_1 = $lib->request('/ondemand/pages/myseries'.$video_data['body']['uri'], array('type' => 'main'), 'PUT');
 $uri = $lib->upload('myvideos2.mp4');
 $video_data = $lib->request($uri);
-$series_video_2 = $lib->request('/ondemand/pages/myseries'.$video_data['body']['uri'], array('type' => 'main', 'rent' => array('active' => true, 'price' => array('USD' => 3)), 'buy' => array('active' => true, 'price' => array('USD' => 4))), 'PUT');
+$series_video_2 = $lib->request('/ondemand/pages/myseries'.$video_data['body']['uri'], array(
+    'type' => 'main',
+    'rent' => array(
+        'active' => true,
+        'price' => array('USD' => 3)
+    ),
+    'buy' => array(
+        'active' => true,
+        'price' => array('USD' => 4)
+    )
+), 'PUT');
 
 // Add a trailer
 $uri = $lib->upload('mytrailer.mp4');
@@ -92,5 +144,3 @@ $poster = $lib->request($response, array('active' => true), 'PATCH');
 // Publish our new vod page - You can only publish after you all videos for your series have finished transcoding
 //$publish_video = $lib->request('/ondemand/pages/myseries', array('publish' => array('active' => true)), 'PATCH');
 //print_r($publish_video);
-
-?>
