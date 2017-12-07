@@ -308,7 +308,7 @@ class Vimeo
      * @param string $video_uri Video uri of the video file to replace.
      * @param string $file_path Path to the video file to upload.
      * @throws VimeoUploadException
-     * @return string Status
+     * @return string Video URI
      */
     public function replace($video_uri, $file_path)
     {
