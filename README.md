@@ -1,7 +1,7 @@
 # <img src="https://user-images.githubusercontent.com/33762/33720344-abc20bb8-db31-11e7-8362-59a4985aeff0.png" width="250" />
 
+[![Packagist](https://img.shields.io/packagist/v/vimeo/vimeo-api.svg?style=flat-square)](https://packagist.org/packages/vimeo/vimeo-api)
 [![License](https://img.shields.io/packagist/l/vimeo/vimeo-api.svg?style=flat-square)](https://packagist.org/packages/vimeo/vimeo-api)
-[![Development Version](https://img.shields.io/packagist/v/vimeo/vimeo-api.svg?style=flat-square)](https://packagist.org/packages/vimeo/vimeo-api)
 [![Travis CI](https://img.shields.io/travis/vimeo/vimeo.php.svg?style=flat-square)](https://travis-ci.org/vimeo/vimeo.php)
 [![StyleCI](https://styleci.io/repos/9654006/shield?style=flat-square)](https://styleci.io/repos/9654006/)
 
@@ -39,7 +39,7 @@ There is a lot of information about the Vimeo API at <https://developer.vimeo.co
 The API docs often uses dot notation to represent a hierarchy of data (eg. privacy.view). Because this library sends all data using JSON, you must use nested associative arrays, not dot notation.
 
 ```php
-// The docs refer to the following as "privacy.view"
+// The documentation refers to the following as `privacy.view`
 $params = ['privacy' => ['view' => 'disable']];
 ```
 
@@ -73,7 +73,8 @@ All requests require access tokens. There are two types of access tokens.
 Unauthenticated API requests must generate an access token. You should not generate a new access token for each request, you should request an access token once and use it forever.
 
 ```php
-// scope is an array of permissions your token needs to access. You can read more at https://developer.vimeo.com/api/authentication#supported-scopes
+// `scope` is an array of permissions your token needs to access.
+// You can read more at https://developer.vimeo.com/api/authentication#supported-scopes
 $token = $lib->clientCredentials(scope);
 
 // usable access token
