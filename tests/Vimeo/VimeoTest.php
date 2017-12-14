@@ -1,5 +1,5 @@
 <?php
-namespace Vimeo\VimeoTest;
+namespace Vimeo;
 
 use PHPUnit\Framework\TestCase;
 use Vimeo\Vimeo;
@@ -230,7 +230,7 @@ class VimeoTest extends TestCase
     /**
      * @expectedException Vimeo\Exceptions\VimeoUploadException
      */
-    public function testuploadTexttrackWithNonExistedFile()
+    public function testUploadTexttrackWithNonExistedFile()
     {
         // Arrange
         $vimeo = new Vimeo($this->clientId, $this->clientSecret);
@@ -242,7 +242,7 @@ class VimeoTest extends TestCase
     /**
      * @expectedException Vimeo\Exceptions\VimeoRequestException
      */
-    public function testuploadTexttrackWithPictureUriAndMachineIdShouldReturnVimeoRequestException()
+    public function testUploadTexttrackWithPictureUriAndMachineIdShouldReturnVimeoRequestException()
     {
         // Arrange
         $vimeo = new Vimeo($this->clientId, $this->clientSecret);
