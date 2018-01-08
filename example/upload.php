@@ -33,11 +33,6 @@ $lib = new Vimeo($config['client_id'], $config['client_secret'], $config['access
 //  Get the args from the command line to see what files to upload.
 $files = $argv;
 array_shift($files);
-$files = [
-    //'/Users/ursenbachj/Desktop/Untitled.mp4'
-    //'/Users/ursenbachj/Desktop/VID_20171118_163815.mp4'
-    '/Users/ursenbachj/Desktop/VID_20171203_091848.mp4'
-];
 
 // Keep track of what we have uploaded.
 $uploaded = array();
@@ -48,12 +43,7 @@ foreach ($files as $file_name) {
     print 'Uploading ' . $file_name . "\n";
     try {
         // Send this to the API library.
-        $uri = $lib->upload($file_name, array(
-            'name' => 'Test upload from the PHP SDK',
-            'privacy' => [
-                'view' => 'nobody'
-            ]
-        ));
+        $uri = $lib->upload($file_name);
 
         // Now that we know where it is in the API, let's get the info about it so we can find the link.
         $video_data = $lib->request($uri);
