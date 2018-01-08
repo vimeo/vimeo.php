@@ -30,7 +30,7 @@ class Vimeo
     const AUTH_ENDPOINT = 'https://api.vimeo.com/oauth/authorize';
     const ACCESS_TOKEN_ENDPOINT = '/oauth/access_token';
     const CLIENT_CREDENTIALS_TOKEN_ENDPOINT = '/oauth/authorize/client';
-    const REPLACE_ENDPOINT = '/files';
+    const VERSIONS_ENDPOINT = '/versions';
     const VERSION_STRING = 'application/vnd.vimeo.*+json; version=3.4';
     const USER_AGENT = 'vimeo.php 1.4.0; (http://developer.vimeo.com/api/docs)';
     const CERTIFICATE_PATH = '/certificates/vimeo-api.pem';
@@ -267,7 +267,7 @@ class Vimeo
      * @throws VimeoUploadException
      * @return string Video URI
      */
-    public function upload($file_path, array $params = [])
+    public function upload($file_path, array $params = array())
     {
         // Validate that our file is real.
         if (!is_file($file_path)) {
@@ -310,7 +310,7 @@ class Vimeo
      * @throws VimeoUploadException
      * @return string Video URI
      */
-    public function replace($video_uri, $file_path)
+    public function replace($video_uri, $file_path, array $params = array())
     {
         //  Validate that our file is real.
         if (!is_file($file_path)) {
@@ -319,23 +319,25 @@ class Vimeo
 
         $file_size = filesize($file_path);
 
-        $uri = $video_uri . self::REPLACE_ENDPOINT;
-
         // Use JSON filtering so we only receive the data that we need to make an upload happen.
-        $uri .= '?fields=upload_link,complete_uri';
+        $uri = $video_uri . self::VERSIONS_ENDPOINT . '?fields=upload';
 
-        // Begin the upload request by getting a ticket
-        $params = array(
-            'type' => 'streaming'
-        );
+        // Ignore any specified upload approach and size.
+        $params['file_name'] = basename($file_path);
+        $params['upload']['approach'] = 'tus';
+        $params['upload']['size'] = $file_size;
 
-        $ticket = $this->request($uri, $params, 'PUT');
-        if ($ticket['status'] !== 201) {
-            $ticket_error = !empty($ticket['body']['error']) ? ' [' . $ticket['body']['error'] . ']' : '';
-            throw new VimeoUploadException('Unable to get an upload ticket.' . $ticket_error);
+        $attempt = $this->request($uri, $params, 'POST');
+        if ($attempt['status'] !== 201) {
+            $attempt_error = !empty($attempt['body']['error']) ? ' [' . $attempt['body']['error'] . ']' : '';
+            throw new VimeoUploadException('Unable to initiate an upload.' . $attempt_error);
         }
 
-        return $this->perform_upload($file_path, $file_size, $ticket);
+        // `uri` doesn't come back from `/videos/:id/versions` so we need to manually set it here for uploading to
+        // function.
+        $attempt['body']['uri'] = $video_uri;
+
+        return $this->perform_upload_tus($file_path, $file_size, $attempt);
     }
 
     /**
@@ -505,75 +507,6 @@ class Vimeo
     }
 
     /**
-     * Take an upload ticket and perform the actual upload
-     *
-     * @param string $file_path Path to the video file to upload.
-     * @param int $file_size Size of the video file.
-     * @param array $ticket Upload ticket data.
-     * @throws VimeoUploadException
-     * @return string Video URI
-     */
-    private function perform_upload($file_path, $file_size, $ticket)
-    {
-        $url = $ticket['body']['upload_link'];
-
-        // We need a handle on the input file since we may have to send segments multiple times.
-        $file = fopen($file_path, 'r');
-
-        // PUTs a file in a POST....do for the streaming when we get there.
-        $curl_opts = array(
-            CURLOPT_PUT => true,
-            CURLOPT_INFILE => $file,
-            CURLOPT_INFILESIZE => filesize($file_path),
-            CURLOPT_UPLOAD => true,
-            CURLOPT_HTTPHEADER => array('Expect: ', 'Content-Range: replaced...')
-        );
-
-        // These are the options that set up the validate call.
-        $curl_opts_check_progress = array(
-            CURLOPT_PUT => true,
-            CURLOPT_HTTPHEADER => array('Content-Length: 0', 'Content-Range: bytes */*')
-        );
-
-        // Perform the upload by streaming as much to the server as possible and ending when we reach the filesize on the server.
-        $server_at = 0;
-        do {
-            // The last HTTP header we set MUST be the Content-Range, since we need to remove it and replace it with a proper one.
-            array_pop($curl_opts[CURLOPT_HTTPHEADER]);
-            $curl_opts[CURLOPT_HTTPHEADER][] = 'Content-Range: bytes ' . $server_at . '-' . $file_size . '/' . $file_size;
-
-            // Put the FP at the point where the server is.
-            fseek($file, $server_at);
-
-            try {
-                // Send what we can.
-                $this->_request($url, $curl_opts);
-            } catch (VimeoRequestException $exception) {
-                // ignored, it's likely a timeout, and we should only consider a failure from the progress check as a legit failure
-            }
-
-            $progress_check = $this->_request($url, $curl_opts_check_progress); //  Check on what the server has.
-
-            // Figure out how much is on the server.
-            list(, $server_at) = explode('-', $progress_check['headers']['Range']);
-            $server_at = (int)$server_at;
-        } while ($server_at < $file_size);
-
-        // Complete the upload on the server.
-        $completion = $this->request($ticket['body']['complete_uri'], array(), 'DELETE');
-
-        // Validate that we got back 201 Created
-        $status = (int) $completion['status'];
-        if ($status !== 201) {
-            $error = !empty($completion['body']['error']) ? '[' . $completion['body']['error'] . ']' : '';
-            throw new VimeoUploadException('Error completing the upload.'. $error);
-        }
-
-        // Furnish the location for the new clip in the API via the Location header.
-        return $completion['headers']['Location'];
-    }
-
-    /**
      * Take an upload attempt and perform the actual upload via tus.
      *
      * @link https://tus.io/
@@ -601,7 +534,7 @@ class Vimeo
                 'Expect: ',
                 'Content-Type: application/offset+octet-stream',
                 'Tus-Resumable: 1.0.0',
-                'Upload-Offset: {will be replaced}',
+                'Upload-Offset: {placeholder}',
             )
         );
 
