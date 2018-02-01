@@ -28,48 +28,41 @@ if (empty($config['access_token'])) {
     );
 }
 
+// Instantiate the library with your client id, secret and access token (pulled from dev site)
 $lib = new Vimeo($config['client_id'], $config['client_secret'], $config['access_token']);
 
-//  Get the args from the command line to see what files to upload.
-$files = $argv;
-array_shift($files);
+// Create a variable with a hard coded path to your file system
+$file_name = '<full path to a video on the filesystem>';
 
-// Keep track of what we have uploaded.
-$uploaded = array();
+echo 'Uploading: ' . $file_name . "\n";
 
-// Send the files to the upload script.
-foreach ($files as $file_name) {
-    // Update progress.
-    print 'Uploading ' . $file_name . "\n";
-    try {
-        // Send this to the API library.
-        $uri = $lib->upload($file_name);
+try {
+    // Upload the file and include the video title and description.
+    $uri = $lib->upload($file_name, array(
+        'name' => 'Vimeo API SDK test upload',
+        'description' => "This video was uploaded through the Vimeo API's PHP SDK."
+    ));
 
-        // Now that we know where it is in the API, let's get the info about it so we can find the link.
-        $video_data = $lib->request($uri);
+    // Get the metadata response from the upload and log out the Vimeo.com url
+    $video_data = $lib->request($uri . '?fields=link');
+    echo '"' . $file_name . ' has been uploaded to ' . $video_data['body']['link'] . "\n";
 
-        // Pull the link out of successful data responses.
-        $link = '';
-        if($video_data['status'] == 200) {
-            $link = $video_data['body']['link'];
-        }
+    // Make an API call to edit the title and description of the video.
+    $lib->request($uri, array(
+        'name' => 'Vimeo API SDK test edit',
+        'description' => "This video was edited through the Vimeo API's PHP SDK.",
+    ), 'PATCH');
 
-        // Store this in our array of complete videos.
-        $uploaded[] = array(
-            'file' => $file_name,
-            'api_video_uri' => $uri,
-            'link' => $link
-        );
-    } catch (VimeoUploadException $e) {
-        // We may have had an error.  We can't resolve it here necessarily, so report it to the user.
-        print 'Error uploading ' . $file_name . "\n";
-        print 'Server reported: ' . $e->getMessage() . "\n";
-    }
-}
+    echo 'The title and description for ' . $uri . ' has been edited.' . "\n";
 
-// Provide a summary on completion with links to the videos on the site.
-print 'Uploaded ' . count($uploaded) . " files.\n\n";
-foreach ($uploaded as $site_video) {
-    extract($site_video);
-    print "$file is at $link.\n";
+    // Make an API call to see if the video is finished transcoding.
+    $video_data = $lib->request($uri . '?fields=transcode.status');
+    echo 'The transcode status for ' . $uri . ' is: ' . $video_data['body']['transcode']['status'] . "\n";
+} catch (VimeoUploadException $e) {
+    // We may have had an error. We can't resolve it here necessarily, so report it to the user.
+    echo 'Error uploading ' . $file_name . "\n";
+    echo 'Server reported: ' . $e->getMessage() . "\n";
+} catch (VimeoRequestException $e) {
+    echo 'There was an error making the request.' . "\n";
+    echo 'Server reported: ' . $e->getMessage() . "\n";
 }
