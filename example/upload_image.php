@@ -25,7 +25,7 @@ $config = require(__DIR__ . '/init.php');
 $lib = new Vimeo($config['client_id'], $config['client_secret']);
 
 if (empty($config['access_token'])) {
-	throw new Exception('You must be authenticated to upload images. Please set an access token in config.json');
+	throw new Exception('You must be authenticated to upload images. Please set an access token in `config.json`.');
 }
 
 $lib->setToken($config['access_token']);
@@ -53,9 +53,13 @@ if ($resource['status'] != 200) {
 }
 
 if (empty($resource['body']['metadata']['connections']['pictures']['uri'])) {
-	throw new Exception('The resource you loaded does not have a pictures connection. This most likely means that picture uploads are not supported for this resource');
+	throw new Exception(
+		'The resource you loaded does not have a pictures connection. This most likely means that picture uploads ' .
+		'are not supported for this resource.'
+	);
 }
 
-// The third parameter dictates whether the picture should become the default, or just be part of the collection of pictures
+// The third parameter dictates whether the picture should become the default, or just be part of the collection of
+// pictures
 $response = $lib->uploadImage($resource['body']['metadata']['connections']['pictures']['uri'], $image_path, true);
 var_dump($response);

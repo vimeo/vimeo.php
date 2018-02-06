@@ -24,7 +24,7 @@ $config = require(__DIR__ . '/init.php');
 $lib = new Vimeo($config['client_id'], $config['client_secret']);
 
 if (empty($config['access_token'])) {
-	throw new Exception('You must be authenticated to upload text tracks. Please set an access token in config.json');
+	throw new Exception('You must be authenticated to upload text tracks. Please set an access token in `config.json`.');
 }
 
 $lib->setToken($config['access_token']);
@@ -52,9 +52,17 @@ if ($resource['status'] != 200) {
 }
 
 if (empty($resource['body']['metadata']['connections']['texttracks']['uri'])) {
-	throw new Exception('The resource you loaded does not have a text track connection. This most likely means that text track uploads are not supported for this resource');
+	throw new Exception(
+		'The resource you loaded does not have a text track connection. This most likely means that text track ' .
+		'uploads are not supported for this resource.'
+	);
 }
 
 // You are always required to set a text track type and language as the 3rd and 4th parameters respectively.
 var_dump($response);
-$response = $lib->uploadTexttrack($resource['body']['metadata']['connections']['texttracks']['uri'], $texttrack_path, "captions", "en-US");
+$response = $lib->uploadTexttrack(
+	$resource['body']['metadata']['connections']['texttracks']['uri'],
+	$texttrack_path,
+	"captions",
+	"en-US"
+);

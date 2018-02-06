@@ -30,9 +30,9 @@ class Vimeo
     const AUTH_ENDPOINT = 'https://api.vimeo.com/oauth/authorize';
     const ACCESS_TOKEN_ENDPOINT = '/oauth/access_token';
     const CLIENT_CREDENTIALS_TOKEN_ENDPOINT = '/oauth/authorize/client';
-    const REPLACE_ENDPOINT = '/files';
-    const VERSION_STRING = 'application/vnd.vimeo.*+json; version=3.2';
-    const USER_AGENT = 'vimeo.php 1.3.0; (http://developer.vimeo.com/api/docs)';
+    const VERSIONS_ENDPOINT = '/versions';
+    const VERSION_STRING = 'application/vnd.vimeo.*+json; version=3.4';
+    const USER_AGENT = 'vimeo.php 2.0.0; (http://developer.vimeo.com/api/docs)';
     const CERTIFICATE_PATH = '/certificates/vimeo-api.pem';
 
     protected $_curl_opts = array();
@@ -256,63 +256,93 @@ class Vimeo
     }
 
     /**
-     * Upload a file. This should be used to upload a local file.
-     * If you want a form for your site to upload direct to Vimeo,
-     * you should look at the POST /me/videos endpoint.
+     * Upload a file.
      *
+     * This should be used to upload a local file. If you want a form for your site to upload direct to Vimeo, you
+     * should look at the `POST /me/videos` endpoint.
+     *
+     * @link https://developer.vimeo.com/api/endpoints/videos#POST/users/{user_id}/videos
      * @param string $file_path Path to the video file to upload.
-     * @param string|null $machine_id
+     * @param array $params Parameters to send when creating a new video (name, privacy restrictions, etc.).
      * @throws VimeoUploadException
      * @return string Video URI
      */
-    public function upload($file_path, $machine_id = null)
+    public function upload($file_path, array $params = array())
     {
         // Validate that our file is real.
         if (!is_file($file_path)) {
             throw new VimeoUploadException('Unable to locate file to upload.');
         }
 
-        // Begin the upload request by getting a ticket
-        $ticket_args = array('type' => 'streaming');
-        if ($machine_id !== null) {
-            $ticket_args['machine_id'] = $machine_id;
-        }
-        $ticket = $this->request('/me/videos', $ticket_args, 'POST');
+        $file_size = filesize($file_path);
 
-        return $this->perform_upload($file_path, $ticket);
+        // If the user does not have enough free space in their quota to upload this, then don't.
+        $response = $this->request('/me', array('fields' => 'upload_quota.space.free'), 'GET');
+        if ($response['status'] !== 200) {
+            $error = !empty($response['body']['error']) ? ' [' . $response['body']['error'] . ']' : '';
+            throw new VimeoUploadException('Unable to pull the users upload quota.' . $error);
+        } elseif ($file_size > $response['body']['upload_quota']['space']['free']) {
+            throw new VimeoUploadException('User does not have any more free space to upload this video.');
+        }
+
+        // Ignore any specified upload approach and size.
+        $params['upload']['approach'] = 'tus';
+        $params['upload']['size'] = $file_size;
+
+        // Use JSON filtering so we only receive the data that we need to make an upload happen.
+        $uri = '/me/videos?fields=uri,upload';
+
+        $attempt = $this->request($uri, $params, 'POST');
+        if ($attempt['status'] !== 200) {
+            $attempt_error = !empty($attempt['body']['error']) ? ' [' . $attempt['body']['error'] . ']' : '';
+            throw new VimeoUploadException('Unable to initiate an upload.' . $attempt_error);
+        }
+
+        return $this->perform_upload_tus($file_path, $file_size, $attempt);
     }
 
     /**
      * Replace the source of a single Vimeo video.
      *
+     * @link https://developer.vimeo.com/api/endpoints/videos#POST/videos/{video_id}/versions
      * @param string $video_uri Video uri of the video file to replace.
      * @param string $file_path Path to the video file to upload.
-     * @param string|null $machine_id
      * @throws VimeoUploadException
-     * @return string Status
+     * @return string Video URI
      */
-    public function replace($video_uri, $file_path, $machine_id = null)
+    public function replace($video_uri, $file_path, array $params = array())
     {
         //  Validate that our file is real.
         if (!is_file($file_path)) {
             throw new VimeoUploadException('Unable to locate file to upload.');
         }
 
-        $uri = $video_uri . self::REPLACE_ENDPOINT;
+        $file_size = filesize($file_path);
 
-        // Begin the upload request by getting a ticket
-        $ticket_args = array('type' => 'streaming');
-        if ($machine_id !== null) {
-            $ticket_args['machine_id'] = $machine_id;
+        // Use JSON filtering so we only receive the data that we need to make an upload happen.
+        $uri = $video_uri . self::VERSIONS_ENDPOINT . '?fields=upload';
+
+        // Ignore any specified upload approach and size.
+        $params['file_name'] = basename($file_path);
+        $params['upload']['approach'] = 'tus';
+        $params['upload']['size'] = $file_size;
+
+        $attempt = $this->request($uri, $params, 'POST');
+        if ($attempt['status'] !== 201) {
+            $attempt_error = !empty($attempt['body']['error']) ? ' [' . $attempt['body']['error'] . ']' : '';
+            throw new VimeoUploadException('Unable to initiate an upload.' . $attempt_error);
         }
-        $ticket = $this->request($uri, $ticket_args, 'PUT');
 
-        return $this->perform_upload($file_path, $ticket);
+        // `uri` doesn't come back from `/videos/:id/versions` so we need to manually set it here for uploading.
+        $attempt['body']['uri'] = $video_uri;
+
+        return $this->perform_upload_tus($file_path, $file_size, $attempt);
     }
 
     /**
      * Uploads an image to an individual picture response.
      *
+     * @link https://developer.vimeo.com/api/upload/pictures
      * @param string $pictures_uri The pictures endpoint for a resource that allows picture uploads (eg videos and users)
      * @param string $file_path The path to your image file
      * @param boolean $activate Activate image after upload
@@ -370,6 +400,7 @@ class Vimeo
     /**
      * Uploads a text track.
      *
+     * @link https://developer.vimeo.com/api/upload/texttracks
      * @param string $texttracks_uri The text tracks uri that we are adding our text track to
      * @param string $file_path The path to your text track file
      * @param string $track_type The type of your text track
@@ -445,7 +476,7 @@ class Vimeo
 
         if (isset($curl_info['http_code']) && $curl_info['http_code'] === 0) {
             $curl_error = curl_error($curl);
-            $curl_error = !empty($curl_error) ? '[' . $curl_error .']' : '';
+            $curl_error = !empty($curl_error) ? ' [' . $curl_error .']' : '';
             throw new VimeoRequestException('Unable to complete request.' . $curl_error);
         }
 
@@ -475,75 +506,93 @@ class Vimeo
     }
 
     /**
-     * Take an upload ticket and perform the actual upload
+     * Take an upload attempt and perform the actual upload via tus.
      *
-     * @param string $file_path Path to the video file to upload.
-     * @param array $ticket Upload ticket data.
+     * @link https://tus.io/
+     * @param string $file_path Path to the video file to upload
+     * @param int $file_size Size of the video file.
+     * @param array $attempt Upload attempt data.
+     * @return mixed
+     * @throws VimeoRequestException
      * @throws VimeoUploadException
-     * @return string Video URI
      */
-    private function perform_upload($file_path, $ticket)
+    private function perform_upload_tus($file_path, $file_size, $attempt)
     {
-        if ($ticket['status'] !== 201) {
-            $ticket_error = !empty($ticket['body']['error']) ? '[' . $ticket['body']['error'] . ']' : '';
-            throw new VimeoUploadException('Unable to get an upload ticket.' . $ticket_error);
-        }
-
-        // We are going to always target the secure upload URL.
-        $url = $ticket['body']['upload_link_secure'];
+        $url = $attempt['body']['upload']['upload_link'];
 
         // We need a handle on the input file since we may have to send segments multiple times.
         $file = fopen($file_path, 'r');
 
-        // PUTs a file in a POST....do for the streaming when we get there.
         $curl_opts = array(
-            CURLOPT_PUT => true,
+            CURLOPT_POST => true,
+            CURLOPT_CUSTOMREQUEST => 'PATCH',
             CURLOPT_INFILE => $file,
             CURLOPT_INFILESIZE => filesize($file_path),
             CURLOPT_UPLOAD => true,
-            CURLOPT_HTTPHEADER => array('Expect: ', 'Content-Range: replaced...')
+            CURLOPT_HTTPHEADER => array(
+                'Expect: ',
+                'Content-Type: application/offset+octet-stream',
+                'Tus-Resumable: 1.0.0',
+                'Upload-Offset: {placeholder}',
+            )
         );
 
-        // These are the options that set up the validate call.
-        $curl_opts_check_progress = array(
-            CURLOPT_PUT => true,
-            CURLOPT_HTTPHEADER => array('Content-Length: 0', 'Content-Range: bytes */*')
-        );
-
-        // Perform the upload by streaming as much to the server as possible and ending when we reach the filesize on the server.
-        $size = filesize($file_path);
+        // Perform the upload by sending as much to the server as possible and ending when we reach the file size on
+        // the server.
+        $failures = 0;
         $server_at = 0;
         do {
-            // The last HTTP header we set MUST be the Content-Range, since we need to remove it and replace it with a proper one.
+            // The last HTTP header we set has to be `Upload-Offset`, since for resumable uploading to work properly,
+            // we'll need to alter the content of the header for each upload segment request.
             array_pop($curl_opts[CURLOPT_HTTPHEADER]);
-            $curl_opts[CURLOPT_HTTPHEADER][] = 'Content-Range: bytes ' . $server_at . '-' . $size . '/' . $size;
+            $curl_opts[CURLOPT_HTTPHEADER][] = 'Upload-Offset: ' . $server_at;
 
-            fseek($file, $server_at);   //  Put the FP at the point where the server is.
+            fseek($file, $server_at);
 
             try {
-                $this->_request($url, $curl_opts);   //Send what we can.
+                $response = $this->_request($url, $curl_opts);
+
+                // Successful upload, so reset the failure counter.
+                $failures = 0;
+
+                if ($response['status'] === 204) {
+                    // If the `Upload-Offset` returned is equal to the size of the video we want to upload, then we've
+                    // fully uploaded the video. If not, continue uploading.
+                    if ($response['headers']['Upload-Offset'] === $file_size) {
+                        break;
+                    }
+
+                    $server_at = $response['headers']['Upload-Offset'];
+                    continue;
+                }
+
+                // If we didn't receive a 204 response from the tus server, then we should verify what's going on before
+                // proceeding to upload more pieces.
+                $verify_response = $this->request($url, array(), 'HEAD');
+                if ($verify_response['status'] !== 200) {
+                    $verify_error = !empty($ticket['body']) ? ' [' . $ticket['body'] . ']' : '';
+                    throw new VimeoUploadException('Unable to verify upload' . $verify_error);
+                }
+
+                if ($verify_response['headers']['Upload-Offset'] === $file_size) {
+                    break;
+                }
+
+                $server_at = $verify_response['headers']['Upload-Offset'];
             } catch (VimeoRequestException $exception) {
-                // ignored, it's likely a timeout, and we should only consider a failure from the progress check as a legit failure
+                // We likely experienced a timeout, but if we experience three in a row, then we should back off and
+                // fail so as to not overwhelm servers that are, probably, down.
+                if ($failures >= 3) {
+                    throw $exception;
+                }
+
+                $failures++;
+                sleep(pow(4, $failures)); // sleep 4, 16, 64 seconds (based on failure count)
+            } catch (VimeoUploadException $exception) {
+                throw $exception;
             }
+        } while ($server_at < $file_size);
 
-            $progress_check = $this->_request($url, $curl_opts_check_progress); //  Check on what the server has.
-
-            // Figure out how much is on the server.
-            list(, $server_at) = explode('-', $progress_check['headers']['Range']);
-            $server_at = (int)$server_at;
-        } while ($server_at < $size);
-
-        // Complete the upload on the server.
-        $completion = $this->request($ticket['body']['complete_uri'], array(), 'DELETE');
-
-        // Validate that we got back 201 Created
-        $status = (int) $completion['status'];
-        if ($status !== 201) {
-            $error = !empty($completion['body']['error']) ? '[' . $completion['body']['error'] . ']' : '';
-            throw new VimeoUploadException('Error completing the upload.'. $error);
-        }
-
-        // Furnish the location for the new clip in the API via the Location header.
-        return $completion['headers']['Location'];
+        return $attempt['body']['uri'];
     }
 }
