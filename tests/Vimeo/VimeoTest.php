@@ -176,7 +176,7 @@ class VimeoTest extends TestCase
         $vimeo = new Vimeo($this->clientId, $this->clientSecret);
 
         // Act
-        $result = $vimeo->upload(__DIR__.'/../../composer.json');
+        $result = $vimeo->upload(__DIR__.'/../../composer.json', ['fake_machine_id']);
     }
 
     /**
@@ -213,5 +213,41 @@ class VimeoTest extends TestCase
 
         // Act
         $result = $vimeo->uploadTexttrack('https://vimeo.com/241711006', './the_file_is_invalid', 'fake_track_type', 'zh_TW');
+    }
+
+    /**
+     * @expectedException Vimeo\Exceptions\VimeoRequestException
+     */
+    public function testReplaceWithVideoUriAndMachineIdShouldReturnVimeoRequestException()
+    {
+        // Arrange
+        $vimeo = new Vimeo($this->clientId, $this->clientSecret);
+ 
+        // Act
+        $result = $vimeo->replace('https://vimeo.com/241711006', __DIR__.'/../../composer.json', ['fake_machine_id']);
+    }
+
+    /**
+     * @expectedException Vimeo\Exceptions\VimeoRequestException
+     */
+    public function testUploadImageWithPictureUriAndMachineIdShouldReturnVimeoRequestException()
+    {
+        // Arrange
+        $vimeo = new Vimeo($this->clientId, $this->clientSecret);
+ 
+        // Act
+        $result = $vimeo->uploadImage('https://vimeo.com/user59081751', __DIR__.'/../../composer.json', ['fake_machine_id']);
+    }
+
+    /**
+     * @expectedException Vimeo\Exceptions\VimeoRequestException
+     */
+    public function testUploadTexttrackWithPictureUriAndMachineIdShouldReturnVimeoRequestException()
+    {
+        // Arrange
+        $vimeo = new Vimeo($this->clientId, $this->clientSecret);
+ 
+        // Act
+        $result = $vimeo->uploadTexttrack('https://vimeo.com/user59081751', __DIR__.'/../../composer.json', 'fake_track_type', 'zh_TW');
     }
 }
