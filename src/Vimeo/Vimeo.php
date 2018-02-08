@@ -158,6 +158,16 @@ class Vimeo
     }
 
     /**
+     * Gets custom cURL options.
+     *
+     * @return string
+     */
+    public function getCURLOptions()
+    {
+        return $this->_curl_opts;
+    }
+
+    /**
      * Sets custom cURL options.
      *
      * @param array $curl_opts An associative array of cURL options.

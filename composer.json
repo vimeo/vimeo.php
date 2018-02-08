@@ -21,8 +21,14 @@
             "Vimeo\\": "src/Vimeo"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Vimeo\\": "tests/Vimeo"
+        }
+    },
     "require-dev": {
-        "phpunit/phpunit": "^4.8"
+        "phpunit/phpunit": "^4.8",
+        "php-coveralls/php-coveralls": "^1.0"
     },
     "scripts": {
         "coverage": "phpunit --coverage-html reports/",
