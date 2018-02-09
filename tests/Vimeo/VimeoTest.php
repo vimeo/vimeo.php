@@ -170,13 +170,13 @@ class VimeoTest extends TestCase
     /**
      * @expectedException Vimeo\Exceptions\VimeoUploadException
      */
-    public function testUploadWithFakeMachineIdShouldReturnVimeoRequestException()
+    public function testUploadWithInvalidParamShouldReturnVimeoRequestException()
     {
         // Arrange
         $vimeo = new Vimeo($this->clientId, $this->clientSecret);
 
         // Act
-        $result = $vimeo->upload(__DIR__.'/../../composer.json', array('fake_machine_id'));
+        $result = $vimeo->upload(__DIR__.'/../../composer.json', array('invalid_param'));
     }
 
     /**
@@ -224,7 +224,7 @@ class VimeoTest extends TestCase
         $vimeo = new Vimeo($this->clientId, $this->clientSecret);
  
         // Act
-        $result = $vimeo->replace('https://vimeo.com/241711006', __DIR__.'/../../composer.json', array('fake_machine_id'));
+        $result = $vimeo->replace('https://vimeo.com/241711006', __DIR__.'/../../composer.json');
     }
 
     /**
@@ -236,7 +236,7 @@ class VimeoTest extends TestCase
         $vimeo = new Vimeo($this->clientId, $this->clientSecret);
  
         // Act
-        $result = $vimeo->uploadImage('https://vimeo.com/user59081751', __DIR__.'/../../composer.json', array('fake_machine_id'));
+        $result = $vimeo->uploadImage('https://vimeo.com/user59081751', __DIR__.'/../../composer.json');
     }
 
     /**
