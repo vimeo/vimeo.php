@@ -218,7 +218,7 @@ class VimeoTest extends TestCase
     /**
      * @expectedException Vimeo\Exceptions\VimeoRequestException
      */
-    public function testReplaceWithVideoUriAndMachineIdShouldReturnVimeoRequestException()
+    public function testReplaceWithVideoUriShouldReturnVimeoRequestException()
     {
         // Arrange
         $vimeo = new Vimeo($this->clientId, $this->clientSecret);
@@ -230,7 +230,7 @@ class VimeoTest extends TestCase
     /**
      * @expectedException Vimeo\Exceptions\VimeoRequestException
      */
-    public function testUploadImageWithPictureUriAndMachineIdShouldReturnVimeoRequestException()
+    public function testUploadImageWithPictureUriShouldReturnVimeoRequestException()
     {
         // Arrange
         $vimeo = new Vimeo($this->clientId, $this->clientSecret);
@@ -242,7 +242,7 @@ class VimeoTest extends TestCase
     /**
      * @expectedException Vimeo\Exceptions\VimeoRequestException
      */
-    public function testUploadTexttrackWithPictureUriAndMachineIdShouldReturnVimeoRequestException()
+    public function testUploadTexttrackWithPictureUriAndInvalidParamShouldReturnVimeoRequestException()
     {
         // Arrange
         $vimeo = new Vimeo($this->clientId, $this->clientSecret);
