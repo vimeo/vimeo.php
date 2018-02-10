@@ -170,13 +170,13 @@ class VimeoTest extends TestCase
     /**
      * @expectedException Vimeo\Exceptions\VimeoUploadException
      */
-    public function testUploadWithFakeMachineIdShouldReturnVimeoRequestException()
+    public function testUploadWithInvalidParamShouldReturnVimeoRequestException()
     {
         // Arrange
         $vimeo = new Vimeo($this->clientId, $this->clientSecret);
 
         // Act
-        $result = $vimeo->upload(__DIR__.'/../../composer.json');
+        $result = $vimeo->upload(__DIR__.'/../../composer.json', array('invalid_param'));
     }
 
     /**
@@ -213,5 +213,41 @@ class VimeoTest extends TestCase
 
         // Act
         $result = $vimeo->uploadTexttrack('https://vimeo.com/241711006', './the_file_is_invalid', 'fake_track_type', 'zh_TW');
+    }
+
+    /**
+     * @expectedException Vimeo\Exceptions\VimeoRequestException
+     */
+    public function testReplaceWithVideoUriShouldReturnVimeoRequestException()
+    {
+        // Arrange
+        $vimeo = new Vimeo($this->clientId, $this->clientSecret);
+ 
+        // Act
+        $result = $vimeo->replace('https://vimeo.com/241711006', __DIR__.'/../../composer.json');
+    }
+
+    /**
+     * @expectedException Vimeo\Exceptions\VimeoRequestException
+     */
+    public function testUploadImageWithPictureUriShouldReturnVimeoRequestException()
+    {
+        // Arrange
+        $vimeo = new Vimeo($this->clientId, $this->clientSecret);
+ 
+        // Act
+        $result = $vimeo->uploadImage('https://vimeo.com/user59081751', __DIR__.'/../../composer.json');
+    }
+
+    /**
+     * @expectedException Vimeo\Exceptions\VimeoRequestException
+     */
+    public function testUploadTexttrackWithPictureUriAndInvalidParamShouldReturnVimeoRequestException()
+    {
+        // Arrange
+        $vimeo = new Vimeo($this->clientId, $this->clientSecret);
+ 
+        // Act
+        $result = $vimeo->uploadTexttrack('https://vimeo.com/user59081751', __DIR__.'/../../composer.json', 'fake_track_type', 'zh_TW');
     }
 }
