@@ -74,6 +74,7 @@ class Vimeo
      * @param bool $json_body
      * @param array $headers An array of HTTP headers to pass along with the request.
      * @return array This array contains three keys, 'status' is the status code, 'body' is an object representation of the json response body, and headers are an associated array of response headers
+     * @throws VimeoRequestException
      */
     public function request($url, $params = array(), $method = 'GET', $json_body = true, array $headers = array())
     {
@@ -274,8 +275,9 @@ class Vimeo
      * @link https://developer.vimeo.com/api/endpoints/videos#POST/users/{user_id}/videos
      * @param string $file_path Path to the video file to upload.
      * @param array $params Parameters to send when creating a new video (name, privacy restrictions, etc.).
-     * @throws VimeoUploadException
      * @return string Video URI
+     * @throws VimeoRequestException
+     * @throws VimeoUploadException
      */
     public function upload($file_path, array $params = array())
     {
@@ -317,8 +319,9 @@ class Vimeo
      * @link https://developer.vimeo.com/api/endpoints/videos#POST/videos/{video_id}/versions
      * @param string $video_uri Video uri of the video file to replace.
      * @param string $file_path Path to the video file to upload.
-     * @throws VimeoUploadException
      * @return string Video URI
+     * @throws VimeoRequestException
+     * @throws VimeoUploadException
      */
     public function replace($video_uri, $file_path, array $params = array())
     {
@@ -356,8 +359,9 @@ class Vimeo
      * @param string $pictures_uri The pictures endpoint for a resource that allows picture uploads (eg videos and users)
      * @param string $file_path The path to your image file
      * @param boolean $activate Activate image after upload
-     * @throws VimeoUploadException
      * @return string The URI of the uploaded image.
+     * @throws VimeoRequestException
+     * @throws VimeoUploadException
      */
     public function uploadImage($pictures_uri, $file_path, $activate = false)
     {
@@ -415,8 +419,9 @@ class Vimeo
      * @param string $file_path The path to your text track file
      * @param string $track_type The type of your text track
      * @param string $language The language of your text track
-     * @throws VimeoUploadException
      * @return string The URI of the uploaded text track.
+     * @throws VimeoRequestException
+     * @throws VimeoUploadException
      */
     public function uploadTexttrack($texttracks_uri, $file_path, $track_type, $language)
     {
@@ -472,6 +477,7 @@ class Vimeo
      * @param string $url
      * @param array $curl_opts
      * @return array
+     * @throws VimeoRequestException
      */
     private function _request($url, $curl_opts = array())
     {
