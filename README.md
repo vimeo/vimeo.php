@@ -214,8 +214,10 @@ Uploading videos from a public URL (also called "pull uploads") uses a single, s
 $video_response = $lib->request(
     '/me/videos',
     [
-        'upload' => ['approach' => 'pull'],
-        'link' => $url
+        'upload' => [
+            'approach' => 'pull'
+            'link' => $url
+        ],
     ],
     'POST'
 );
