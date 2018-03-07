@@ -97,6 +97,7 @@ class Vimeo
         $curl_opts = array();
         switch ($method) {
             case 'GET':
+            case 'HEAD':
                 if (!empty($params)) {
                     $query_component = '?' . http_build_query($params, '', '&');
                 } else {
