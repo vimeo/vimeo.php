@@ -180,6 +180,22 @@ class Vimeo
     }
 
     /**
+     * @param $proxyAddress         mandatory address of proxy
+     * @param null $proxyPort       optional number of port
+     * @param null $proxyPass       optional user:password authentication
+    */
+    public function setProxy($proxyAddress, $proxyPort=null, $proxyUserPwd=null)
+    {
+        $this->CURL_DEFAULTS[CURLOPT_PROXY] = $proxyAddress;
+        if ($proxyPort) {
+            $this->CURL_DEFAULTS[CURLOPT_PROXYPORT] = $proxyPort;
+        }
+        if ($proxyUserPwd) {
+            $this->CURL_DEFAULTS[CURLOPT_PROXYUSERPWD] = $proxyUserPwd;
+        }
+    }
+
+    /**
      * Convert the raw headers string into an associated array
      *
      * @param string $headers
