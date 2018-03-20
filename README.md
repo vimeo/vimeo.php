@@ -246,7 +246,7 @@ If you have any questions or problems, create a [ticket](https://github.com/vime
 ## Framework integrations
 
 - **WordPress** - <http://vimeography.com/>
-- **Laravel** - <https://github.com/vinkla/vimeo>
+- **Laravel** - <https://github.com/vimeo/laravel>
 
 If you have integrated Vimeo into a popular PHP framework, let us know!
 
