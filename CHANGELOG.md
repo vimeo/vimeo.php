@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.3] - 2018-04-02
+### Changed
+- Uploads no longer make a pre-emptive request to check the user's quota. This check is done automatically when making a POST to `/me/videos`. ([#163](https://github.com/vimeo/vimeo.php/pull/163))
+
 ## [2.0.2] - 2018-03-20
 ### Added
 - Support for passing API requests through a custom proxy. ([#161](https://github.com/vimeo/vimeo.php/pull/161), [@MichalMMac](https://github.com/MichalMMac))
@@ -75,6 +79,7 @@
 ### Added
 - This is the Vimeo library for version 3 of the Vimeo API.
 
+[2.0.3]: https://github.com/vimeo/vimeo.php/compare/2.0.2...2.0.3
 [2.0.2]: https://github.com/vimeo/vimeo.php/compare/2.0.1...2.0.2
 [2.0.1]: https://github.com/vimeo/vimeo.php/compare/2.0.0...2.0.1
 [2.0.0]: https://github.com/vimeo/vimeo.php/compare/1.3.0...2.0.0

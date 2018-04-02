@@ -32,7 +32,7 @@ class Vimeo
     const CLIENT_CREDENTIALS_TOKEN_ENDPOINT = '/oauth/authorize/client';
     const VERSIONS_ENDPOINT = '/versions';
     const VERSION_STRING = 'application/vnd.vimeo.*+json; version=3.4';
-    const USER_AGENT = 'vimeo.php 2.0.1; (http://developer.vimeo.com/api/docs)';
+    const USER_AGENT = 'vimeo.php 2.0.3; (http://developer.vimeo.com/api/docs)';
     const CERTIFICATE_PATH = '/certificates/vimeo-api.pem';
 
     protected $_curl_opts = array();

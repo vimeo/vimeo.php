@@ -55,7 +55,7 @@ composer require vimeo/vimeo-api
 
 ### Manual
 
-1. Download the latest release: [v2.0.1](https://github.com/vimeo/vimeo.php/archive/2.0.1.zip).
+1. Download the latest release: [v2.0.3](https://github.com/vimeo/vimeo.php/archive/2.0.3.zip).
 2. Include the autoloader `require("/path/to/vimeo.php/autoload.php");`.
 3. Use the library `$lib = new \Vimeo\Vimeo($client_id, $client_secret)`.
 
