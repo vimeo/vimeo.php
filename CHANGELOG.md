@@ -2,11 +2,11 @@
 
 ## [2.0.2] - 2018-03-20
 ### Added
-- Support for passing API requests through a custom proxy. ([#161](https://github.com/vimeo/vimeo.php/pull/161), @MichalMMac)
+- Support for passing API requests through a custom proxy. ([#161](https://github.com/vimeo/vimeo.php/pull/161), [@MichalMMac](https://github.com/MichalMMac))
 
 ## [2.0.1] - 2018-03-07
 ### Added
-- Initializing a unit test environment. ([#143](https://github.com/vimeo/vimeo.php/pull/143), @peter279k)
+- Initializing a unit test environment. ([#143](https://github.com/vimeo/vimeo.php/pull/143), [@peter279k](https://github.com/peter279k))
 - Support for making `HEAD` requests. ([#160](https://github.com/vimeo/vimeo.php/pull/160))
 
 ## [2.0.0] - 2018-02-06
@@ -20,13 +20,13 @@
 
 ## [1.2.7] - 2017-10-04
 ### Added
-- Support for supplying custom HTTP headers. ([#136](https://github.com/vimeo/vimeo.php/pull/136), @davekiss)
+- Support for supplying custom HTTP headers. ([#136](https://github.com/vimeo/vimeo.php/pull/136), [@davekiss](https://github.com/davekiss))
 
 ### Fixed
-- Updated some bad PHPDoc comments on the upload methods. ([#129](https://github.com/vimeo/vimeo.php/pull/129), @hluup)
+- Updated some bad PHPDoc comments on the upload methods. ([#129](https://github.com/vimeo/vimeo.php/pull/129), [@hluup](https://github.com/hluup))
 
 ### Changed
-- PSR-2 code style. ([#117](https://github.com/vimeo/vimeo.php/pull/117), @peter279k)
+- PSR-2 code style. ([#117](https://github.com/vimeo/vimeo.php/pull/117), [@peter279k](https://github.com/peter279k))
 
 ## [1.2.6] - 2016-12-02
 ### Fixed
@@ -34,12 +34,12 @@
 
 ## [1.2.5] - 2016-10-13
 ### Fixed
-- Some namespace gremlins. ([#112](https://github.com/vimeo/vimeo.php/pull/112), @Spudley)
+- Some namespace gremlins. ([#112](https://github.com/vimeo/vimeo.php/pull/112), [@Spudley](https://github.com/Spudley))
 
 ## [1.2.4] - 2016-09-13
 ### Added
 - Changelog (@vinkla)
-- Added a new search example. (@greedo)
+- Added a new search example. ([@greedo](https://github.com/greedo))
 - Support for lowercase HTTP verbs. ([#108](https://github.com/vimeo/vimeo.php/issues/108))
 
 ### Changed
@@ -48,7 +48,7 @@
 ### Fixed
 - Fixed some bad documentation in the README.
 - Fixed a bad VOD example. ([#76](https://github.com/vimeo/vimeo.php/issues/76))
-- Correctly handing headers when parsing them. ([#110](https://github.com/vimeo/vimeo.php/pull/110), @qzminski)
+- Correctly handing headers when parsing them. ([#110](https://github.com/vimeo/vimeo.php/pull/110), [@qzminski](https://github.com/qzminski))
 
 ## [1.2.3] - 2015-06-02
 ### Added
