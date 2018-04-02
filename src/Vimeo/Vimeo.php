@@ -180,9 +180,11 @@ class Vimeo
     }
 
     /**
-     * @param string $proxy_address         mandatory address of proxy
-     * @param string|null $proxy_port       optional number of port
-     * @param string|nnull $proxy_userpwd   optional user:password authentication
+     * Set a proxy to pass all API requests through.
+     *
+     * @param string $proxy_address Mandatory address of proxy.
+     * @param string|null $proxy_port Optional number of port.
+     * @param string|null $proxy_userpwd Optional `user:password` authentication.
      */
     public function setProxy($proxy_address, $proxy_port = null, $proxy_userpwd = null)
     {
@@ -305,15 +307,6 @@ class Vimeo
         }
 
         $file_size = filesize($file_path);
-
-        // If the user does not have enough free space in their quota to upload this, then don't.
-        $response = $this->request('/me', array('fields' => 'upload_quota.space.free'), 'GET');
-        if ($response['status'] !== 200) {
-            $error = !empty($response['body']['error']) ? ' [' . $response['body']['error'] . ']' : '';
-            throw new VimeoUploadException('Unable to pull the users upload quota.' . $error);
-        } elseif ($file_size > $response['body']['upload_quota']['space']['free']) {
-            throw new VimeoUploadException('User does not have any more free space to upload this video.');
-        }
 
         // Ignore any specified upload approach and size.
         $params['upload']['approach'] = 'tus';
