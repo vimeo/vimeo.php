@@ -85,12 +85,14 @@ class Vimeo
 
         $method = strtoupper($method);
 
-        // add bearer token, or client information
-        if (!empty($this->_access_token)) {
-            $headers['Authorization'] = 'Bearer ' . $this->_access_token;
-        } else {
-            //  this may be a call to get the tokens, so we add the client info.
-            $headers['Authorization'] = 'Basic ' . $this->_authHeader();
+        // If a pre-defined `Authorization` header isn't present, then add a bearer token or client information.
+        if (!isset($headers['Authorization'])) {
+            if (!empty($this->_access_token)) {
+                $headers['Authorization'] = 'Bearer ' . $this->_access_token;
+            } else {
+                // this may be a call to get the tokens, so we add the client info.
+                $headers['Authorization'] = 'Basic ' . $this->_authHeader();
+            }
         }
 
         //  Set the methods, determine the URL that we should actually request and prep the body.
