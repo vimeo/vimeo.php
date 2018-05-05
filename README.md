@@ -215,7 +215,7 @@ $video_response = $lib->request(
     '/me/videos',
     [
         'upload' => [
-            'approach' => 'pull'
+            'approach' => 'pull',
             'link' => $url
         ],
     ],
