@@ -47,7 +47,7 @@ class Vimeo
      *
      * @param string $client_id Your applications client id. Can be found on developer.vimeo.com/apps
      * @param string $client_secret Your applications client secret. Can be found on developer.vimeo.com/apps
-     * @param string $access_token Your applications client id. Can be found on developer.vimeo.com/apps or generated using OAuth 2.
+     * @param string $access_token Your access token. Can be found on developer.vimeo.com/apps or generated using OAuth 2.
      */
     public function __construct($client_id, $client_secret, $access_token = null)
     {
