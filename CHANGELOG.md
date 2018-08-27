@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.5] - 2018-04-27
+### Changed
+- Updating the user agent version string to match the library version.
+
 ## [2.0.4] - 2018-04-24
 ### Added
 - Support for passing your own `Authorization` header on API requests. ([#166](https://github.com/vimeo/vimeo.php/pull/166))
@@ -83,6 +87,7 @@
 ### Added
 - This is the Vimeo library for version 3 of the Vimeo API.
 
+[2.0.5]: https://github.com/vimeo/vimeo.php/compare/2.0.4...2.0.5
 [2.0.4]: https://github.com/vimeo/vimeo.php/compare/2.0.3...2.0.4
 [2.0.3]: https://github.com/vimeo/vimeo.php/compare/2.0.2...2.0.3
 [2.0.2]: https://github.com/vimeo/vimeo.php/compare/2.0.1...2.0.2
