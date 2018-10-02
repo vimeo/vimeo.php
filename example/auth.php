@@ -59,7 +59,7 @@ function handleDefault($config)
 	}
 }
 
-// When vimeo redirects the user  ack to your callback url, this method is executed
+// When vimeo redirects the user back to your callback url, this method is executed
 // It validates the state parameter, and then exchanges the authorization code for an access token
 function handleCallback($config)
 {
