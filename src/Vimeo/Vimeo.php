@@ -1,6 +1,7 @@
 <?php
 namespace Vimeo;
 
+use Vimeo\Exceptions\VimeoException;
 use Vimeo\Exceptions\VimeoRequestException;
 use Vimeo\Exceptions\VimeoUploadException;
 
@@ -35,11 +36,19 @@ class Vimeo
     const USER_AGENT = 'vimeo.php 2.0.5; (http://developer.vimeo.com/api/docs)';
     const CERTIFICATE_PATH = '/certificates/vimeo-api.pem';
 
+    /** @var array */
     protected $_curl_opts = array();
+
+    /** @var array */
     protected $CURL_DEFAULTS = array();
 
+    /** @var null|string */
     private $_client_id = null;
+
+    /** @var null|string */
     private $_client_secret = null;
+
+    /** @var null|string */
     private $_access_token = null;
 
     /**
@@ -47,9 +56,9 @@ class Vimeo
      *
      * @param string $client_id Your applications client id. Can be found on developer.vimeo.com/apps
      * @param string $client_secret Your applications client secret. Can be found on developer.vimeo.com/apps
-     * @param string $access_token Your access token. Can be found on developer.vimeo.com/apps or generated using OAuth 2.
+     * @param string|null $access_token Your access token. Can be found on developer.vimeo.com/apps or generated using OAuth 2.
      */
-    public function __construct($client_id, $client_secret, $access_token = null)
+    public function __construct(string $client_id, string $client_secret, string $access_token = null)
     {
         $this->_client_id = $client_id;
         $this->_client_secret = $client_secret;
@@ -76,7 +85,7 @@ class Vimeo
      * @return array This array contains three keys, 'status' is the status code, 'body' is an object representation of the json response body, and headers are an associated array of response headers
      * @throws VimeoRequestException
      */
-    public function request($url, $params = array(), $method = 'GET', $json_body = true, array $headers = array())
+    public function request($url, $params = array(), $method = 'GET', $json_body = true, array $headers = array()): array
     {
         $headers = array_merge(array(
             'Accept' => self::VERSION_STRING,
@@ -127,6 +136,9 @@ class Vimeo
                     CURLOPT_POSTFIELDS => $body
                 );
                 break;
+
+            default:
+                throw new VimeoRequestException('This library does not support ' . $method . ' requests.');
         }
 
         // Set the headers
@@ -146,7 +158,7 @@ class Vimeo
      *
      * @return string
      */
-    public function getToken()
+    public function getToken(): ?string
     {
         return $this->_access_token;
     }
@@ -156,7 +168,7 @@ class Vimeo
      *
      * @param string $access_token the new access token
      */
-    public function setToken($access_token)
+    public function setToken(string $access_token): void
     {
         $this->_access_token = $access_token;
     }
@@ -164,9 +176,9 @@ class Vimeo
     /**
      * Gets custom cURL options.
      *
-     * @return string
+     * @return array
      */
-    public function getCURLOptions()
+    public function getCURLOptions(): array
     {
         return $this->_curl_opts;
     }
@@ -176,7 +188,7 @@ class Vimeo
      *
      * @param array $curl_opts An associative array of cURL options.
      */
-    public function setCURLOptions($curl_opts = array())
+    public function setCURLOptions(array $curl_opts = array()): void
     {
         $this->_curl_opts = $curl_opts;
     }
@@ -188,7 +200,7 @@ class Vimeo
      * @param string|null $proxy_port Optional number of port.
      * @param string|null $proxy_userpwd Optional `user:password` authentication.
      */
-    public function setProxy($proxy_address, $proxy_port = null, $proxy_userpwd = null)
+    public function setProxy(string $proxy_address, string $proxy_port = null, string $proxy_userpwd = null): void
     {
         $this->CURL_DEFAULTS[CURLOPT_PROXY] = $proxy_address;
         if ($proxy_port) {
@@ -206,7 +218,7 @@ class Vimeo
      * @param string $headers
      * @return array
      */
-    public static function parse_headers($headers)
+    public static function parse_headers(string $headers): array
     {
         $final_headers = array();
         $list = explode("\n", trim($headers));
@@ -229,7 +241,7 @@ class Vimeo
      * @param string $redirect_uri The redirect_uri that is configured on your app page, and was used in buildAuthorizationEndpoint
      * @return array This array contains three keys, 'status' is the status code, 'body' is an object representation of the json response body, and headers are an associated array of response headers
      */
-    public function accessToken($code, $redirect_uri)
+    public function accessToken(string $code, string $redirect_uri): array
     {
         return $this->request(self::ACCESS_TOKEN_ENDPOINT, array(
             'grant_type' => 'authorization_code',
@@ -262,8 +274,8 @@ class Vimeo
      * Build the url that your user.
      *
      * @param string $redirect_uri The redirect url that you have configured on your app page
-     * @param string $scope An array of scopes that your final access token needs to access
-     * @param string $state A random variable that will be returned on your redirect url. You should validate that this matches
+     * @param string|array|null $scope An array of scopes that your final access token needs to access
+     * @param string|null $state A random variable that will be returned on your redirect url. You should validate that this matches
      * @return string
      */
     public function buildAuthorizationEndpoint($redirect_uri, $scope = 'public', $state = null)
@@ -406,10 +418,11 @@ class Vimeo
         $response = curl_exec($curl);
         $curl_info = curl_getinfo($curl);
 
-        if (!$response) {
+        if (!$response || !is_string($response)) {
             $error = curl_error($curl);
             throw new VimeoUploadException($error);
         }
+
         curl_close($curl);
 
         if ($curl_info['http_code'] !== 200) {
@@ -447,7 +460,11 @@ class Vimeo
         $name = array_slice(explode("/", $file_path), -1);
         $name = $name[0];
 
-        $texttrack_response = $this->request($texttracks_uri, array('type' => $track_type, 'language' => $language, 'name' => $name), 'POST');
+        $texttrack_response = $this->request($texttracks_uri, array(
+            'type' => $track_type,
+            'language' => $language,
+            'name' => $name
+        ), 'POST');
 
         if ($texttrack_response['status'] !== 201) {
             throw new VimeoUploadException('Unable to request an upload url from vimeo');
@@ -471,10 +488,11 @@ class Vimeo
         $response = curl_exec($curl);
         $curl_info = curl_getinfo($curl);
 
-        if (!$response) {
+        if (!$response || !is_string($response)) {
             $error = curl_error($curl);
             throw new VimeoUploadException($error);
         }
+
         curl_close($curl);
 
         if ($curl_info['http_code'] !== 200) {
@@ -492,7 +510,7 @@ class Vimeo
      * @return array
      * @throws VimeoRequestException
      */
-    private function _request($url, $curl_opts = array())
+    private function _request(string $url, $curl_opts = array()): array
     {
         // Merge the options (custom options take precedence).
         $curl_opts = $this->_curl_opts + $curl_opts + $this->CURL_DEFAULTS;
@@ -504,6 +522,10 @@ class Vimeo
         $curl_info = curl_getinfo($curl);
 
         if (isset($curl_info['http_code']) && $curl_info['http_code'] === 0) {
+            $curl_error = curl_error($curl);
+            $curl_error = !empty($curl_error) ? ' [' . $curl_error .']' : '';
+            throw new VimeoRequestException('Unable to complete request.' . $curl_error);
+        } elseif (!$response || !is_string($response)) {
             $curl_error = curl_error($curl);
             $curl_error = !empty($curl_error) ? ' [' . $curl_error .']' : '';
             throw new VimeoRequestException('Unable to complete request.' . $curl_error);
@@ -529,8 +551,14 @@ class Vimeo
      *
      * @return string
      */
-    private function _authHeader()
+    private function _authHeader(): string
     {
+        if (empty($this->_client_id)) {
+            throw new VimeoException('A client ID must be set in order to generate an auth header.');
+        } elseif (empty($this->_client_secret)) {
+            throw new VimeoException('A client secret must be set in order to generate an auth header.');
+        }
+
         return base64_encode($this->_client_id . ':' . $this->_client_secret);
     }
 
@@ -538,13 +566,13 @@ class Vimeo
      * Take an upload attempt and perform the actual upload via tus.
      *
      * @link https://tus.io/
-     * @param $file_path Path to the video file to upload.
-     * @param $file_size Size of the video file.
-     * @param $attempt Upload attempt data.
-     * @return mixed
+     * @param string $file_path Path to the video file to upload.
+     * @param int|float $file_size Size of the video file.
+     * @param array $attempt Upload attempt data.
+     * @return string
      * @throws VimeoUploadException
      */
-    private function perform_upload_tus($file_path, $file_size, $attempt)
+    private function perform_upload_tus(string $file_path, $file_size, array $attempt): string
     {
         $default_chunk_size = (100 * 1024 * 1024); // 100 MB
 
@@ -559,7 +587,7 @@ class Vimeo
 
         $bytes_uploaded = 0;
         $failures = 0;
-        $chunk_size = $this->getTusUploadChunkSize($default_chunk_size, $file_size);
+        $chunk_size = $this->getTusUploadChunkSize($default_chunk_size, (int)$file_size);
 
         $client = new \TusPhp\Tus\Client($base_url);
         $client->setApiPath($api_path);
@@ -576,7 +604,7 @@ class Vimeo
                 }
 
                 $failures++;
-                sleep(pow(4, $failures)); // sleep 4, 16, 64 seconds (based on failure count)
+                sleep((int)pow(4, $failures)); // sleep 4, 16, 64 seconds (based on failure count)
             }
         } while ($bytes_uploaded < $file_size);
 
@@ -599,7 +627,7 @@ class Vimeo
         $number_of_chunks_proposed = ($divides_evenly) ? $chunks : $chunks + 1;
 
         if ($number_of_chunks_proposed > 1024) {
-            return floor($file_size / 1024) + 1;
+            return (int)floor($file_size / 1024) + 1;
         }
 
         return $proposed_chunk_size;

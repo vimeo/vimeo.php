@@ -12,7 +12,7 @@ class VimeoTest extends TestCase
     /** @var string */
     protected $clientSecret = 'client_secret';
 
-    public function testRequestGetUserInformation()
+    public function testRequestGetUserInformation(): void
     {
         $this->markTestSkipped('Skipping until we have time to set up real tests with Travis secret storage.');
 
@@ -26,7 +26,7 @@ class VimeoTest extends TestCase
         $this->assertSame('You must provide a valid authenticated access token.', $result['body']['error']);
     }
 
-    public function testRequestGetUserInformationWithAccessToken()
+    public function testRequestGetUserInformationWithAccessToken(): void
     {
         $this->markTestSkipped('Skipping until we have time to set up real tests with Travis secret storage.');
 
@@ -40,7 +40,7 @@ class VimeoTest extends TestCase
         $this->assertSame('You must provide a valid authenticated access token.', $result['body']['error']);
     }
 
-    public function testRequestGetUserInformationWithParams()
+    public function testRequestGetUserInformationWithParams(): void
     {
         $this->markTestSkipped('Skipping until we have time to set up real tests with Travis secret storage.');
 
@@ -54,7 +54,7 @@ class VimeoTest extends TestCase
         $this->assertSame('You must provide a valid authenticated access token.', $result['body']['error']);
     }
 
-    public function testGetToken()
+    public function testGetToken(): void
     {
         $this->markTestSkipped('Skipping until we have time to set up real tests with Travis secret storage.');
 
@@ -68,7 +68,7 @@ class VimeoTest extends TestCase
         $this->assertSame('fake_access_token', $vimeo->getToken());
     }
 
-    public function testGetCurlOptions()
+    public function testGetCurlOptions(): void
     {
         $this->markTestSkipped('Skipping until we have time to set up real tests with Travis secret storage.');
 
@@ -84,7 +84,7 @@ class VimeoTest extends TestCase
         $this->assertSame('custom_value', $result['custom_name']);
     }
 
-    public function testAccessTokenWithCallingFakeRedirectUri()
+    public function testAccessTokenWithCallingFakeRedirectUri(): void
     {
         $this->markTestSkipped('Skipping until we have time to set up real tests with Travis secret storage.');
 
@@ -98,7 +98,7 @@ class VimeoTest extends TestCase
         $this->assertSame('invalid_client', $result['body']['error']);
     }
 
-    public function testClientCredentialsWithDefaultScope()
+    public function testClientCredentialsWithDefaultScope(): void
     {
         $this->markTestSkipped('Skipping until we have time to set up real tests with Travis secret storage.');
 
@@ -112,7 +112,7 @@ class VimeoTest extends TestCase
         $this->assertSame('You must provide a valid authenticated access token.', $result['body']['error']);
     }
 
-    public function testClientCredentialsWithArrayScope()
+    public function testClientCredentialsWithArrayScope(): void
     {
         $this->markTestSkipped('Skipping until we have time to set up real tests with Travis secret storage.');
 
@@ -126,7 +126,7 @@ class VimeoTest extends TestCase
         $this->assertSame('You must provide a valid authenticated access token.', $result['body']['error']);
     }
 
-    public function testBuildAuthorizationEndpointWithDefaultScopeAndNullState()
+    public function testBuildAuthorizationEndpointWithDefaultScopeAndNullState(): void
     {
         $this->markTestSkipped('Skipping until we have time to set up real tests with Travis secret storage.');
 
@@ -140,7 +140,7 @@ class VimeoTest extends TestCase
         $this->assertSame('https://api.vimeo.com/oauth/authorize?response_type=code&client_id=client_id&redirect_uri=https%3A%2F%2Ffake.redirect.uri&scope=public', $result);
     }
 
-    public function testBuildAuthorizationEndpointWithNullScopeAndNullState()
+    public function testBuildAuthorizationEndpointWithNullScopeAndNullState(): void
     {
         $this->markTestSkipped('Skipping until we have time to set up real tests with Travis secret storage.');
 
@@ -154,7 +154,7 @@ class VimeoTest extends TestCase
         $this->assertSame('https://api.vimeo.com/oauth/authorize?response_type=code&client_id=client_id&redirect_uri=https%3A%2F%2Ffake.redirect.uri&scope=public', $result);
     }
 
-    public function testBuildAuthorizationEndpointWithArrayScopeAndNullState()
+    public function testBuildAuthorizationEndpointWithArrayScopeAndNullState(): void
     {
         $this->markTestSkipped('Skipping until we have time to set up real tests with Travis secret storage.');
 
@@ -168,7 +168,7 @@ class VimeoTest extends TestCase
         $this->assertSame('https://api.vimeo.com/oauth/authorize?response_type=code&client_id=client_id&redirect_uri=https%3A%2F%2Ffake.redirect.uri&scope=public+private', $result);
     }
 
-    public function testBuildAuthorizationEndpointWithArrayScopeAndState()
+    public function testBuildAuthorizationEndpointWithArrayScopeAndState(): void
     {
         $this->markTestSkipped('Skipping until we have time to set up real tests with Travis secret storage.');
 
@@ -185,7 +185,7 @@ class VimeoTest extends TestCase
     /**
      * @expectedException Vimeo\Exceptions\VimeoUploadException
      */
-    public function testUploadWithNonExistedFile()
+    public function testUploadWithNonExistedFile(): void
     {
         $this->markTestSkipped('Skipping until we have time to set up real tests with Travis secret storage.');
 
@@ -199,7 +199,7 @@ class VimeoTest extends TestCase
     /**
      * @expectedException Vimeo\Exceptions\VimeoUploadException
      */
-    public function testUploadWithInvalidParamShouldReturnVimeoRequestException()
+    public function testUploadWithInvalidParamShouldReturnVimeoRequestException(): void
     {
         $this->markTestSkipped('Skipping until we have time to set up real tests with Travis secret storage.');
 
@@ -213,7 +213,7 @@ class VimeoTest extends TestCase
     /**
      * @expectedException Vimeo\Exceptions\VimeoUploadException
      */
-    public function testReplaceWithNonExistedFile()
+    public function testReplaceWithNonExistedFile(): void
     {
         $this->markTestSkipped('Skipping until we have time to set up real tests with Travis secret storage.');
 
@@ -227,7 +227,7 @@ class VimeoTest extends TestCase
     /**
      * @expectedException Vimeo\Exceptions\VimeoUploadException
      */
-    public function testUploadImageWithNonExistedFile()
+    public function testUploadImageWithNonExistedFile(): void
     {
         $this->markTestSkipped('Skipping until we have time to set up real tests with Travis secret storage.');
 
@@ -241,7 +241,7 @@ class VimeoTest extends TestCase
     /**
      * @expectedException Vimeo\Exceptions\VimeoUploadException
      */
-    public function testUploadTexttrackWithNonExistedFile()
+    public function testUploadTexttrackWithNonExistedFile(): void
     {
         $this->markTestSkipped('Skipping until we have time to set up real tests with Travis secret storage.');
 
@@ -255,7 +255,7 @@ class VimeoTest extends TestCase
     /**
      * @expectedException Vimeo\Exceptions\VimeoRequestException
      */
-    public function testReplaceWithVideoUriShouldReturnVimeoRequestException()
+    public function testReplaceWithVideoUriShouldReturnVimeoRequestException(): void
     {
         $this->markTestSkipped('Skipping until we have time to set up real tests with Travis secret storage.');
 
@@ -269,7 +269,7 @@ class VimeoTest extends TestCase
     /**
      * @expectedException Vimeo\Exceptions\VimeoRequestException
      */
-    public function testUploadImageWithPictureUriShouldReturnVimeoRequestException()
+    public function testUploadImageWithPictureUriShouldReturnVimeoRequestException(): void
     {
         $this->markTestSkipped('Skipping until we have time to set up real tests with Travis secret storage.');
 
@@ -283,7 +283,7 @@ class VimeoTest extends TestCase
     /**
      * @expectedException Vimeo\Exceptions\VimeoRequestException
      */
-    public function testUploadTexttrackWithPictureUriAndInvalidParamShouldReturnVimeoRequestException()
+    public function testUploadTexttrackWithPictureUriAndInvalidParamShouldReturnVimeoRequestException(): void
     {
         $this->markTestSkipped('Skipping until we have time to set up real tests with Travis secret storage.');
 

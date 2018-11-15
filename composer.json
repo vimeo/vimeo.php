@@ -29,10 +29,14 @@
     },
     "require-dev": {
         "php-coveralls/php-coveralls": "^1.0",
-        "phpunit/phpunit": "^7.4"
+        "phpunit/phpunit": "^7.4",
+        "vimeo/psalm": "^2.0"
     },
     "scripts": {
         "coverage": "phpunit --coverage-html reports/",
-        "tests": "phpunit"
+        "tests": [
+            "psalm",
+            "phpunit"
+        ]
     }
 }
