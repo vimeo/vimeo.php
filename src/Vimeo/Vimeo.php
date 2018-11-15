@@ -538,90 +538,70 @@ class Vimeo
      * Take an upload attempt and perform the actual upload via tus.
      *
      * @link https://tus.io/
-     * @param string $file_path Path to the video file to upload
-     * @param int $file_size Size of the video file.
-     * @param array $attempt Upload attempt data.
+     * @param $file_path Path to the video file to upload.
+     * @param $file_size Size of the video file.
+     * @param $attempt Upload attempt data.
      * @return mixed
-     * @throws VimeoRequestException
      * @throws VimeoUploadException
      */
     private function perform_upload_tus($file_path, $file_size, $attempt)
     {
+        $default_chunk_size = (100 * 1024 * 1024); // 100 MB
+
         $url = $attempt['body']['upload']['upload_link'];
+        $url_path = parse_url($url)['path'];
 
-        // We need a handle on the input file since we may have to send segments multiple times.
-        $file = fopen($file_path, 'r');
+        $base_url = str_replace($url_path, '', $url);
+        $api_path = $url_path;
+        $api_pathp = explode('/', $api_path);
+        $key = $api_pathp[count($api_pathp) - 1];
+        $api_path = str_replace('/' . $key, '', $api_path);
 
-        $curl_opts = array(
-            CURLOPT_POST => true,
-            CURLOPT_CUSTOMREQUEST => 'PATCH',
-            CURLOPT_INFILE => $file,
-            CURLOPT_INFILESIZE => filesize($file_path),
-            CURLOPT_UPLOAD => true,
-            CURLOPT_HTTPHEADER => array(
-                'Expect: ',
-                'Content-Type: application/offset+octet-stream',
-                'Tus-Resumable: 1.0.0',
-                'Upload-Offset: {placeholder}',
-            )
-        );
-
-        // Perform the upload by sending as much to the server as possible and ending when we reach the file size on
-        // the server.
+        $bytes_uploaded = 0;
         $failures = 0;
-        $server_at = 0;
+        $chunk_size = $this->getTusUploadChunkSize($default_chunk_size, $file_size);
+
+        $client = new \TusPhp\Tus\Client($base_url);
+        $client->setApiPath($api_path);
+        $client->setKey($key)->file($file_path);
+
         do {
-            // The last HTTP header we set has to be `Upload-Offset`, since for resumable uploading to work properly,
-            // we'll need to alter the content of the header for each upload segment request.
-            array_pop($curl_opts[CURLOPT_HTTPHEADER]);
-            $curl_opts[CURLOPT_HTTPHEADER][] = 'Upload-Offset: ' . $server_at;
-
-            fseek($file, $server_at);
-
             try {
-                $response = $this->_request($url, $curl_opts);
-
-                // Successful upload, so reset the failure counter.
-                $failures = 0;
-
-                if ($response['status'] === 204) {
-                    // If the `Upload-Offset` returned is equal to the size of the video we want to upload, then we've
-                    // fully uploaded the video. If not, continue uploading.
-                    if ($response['headers']['Upload-Offset'] === $file_size) {
-                        break;
-                    }
-
-                    $server_at = $response['headers']['Upload-Offset'];
-                    continue;
-                }
-
-                // If we didn't receive a 204 response from the tus server, then we should verify what's going on before
-                // proceeding to upload more pieces.
-                $verify_response = $this->request($url, array(), 'HEAD');
-                if ($verify_response['status'] !== 200) {
-                    $verify_error = !empty($ticket['body']) ? ' [' . $ticket['body'] . ']' : '';
-                    throw new VimeoUploadException('Unable to verify upload' . $verify_error);
-                }
-
-                if ($verify_response['headers']['Upload-Offset'] === $file_size) {
-                    break;
-                }
-
-                $server_at = $verify_response['headers']['Upload-Offset'];
-            } catch (VimeoRequestException $exception) {
+                $bytes_uploaded = $client->upload($chunk_size);
+            } catch (\Exception $e) {
                 // We likely experienced a timeout, but if we experience three in a row, then we should back off and
                 // fail so as to not overwhelm servers that are, probably, down.
                 if ($failures >= 3) {
-                    throw $exception;
+                    throw new VimeoUploadException($e->getMessage());
                 }
 
                 $failures++;
                 sleep(pow(4, $failures)); // sleep 4, 16, 64 seconds (based on failure count)
-            } catch (VimeoUploadException $exception) {
-                throw $exception;
             }
-        } while ($server_at < $file_size);
+        } while ($bytes_uploaded < $file_size);
 
         return $attempt['body']['uri'];
+    }
+
+    /**
+     * Enforces the notion that a user may supply any `proposed_chunk_size`, as long as it results in 1024 or less
+     * proposed chunks. In the event it does not, then the chunk size becomes the file size divided by 1024.
+     *
+     * @param int $proposed_chunk_size
+     * @param int $file_size
+     * @return int
+     */
+    private function getTusUploadChunkSize(int $proposed_chunk_size, int $file_size): int
+    {
+        $proposed_chunk_size = ($proposed_chunk_size <= 0) ? 1 : $proposed_chunk_size;
+        $chunks = floor($file_size / $proposed_chunk_size);
+        $divides_evenly = $file_size % $proposed_chunk_size === 0;
+        $number_of_chunks_proposed = ($divides_evenly) ? $chunks : $chunks + 1;
+
+        if ($number_of_chunks_proposed > 1024) {
+            return floor($file_size / 1024) + 1;
+        }
+
+        return $proposed_chunk_size;
     }
 }
