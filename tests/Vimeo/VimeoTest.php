@@ -303,21 +303,21 @@ class VimeoTest extends TestCase
         $method->setAccessible(true);
 
         // The following cases result in < 1024 and as such should be allowed
-        $this->assertEquals(1, $method->invoke($client, 1, 1024));
-        $this->assertEquals(3, $method->invoke($client, 3, 1024));
+        $this->assertSame(1, $method->invoke($client, 1, 1024));
+        $this->assertSame(3, $method->invoke($client, 3, 1024));
 
         // A `chunk_size` larger than `file_size` is ok
-        $this->assertEquals(3, $method->invoke($client, 3, 1));
-        $this->assertEquals(1024, $method->invoke($client, 1024, 1));
+        $this->assertSame(3, $method->invoke($client, 3, 1));
+        $this->assertSame(1024, $method->invoke($client, 1024, 1));
 
         // A `chunk_size` <= 0 is equivalent to 1 byte.
-        $this->assertEquals(1, $method->invoke($client, 0, 1024));
-        $this->assertEquals(1, $method->invoke($client, -1000, 1024));
+        $this->assertSame(1, $method->invoke($client, 0, 1024));
+        $this->assertSame(1, $method->invoke($client, -1000, 1024));
 
         // The following cases all result in > 1024 chunks.
-        $this->assertEquals(2, $method->invoke($client, 1, 1025));
+        $this->assertSame(2, $method->invoke($client, 1, 1025));
 
         // 20 MB chunks for a 100000 MB file (100GB)
-        $this->assertEquals(102400001, $method->invoke($client, (20 * 1024 * 1024), (100000 * 1024 * 1024)));
+        $this->assertSame(102400001, $method->invoke($client, (20 * 1024 * 1024), (100000 * 1024 * 1024)));
     }
 }
