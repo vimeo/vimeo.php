@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.0.0] - 2018-11-19
+### Added
+* Added [Psalm](https://github.com/vimeo/psalm) into our test process for static analysis. ([#186](https://github.com/vimeo/vimeo.php/pull/186))
+
+### Changed
+* Rewrote the Tus upload integration to use [TusPHP](https://github.com/ankitpokhrel/tus-php). ([#186](https://github.com/vimeo/vimeo.php/pull/186))
+
+### Removed
+* Removed support for <PHP 7.1. ([#186](https://github.com/vimeo/vimeo.php/pull/186))
+
 ## [2.0.5] - 2018-04-27
 ### Changed
 - Updating the user agent version string to match the library version.
@@ -87,6 +97,7 @@
 ### Added
 - This is the Vimeo library for version 3 of the Vimeo API.
 
+[3.0.0]: https://github.com/vimeo/vimeo.php/compare/2.0.5...3.0.0
 [2.0.5]: https://github.com/vimeo/vimeo.php/compare/2.0.4...2.0.5
 [2.0.4]: https://github.com/vimeo/vimeo.php/compare/2.0.3...2.0.4
 [2.0.3]: https://github.com/vimeo/vimeo.php/compare/2.0.2...2.0.3

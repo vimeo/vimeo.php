@@ -43,8 +43,6 @@ $params = ['privacy' => ['view' => 'disable']];
 ```
 
 ## Installation
-### Composer
-
 1. Require this package, with [Composer](https://getcomposer.org/), in the root directory of your project.
 
 ```bash
@@ -52,12 +50,6 @@ composer require vimeo/vimeo-api
 ```
 
 2. Use the library `$lib = new \Vimeo\Vimeo($client_id, $client_secret)`.
-
-### Manual
-
-1. Download the latest release: [v2.0.5](https://github.com/vimeo/vimeo.php/archive/2.0.5.zip).
-2. Include the autoloader `require("/path/to/vimeo.php/autoload.php");`.
-3. Use the library `$lib = new \Vimeo\Vimeo($client_id, $client_secret)`.
 
 ## Usage
 ### Generate your access token
