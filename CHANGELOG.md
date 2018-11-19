@@ -12,7 +12,7 @@
 - Rewrote the Tus upload integration to use [TusPHP](https://github.com/ankitpokhrel/tus-php). ([#186](https://github.com/vimeo/vimeo.php/pull/186))
 
 ### Removed
-0 Removed support for <PHP 7.1. ([#186](https://github.com/vimeo/vimeo.php/pull/186))
+- Removed support for <PHP 7.1. ([#186](https://github.com/vimeo/vimeo.php/pull/186))
 
 ## [2.0.5] - 2018-04-27
 ### Changed
