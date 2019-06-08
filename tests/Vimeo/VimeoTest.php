@@ -80,7 +80,7 @@ class VimeoTest extends TestCase
         $result = $vimeo->getCurlOptions();
 
         // Assert
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertSame('custom_value', $result['custom_name']);
     }
 
