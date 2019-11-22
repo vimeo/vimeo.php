@@ -1,6 +1,7 @@
 <?php
 namespace Vimeo;
 
+use Carbon\Carbon;
 use Vimeo\Exceptions\VimeoException;
 use Vimeo\Exceptions\VimeoRequestException;
 use Vimeo\Exceptions\VimeoUploadException;
@@ -592,6 +593,11 @@ class Vimeo
         $client = new \TusPhp\Tus\Client($base_url);
         $client->setApiPath($api_path);
         $client->setKey($key)->file($file_path);
+        $client->setUrl($url);
+        $client->getCache()->set($client->getKey(),[
+           'location' => $url,
+            'expires_at' => Carbon::now()->addSeconds($client->getCache()->getTtl())->format($client->getCache()::RFC_7231),
+        ]);
 
         do {
             try {
