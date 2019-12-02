@@ -1,4 +1,12 @@
 # Changelog
+## [3.0.4] - 2019-12-02
+### Fixed
+- Fixes "invalid bucket" error when uploading a new video. ([#237](https://github.com/vimeo/vimeo.php/pull/237))
+
+## [3.0.3] - 2019-11-15
+### Changed
+- Updating `ankitpokhrel/tus-php` to stable `v1.0.0` release.
+
 ## [3.0.2] - 2018-12-18
 ### Fixed
 - Locking our `ankitpokhrel/tus-php` at v0.1.0 instead of a specific commit. ([#189](https://github.com/vimeo/vimeo.php/issues/189))
@@ -104,6 +112,8 @@
 ### Added
 - This is the Vimeo library for version 3 of the Vimeo API.
 
+[3.0.4]: https://github.com/vimeo/vimeo.php/compare/3.0.3...3.0.4
+[3.0.3]: https://github.com/vimeo/vimeo.php/compare/3.0.2...3.0.3
 [3.0.2]: https://github.com/vimeo/vimeo.php/compare/3.0.1...3.0.2
 [3.0.1]: https://github.com/vimeo/vimeo.php/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/vimeo/vimeo.php/compare/2.0.5...3.0.0
