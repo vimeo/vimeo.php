@@ -1,6 +1,7 @@
 <?php
 namespace Vimeo;
 
+use Carbon\Carbon;
 use Vimeo\Exceptions\VimeoException;
 use Vimeo\Exceptions\VimeoRequestException;
 use Vimeo\Exceptions\VimeoUploadException;
@@ -33,7 +34,7 @@ class Vimeo
     const CLIENT_CREDENTIALS_TOKEN_ENDPOINT = '/oauth/authorize/client';
     const VERSIONS_ENDPOINT = '/versions';
     const VERSION_STRING = 'application/vnd.vimeo.*+json; version=3.4';
-    const USER_AGENT = 'vimeo.php 3.0.2; (http://developer.vimeo.com/api/docs)';
+    const USER_AGENT = 'vimeo.php 3.0.4; (http://developer.vimeo.com/api/docs)';
     const CERTIFICATE_PATH = '/certificates/vimeo-api.pem';
 
     /** @var array */
@@ -592,6 +593,11 @@ class Vimeo
         $client = new \TusPhp\Tus\Client($base_url);
         $client->setApiPath($api_path);
         $client->setKey($key)->file($file_path);
+        $client->setUrl($url);
+        $client->getCache()->set($client->getKey(),[
+            'location' => $url,
+            'expires_at' => Carbon::now()->addSeconds($client->getCache()->getTtl())->format($client->getCache()::RFC_7231),
+        ]);
 
         do {
             try {
