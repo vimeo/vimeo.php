@@ -5,7 +5,7 @@ namespace Vimeo\Upload;
 
 
 
-class TusHelper extends \TusPhp\Tus\Client
+class TusClient extends \TusPhp\Tus\Client
 {
     /**
      * Sets the url for retrieving the TUS upload.

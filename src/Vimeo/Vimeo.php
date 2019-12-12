@@ -5,7 +5,7 @@ use Carbon\Carbon;
 use Vimeo\Exceptions\VimeoException;
 use Vimeo\Exceptions\VimeoRequestException;
 use Vimeo\Exceptions\VimeoUploadException;
-use Vimeo\Upload\TusHelper;
+use Vimeo\Upload\TusClient;
 
 /**
  *   Copyright 2013 Vimeo
@@ -591,7 +591,7 @@ class Vimeo
         $failures = 0;
         $chunk_size = $this->getTusUploadChunkSize($default_chunk_size, (int)$file_size);
 
-        $client = new TusHelper($base_url);
+        $client = new TusClient($base_url);
         $client->setApiPath($api_path);
         $client->setKey($key)->file($file_path);
         $client->setUrl($url);
