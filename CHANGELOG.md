@@ -1,4 +1,9 @@
 # Changelog
+## [3.0.5] - 2019-12-11
+### Fixed
+- Fixes `setUrl` method not found error.([#239](https://github.com/vimeo/vimeo.php/pull/239)) 
+- Adds `TusHelper` class.
+
 ## [3.0.4] - 2019-12-02
 ### Fixed
 - Fixes "invalid bucket" error when uploading a new video. ([#237](https://github.com/vimeo/vimeo.php/pull/237))
@@ -112,6 +117,7 @@
 ### Added
 - This is the Vimeo library for version 3 of the Vimeo API.
 
+[3.0.5]: https://github.com/vimeo/vimeo.php/compare/3.0.4...3.0.5
 [3.0.4]: https://github.com/vimeo/vimeo.php/compare/3.0.3...3.0.4
 [3.0.3]: https://github.com/vimeo/vimeo.php/compare/3.0.2...3.0.3
 [3.0.2]: https://github.com/vimeo/vimeo.php/compare/3.0.1...3.0.2
