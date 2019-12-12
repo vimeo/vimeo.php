@@ -5,6 +5,7 @@ use Carbon\Carbon;
 use Vimeo\Exceptions\VimeoException;
 use Vimeo\Exceptions\VimeoRequestException;
 use Vimeo\Exceptions\VimeoUploadException;
+use Vimeo\Upload\TusHelper;
 
 /**
  *   Copyright 2013 Vimeo
@@ -34,7 +35,7 @@ class Vimeo
     const CLIENT_CREDENTIALS_TOKEN_ENDPOINT = '/oauth/authorize/client';
     const VERSIONS_ENDPOINT = '/versions';
     const VERSION_STRING = 'application/vnd.vimeo.*+json; version=3.4';
-    const USER_AGENT = 'vimeo.php 3.0.4; (http://developer.vimeo.com/api/docs)';
+    const USER_AGENT = 'vimeo.php 3.0.5; (http://developer.vimeo.com/api/docs)';
     const CERTIFICATE_PATH = '/certificates/vimeo-api.pem';
 
     /** @var array */
@@ -590,7 +591,7 @@ class Vimeo
         $failures = 0;
         $chunk_size = $this->getTusUploadChunkSize($default_chunk_size, (int)$file_size);
 
-        $client = new \TusPhp\Tus\Client($base_url);
+        $client = new TusHelper($base_url);
         $client->setApiPath($api_path);
         $client->setKey($key)->file($file_path);
         $client->setUrl($url);
