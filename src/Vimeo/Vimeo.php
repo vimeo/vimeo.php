@@ -5,7 +5,8 @@ use Carbon\Carbon;
 use Vimeo\Exceptions\VimeoException;
 use Vimeo\Exceptions\VimeoRequestException;
 use Vimeo\Exceptions\VimeoUploadException;
-use Vimeo\Upload\TusClient;
+use Vimeo\Upload\TusClientFactory;
+use Vimeo\Upload\TusClientFactoryInterface;
 
 /**
  *   Copyright 2013 Vimeo
@@ -53,14 +54,18 @@ class Vimeo
     /** @var null|string */
     private $_access_token = null;
 
+    /** @var \Vimeo\Upload\TusClientFactoryInterface */
+    private $tusClientFactory;
+
     /**
      * Creates the Vimeo library, and tracks the client and token information.
      *
      * @param string $client_id Your applications client id. Can be found on developer.vimeo.com/apps
      * @param string $client_secret Your applications client secret. Can be found on developer.vimeo.com/apps
      * @param string|null $access_token Your access token. Can be found on developer.vimeo.com/apps or generated using OAuth 2.
+     * @param \Vimeo\Upload\TusClientFactoryInterface Provide a tus client factory allowing custom tus client creation.
      */
-    public function __construct(string $client_id, string $client_secret, string $access_token = null)
+    public function __construct(string $client_id, string $client_secret, string $access_token = null, ?TusClientFactoryInterface $tusClientFactory = null)
     {
         $this->_client_id = $client_id;
         $this->_client_secret = $client_secret;
@@ -74,6 +79,7 @@ class Vimeo
             CURLOPT_SSL_VERIFYHOST => 2,
             CURLOPT_CAINFO => realpath(__DIR__ .'/../..') . self::CERTIFICATE_PATH
         );
+        $this->tusClientFactory = $tusClientFactory ?? new TusClientFactory();
     }
 
     /**
@@ -591,7 +597,7 @@ class Vimeo
         $failures = 0;
         $chunk_size = $this->getTusUploadChunkSize($default_chunk_size, (int)$file_size);
 
-        $client = new TusClient($base_url);
+        $client = $this->tusClientFactory->fromBaseUrl($base_url);
         $client->setApiPath($api_path);
         $client->setKey($key)->file($file_path);
         $client->setUrl($url);
