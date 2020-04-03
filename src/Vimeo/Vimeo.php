@@ -576,7 +576,7 @@ class Vimeo
      */
     private function perform_upload_tus(string $file_path, $file_size, array $attempt): string
     {
-        $default_chunk_size = (100 * 1024 * 1024); // 100 MB
+        $default_chunk_size = (10 * 1024 * 1024); // 10 MB - edited, previous 100 MB wasn't properly uploaded
 
         $url = $attempt['body']['upload']['upload_link'];
         $url_path = parse_url($url)['path'];
