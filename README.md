@@ -163,7 +163,7 @@ For more information, check out the [example](https://github.com/vimeo/vimeo.php
 Name     | Type    | Description
 ---------|---------|------------
 `file`   | string  | Full path to the upload file on the local system.
-`params` | array   | Parameters to send when creating a new video (name, privacy restrictions, etc.). See the [`/me/videos` documentation](https://developer.vimeo.com/api/endpoints/videos#POST/users/{user_id}/videos) for supported parameters.
+`params` | array   | Parameters to send when creating a new video (name, privacy restrictions, etc.). See the [`/me/videos` documentation](https://developer.vimeo.com/api/reference/videos#upload_video) for supported parameters.
 
 ```php
 $response = $lib->upload('/home/aaron/Downloads/ada.mp4')
