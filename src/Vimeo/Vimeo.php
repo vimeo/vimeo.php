@@ -311,11 +311,12 @@ class Vimeo
      * @link https://developer.vimeo.com/api/endpoints/videos#POST/users/{user_id}/videos
      * @param string $file_path Path to the video file to upload.
      * @param array $params Parameters to send when creating a new video (name, privacy restrictions, etc.).
+     * @param array $fields Fields to return when upload completes. Defaults to 'uri' and 'upload'
      * @return string Video URI
      * @throws VimeoRequestException
      * @throws VimeoUploadException
      */
-    public function upload($file_path, array $params = array())
+    public function upload($file_path, array $params = array(), array $fields = array('uri', 'upload'))
     {
         // Validate that our file is real.
         if (!is_file($file_path)) {
@@ -329,7 +330,8 @@ class Vimeo
         $params['upload']['size'] = $file_size;
 
         // Use JSON filtering so we only receive the data that we need to make an upload happen.
-        $uri = '/me/videos?fields=uri,upload';
+        $return_fields = implode(',', $fields);
+        $uri = "/me/videos?fields={$return_fields}";
 
         $attempt = $this->request($uri, $params, 'POST');
         if ($attempt['status'] !== 200) {
