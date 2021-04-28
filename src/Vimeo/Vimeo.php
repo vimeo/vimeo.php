@@ -36,7 +36,6 @@ class Vimeo
     const VERSIONS_ENDPOINT = '/versions';
     const VERSION_STRING = 'application/vnd.vimeo.*+json; version=3.4';
     const USER_AGENT = 'vimeo.php 3.0.5; (http://developer.vimeo.com/api/docs)';
-    const CERTIFICATE_PATH = '/certificates/vimeo-api.pem';
 
     /** @var array */
     protected $_curl_opts = array();
@@ -72,7 +71,6 @@ class Vimeo
             CURLOPT_SSL_VERIFYPEER => true,
             //Certificate must indicate that the server is the server to which you meant to connect.
             CURLOPT_SSL_VERIFYHOST => 2,
-            CURLOPT_CAINFO => realpath(__DIR__ .'/../..') . self::CERTIFICATE_PATH
         );
     }
 
