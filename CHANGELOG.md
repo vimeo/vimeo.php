@@ -3,7 +3,7 @@
 ### Fixed
 - Fix user-agent in vimeo.php
 
-## [3.0.7] - 2019-12-11
+## [3.0.7] - 2021-04-28
 ### Fixed
 - Fix an issue with SSL certificates on certain requests ([#286](https://github.com/vimeo/vimeo.php/issues/286))
 
