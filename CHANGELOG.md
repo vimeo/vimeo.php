@@ -1,5 +1,5 @@
 # Changelog
-## [3.0.8] - 2019-12-11
+## [3.0.8] - 2021-05-03
 ### Fixed
 - Fix user-agent in vimeo.php
 
