@@ -7,7 +7,7 @@
 ### Fixed
 - Fix an issue with SSL certificates on certain requests ([#286](https://github.com/vimeo/vimeo.php/issues/286))
 
-## [3.0.6] - 2019-12-11
+## [3.0.6] - 2020-06-20
 ### Fixed
 - Add TUS 2.0
 
