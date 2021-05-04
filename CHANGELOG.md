@@ -1,4 +1,16 @@
 # Changelog
+## [3.0.8] - 2021-05-03
+### Fixed
+- Fix user-agent in vimeo.php
+
+## [3.0.7] - 2021-04-28
+### Fixed
+- Fix an issue with SSL certificates on certain requests ([#286](https://github.com/vimeo/vimeo.php/issues/286))
+
+## [3.0.6] - 2020-06-20
+### Fixed
+- Add TUS 2.0
+
 ## [3.0.5] - 2019-12-11
 ### Fixed
 - Fixes `setUrl` method not found error.([#239](https://github.com/vimeo/vimeo.php/pull/239)) 
@@ -117,6 +129,9 @@
 ### Added
 - This is the Vimeo library for version 3 of the Vimeo API.
 
+[3.0.8]: https://github.com/vimeo/vimeo.php/compare/3.0.7...3.0.8
+[3.0.7]: https://github.com/vimeo/vimeo.php/compare/3.0.6...3.0.7
+[3.0.6]: https://github.com/vimeo/vimeo.php/compare/3.0.5...3.0.6
 [3.0.5]: https://github.com/vimeo/vimeo.php/compare/3.0.4...3.0.5
 [3.0.4]: https://github.com/vimeo/vimeo.php/compare/3.0.3...3.0.4
 [3.0.3]: https://github.com/vimeo/vimeo.php/compare/3.0.2...3.0.3
