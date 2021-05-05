@@ -301,6 +301,101 @@ class Vimeo
     }
 
     /**
+     * Get video details.
+     */
+    public function get_video($uri) {
+      return $this->request($uri, [], 'GET');
+    }
+
+    /**
+     * Get thumbnail upload link.
+     * $pictures_uri in the form '/videos/[video id]/pictures'.
+     */
+    public function get_thumbnail_upload_link($pictures_uri) {
+      return $this->request($pictures_uri, [], 'POST');
+    }
+
+    /**
+     * PUT a thumbnail.
+     */
+    public function put_thumbnail($url, $thumbnail, $content_type) {
+      $params[0] = $thumbnail;
+      $headers['Content-Type'] = $content_type;
+      return $this->request($url, $params, 'PUT', FALSE, $headers, TRUE); 
+    }
+
+    /**
+     * Set thumbnail active.
+     */
+    public function activate_thumbnail($pictures_uri) {
+      $params['active'] = true;
+      return $this->request($pictures_uri, $params, 'PATCH', TRUE);
+    }
+
+    /**
+     * Search for a video by its name.
+     */
+    public function find_video($name, $page = null) {
+      $params['query'] = $name;
+      if ($page !== null) {
+        $params['page'] = $page;
+      }
+      $uri = '/videos';
+      return $this->request($uri, $params, 'GET');
+    }
+
+    /**
+     * Get a user's videos.
+     */
+    public function get_videos($user_id, array $params = [], $page = null) {
+      if ($page !== null) {
+        $params['page'] = $page;
+      }
+      $uri = '/users/' . $user_id . '/videos';
+      return $this->request($uri, $params, 'GET');
+    }
+
+    /**
+     * Do a "PULL" upload via a url.
+     */
+    public function pull_upload($url, array $params = array()) {
+      $params['upload']['approach'] = 'pull';
+      $params['upload']['link'] = $url;
+
+      $uri = '/me/videos';
+
+      $attempt = $this->request($uri, $params, 'POST');
+
+      return $attempt;
+    }
+
+    /**
+     * Replace a video's file via pull method.
+     */
+    public function pull_replace($video_id, $file_url, $filename) {
+      $params = [
+        'file_name' => $filename,
+        'upload' => [
+          'status' => 'in_progress',
+          'approach' => 'pull',
+          'link' => $file_url,
+        ],
+      ];
+
+      $uri = '/videos/' . $video_id . '/versions';
+
+      return $this->request($uri, $params, 'POST', TRUE);
+    }
+
+    /**
+     * Check transcode status of a uri.
+     */
+    public function check_transcode($uri) {
+      $response = $this->request($uri . '?fields=transcode.status');
+      return $response['body']['transcode']['status'];
+    }
+
+    /**
      * Upload a file.
      *
      * This should be used to upload a local file. If you want a form for your site to upload direct to Vimeo, you
