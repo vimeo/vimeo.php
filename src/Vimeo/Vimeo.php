@@ -85,7 +85,7 @@ class Vimeo
      * @return array This array contains three keys, 'status' is the status code, 'body' is an object representation of the json response body, and headers are an associated array of response headers
      * @throws VimeoRequestException
      */
-    public function request($url, $params = array(), $method = 'GET', $json_body = true, array $headers = array()): array
+    public function request($url, $params = array(), $method = 'GET', $json_body = true, array $headers = array(), $absolute_url = FALSE): array
     {
         $headers = array_merge(array(
             'Accept' => self::VERSION_STRING,
@@ -115,7 +115,12 @@ class Vimeo
                     $query_component = '';
                 }
 
-                $curl_url = self::ROOT_ENDPOINT . $url . $query_component;
+                if (!$absolute_url) {
+                  $curl_url = self::ROOT_ENDPOINT . $url . $query_component;
+                }
+                else {
+                  $curl_url = $url . $query_component;
+                }
                 break;
 
             case 'POST':
@@ -125,11 +130,19 @@ class Vimeo
                 if ($json_body && !empty($params)) {
                     $headers['Content-Type'] = 'application/json';
                     $body = json_encode($params);
+                } else if ($absolute_url) {
+                  // i.e. for putting a thumbnail image.
+                  $body = $params[0];
                 } else {
                     $body = http_build_query($params, '', '&');
                 }
 
-                $curl_url = self::ROOT_ENDPOINT . $url;
+                if (!$absolute_url) {
+                  $curl_url = self::ROOT_ENDPOINT . $url;
+                }
+                else {
+                  $curl_url = $url;
+                }
                 $curl_opts = array(
                     CURLOPT_POST => true,
                     CURLOPT_CUSTOMREQUEST => $method,
