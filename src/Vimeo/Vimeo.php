@@ -52,6 +52,9 @@ class Vimeo
     /** @var null|string */
     private $_access_token = null;
 
+    /** @var null|array */
+    private $_tus_config = null;
+
     /**
      * Creates the Vimeo library, and tracks the client and token information.
      *
@@ -191,6 +194,16 @@ class Vimeo
     public function setCURLOptions(array $curl_opts = array()): void
     {
         $this->_curl_opts = $curl_opts;
+    }
+
+    /**
+     * Sets custom TUS client FileStore configuration.
+     *
+     * @param array $config An associative array of TUS FileStore configuration.
+     */
+    public function setTUSConfig(array $config = array()): void
+    {
+        $this->_tus_config = $config;
     }
 
     /**
@@ -590,6 +603,7 @@ class Vimeo
         $chunk_size = $this->getTusUploadChunkSize($default_chunk_size, (int)$file_size);
 
         $client = new TusClient($base_url);
+        $client->setConfig($this->_tus_config);
         $client->setApiPath($api_path);
         $client->setKey($key)->file($file_path);
         $client->setUrl($url);
