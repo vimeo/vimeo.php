@@ -55,7 +55,7 @@ Please note that this library requires at least PHP 7.1 installed. If you are on
 composer require vimeo/vimeo-api ^2.0
 ```
 
-2. Use the library `$lib = new \Vimeo\Vimeo($client_id, $client_secret)`.
+2. Use the library `$client = new \Vimeo\Vimeo($client_id, $client_secret)`.
 
 ## Usage
 ### Generate your access token
@@ -72,7 +72,7 @@ Unauthenticated API requests must generate an access token. You should not gener
 ```php
 // `scope` is an array of permissions your token needs to access.
 // You can read more at https://developer.vimeo.com/api/authentication#supported-scopes
-$token = $lib->clientCredentials(scope);
+$token = $client->clientCredentials(scope);
 
 // usable access token
 var_dump($token['body']['access_token']);
@@ -81,7 +81,7 @@ var_dump($token['body']['access_token']);
 var_dump($token['body']['scope']);
 
 // use the token
-$lib->setToken($token['body']['access_token']);
+$client->setToken($token['body']['access_token']);
 ```
 
 #### Authenticated
@@ -89,7 +89,7 @@ $lib->setToken($token['body']['access_token']);
 1. Build a link to Vimeo so your users can authorize your app.
 
 ```php
-$url = $lib->buildAuthorizationEndpoint($redirect_uri, $scopes, $state)
+$url = $client->buildAuthorizationEndpoint($redirect_uri, $scopes, $state)
 ```
 
 Name           | Type     | Description
@@ -106,7 +106,7 @@ Name           | Type     | Description
 
 ```php
 // `redirect_uri` must be provided, and must match your configured URI
-$token = $lib->accessToken(code, redirect_uri);
+$token = $client->accessToken(code, redirect_uri);
 
 // Usable access token
 var_dump($token['body']['access_token']);
@@ -115,7 +115,7 @@ var_dump($token['body']['access_token']);
 var_dump($token['body']['scope']);
 
 // Set the token
-$lib->setToken($token['body']['access_token']);
+$client->setToken($token['body']['access_token']);
 ```
 
 For additional information, check out the [example](https://github.com/vimeo/vimeo.php/blob/master/example/auth.php).
@@ -133,7 +133,7 @@ Name      | Type     | Description
 `method`  | string   | The HTTP method (e.g.: `GET`).
 
 ```php
-$response = $lib->request('/me/videos', ['per_page' => 2], 'GET');
+$response = $client->request('/me/videos', ['per_page' => 2], 'GET');
 ```
 
 #### Response
@@ -147,7 +147,7 @@ Name       | Type   | Description
 `headers`  | array  | An associative array containing all of the response headers.
 
 ```php
-$response = $lib->request('/me/videos', ['per_page' => 2], 'GET');
+$response = $client->request('/me/videos', ['per_page' => 2], 'GET');
 var_dump($response['body']);
 ```
 
@@ -166,10 +166,10 @@ Name     | Type    | Description
 `params` | array   | Parameters to send when creating a new video (name, privacy restrictions, etc.). See the [`/me/videos` documentation](https://developer.vimeo.com/api/reference/videos#upload_video) for supported parameters.
 
 ```php
-$response = $lib->upload('/home/aaron/Downloads/ada.mp4')
+$response = $client->upload('/home/aaron/Downloads/ada.mp4')
 
 // With parameters.
-$response = $lib->upload('/home/aaron/Downloads/ada.mp4', [
+$response = $client->upload('/home/aaron/Downloads/ada.mp4', [
     'name' => 'Ada',
     'privacy' => [
         'view' => 'anybody'
@@ -187,7 +187,7 @@ Name        | Type     | Description
 `file`      | string   | Full path to the upload file on the local system.
 
 ```php
-$response = $lib->replace('/videos/12345', '/home/aaron/Downloads/ada-v2.mp4')
+$response = $client->replace('/videos/12345', '/home/aaron/Downloads/ada-v2.mp4')
 ```
 
 #### Upload or replace videos from the client
@@ -209,7 +209,7 @@ Read through the [Vimeo documentation](https://developer.vimeo.com/api/upload/vi
 Uploading videos from a public URL (also called "pull uploads") uses a single, simple API call.
 
 ```php
-$video_response = $lib->request(
+$video_response = $client->request(
     '/me/videos',
     [
         'upload' => [
@@ -234,7 +234,7 @@ Name           | Type     | Description
 `activate`     | boolean  | (Optional) Defaults to `false`. If true, this picture will become the default picture for the associated resource.
 
 ```php
-$response = $lib->uploadImage('/videos/12345/pictures', '/home/aaron/Downloads/ada.png', true)
+$response = $client->uploadImage('/videos/12345/pictures', '/home/aaron/Downloads/ada.png', true)
 ```
 
 ## Troubleshooting
