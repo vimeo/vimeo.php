@@ -221,6 +221,11 @@ $video_response = $lib->request(
 );
 ```
 
+#### Using a custom TusClient
+
+If the standard [TusPhp\Client](https://github.com/ankitpokhrel/tus-php/blob/main/src/Tus/Client.php) doesn't work for you,
+you can pass in a custom factory for a client that suits your needs. See the [custom_cache example](https://github.com/vimeo/vimeo.php/blob/master/example/upload_image.php).
+
 ### Upload images
 
 To upload an image, call the `uploadImage` method. It takes three parameters.
