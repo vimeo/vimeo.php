@@ -477,13 +477,14 @@ class Vimeo
 
         $upload_url = $texttrack_response['body']['link'];
 
-        $texttrack_resource = fopen($file_path, 'r');
+        $handle = fopen($file_path, 'r');
+        $texttrack_resource = fread($handle, filesize($file_path));
 
         $curl_opts = array(
             CURLOPT_TIMEOUT => 240,
-            CURLOPT_UPLOAD => true,
             CURLOPT_CUSTOMREQUEST => 'PUT',
-            CURLOPT_READDATA => $texttrack_resource
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_POSTFIELDS => $texttrack_resource
         );
 
         $curl = curl_init($upload_url);
@@ -499,7 +500,8 @@ class Vimeo
         }
 
         curl_close($curl);
-
+        fclose($handle);
+        
         if ($curl_info['http_code'] !== 200) {
             throw new VimeoUploadException($response);
         }
