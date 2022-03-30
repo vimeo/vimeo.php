@@ -25,13 +25,11 @@ To install the PHP library, run the following command:
 composer require vimeo/vimeo-api
 ```
 
-After installation is complete, you can access the library by running the following command:
-
- `$lib = new \Vimeo\Vimeo($client_id, $client_secret)`
+After installation is complete, you can access the library by using `$lib = new \Vimeo\Vimeo($client_id, $client_secret)` in a Composer-enabled PHP script.
 
 ## Advanced examples
 
-To see examples of the most common use cases of the PHP library, visit our [PHP Examples Library](https://developer.vimeo.com/api/libraries/examples). 
+To see examples of the most common use cases of the PHP library, visit our [PHP Library Examples](https://developer.vimeo.com/api/libraries/examples). 
 
 ## Framework integrations
 
@@ -42,4 +40,4 @@ If you have integrated Vimeo into a popular PHP framework, [let us know](https:/
 
 ## Support
 
-To troubleshoot an issue, reach out to [Vimeo Support](https://vimeo.com/help/contact)
+To troubleshoot an issue, reach out to [Vimeo Support](https://vimeo.com/help/contact).
