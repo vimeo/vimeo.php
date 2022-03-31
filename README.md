@@ -33,8 +33,7 @@ To see examples of the most common use cases of the PHP library, visit our [PHP 
 
 ## Framework integrations
 
-- **WordPress** - <http://vimeography.com/>
-- **Laravel** - <https://github.com/vimeo/laravel>
+We have PHP framework integrations for [WordPress](http://vimeography.com/) and [Laravel](https://github.com/vimeo/laravel). 
 
 If you've integrated Vimeo into a popular PHP framework, [let us know](https://vimeo.com/help/contact)!
 
