@@ -29,14 +29,14 @@ After installation is complete, you can access the library by using `$lib = new 
 
 ## Advanced examples
 
-To see examples of the most common use cases of the PHP library, visit our [PHP Library Examples](https://developer.vimeo.com/api/libraries/examples). 
+To see examples of the most common use cases of the PHP library, visit our [PHP Library Examples](https://developer.vimeo.com/api/libraries/examples) page. 
 
 ## Framework integrations
 
 - **WordPress** - <http://vimeography.com/>
 - **Laravel** - <https://github.com/vimeo/laravel>
 
-If you have integrated Vimeo into a popular PHP framework, [let us know](https://vimeo.com/help/contact)!
+If you've integrated Vimeo into a popular PHP framework, [let us know](https://vimeo.com/help/contact)!
 
 ## Support
 
