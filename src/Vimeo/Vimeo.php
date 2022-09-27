@@ -87,7 +87,7 @@ class Vimeo
      * @param string $method The HTTP Method of the request
      * @param bool $json_body
      * @param array $headers An array of HTTP headers to pass along with the request.
-     * @return array This array contains three keys, 'status' is the status code, 'body' is an object representation of the json response body, and headers are an associated array of response headers
+     * @return array This array contains three keys, 'status' is the status code, 'body' is an object representation of the json response body, and 'headers' are an associated array of response headers
      * @throws VimeoRequestException
      */
     public function request($url, $params = array(), $method = 'GET', $json_body = true, array $headers = array()): array
