@@ -9,7 +9,7 @@ class TusClient extends \TusPhp\Tus\Client
 {
     /**
      * Sets the url for retrieving the TUS upload.
-     * @param string $url
+     * @param string|null $url
      * @return $this
      */
     public function setUrl(string $url)
