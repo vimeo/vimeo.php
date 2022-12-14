@@ -12,7 +12,7 @@ class TusClient extends \TusPhp\Tus\Client
      * @param string|null $url
      * @return $this
      */
-    public function setUrl(string $url)
+    public function setUrl(?string $url)
     {
         $this->url = $url;
         return $this;

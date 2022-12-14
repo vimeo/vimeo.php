@@ -11,7 +11,7 @@ class TusClientFactory
      * @param string|null $url The fully qualified url of the upload, ex: https://us-files.tus.vimeo.com/files/vimeo-a1b2c3d4
      * @return Client
      */
-    public function getTusClient(string $base_uri, string $url) : Client
+    public function getTusClient(string $base_uri, ?string $url) : Client
     {
         $client = new TusClient($base_uri);
         $client->setUrl($url);
