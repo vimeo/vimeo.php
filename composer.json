@@ -11,11 +11,17 @@
         }
     ],
     "minimum-stability": "stable",
+    "repositories": {
+        "ankitpokhrel/tus-php": {
+            "type": "git",
+            "url": "https://github.com/mestrega/tus-php.git"
+        }
+    },
     "require": {
-        "php": ">=7.1.0",
+        "php": ">=7.1.0 || ^8.0",
         "ext-curl": "*",
         "ext-json":"*",
-        "ankitpokhrel/tus-php": "^v1.0.0 || ^v2.0.0"
+        "ankitpokhrel/tus-php": "dev-Feature/Make-Compat-With-EOL-D9"
     },
     "autoload": {
         "psr-4": {
