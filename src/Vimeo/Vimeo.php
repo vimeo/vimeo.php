@@ -583,7 +583,7 @@ class Vimeo
      * @return string
      * @throws VimeoUploadException
      */
-    private function perform_upload_tus(string $file_path, $file_size, array $attempt): string
+    public function perform_upload_tus(string $file_path, $file_size, array $attempt): string
     {
         $default_chunk_size = (100 * 1024 * 1024); // 100 MB
 
