@@ -122,6 +122,9 @@ class Vimeo
                 }
 
                 $curl_url = (!$absoluteUrl ? self::ROOT_ENDPOINT : '') . $url . $query_component;
+                $curl_opts = array(
+                    CURLOPT_CUSTOMREQUEST => $method,
+                );
                 break;
 
             case 'POST':
