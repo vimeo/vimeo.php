@@ -584,9 +584,9 @@ class Vimeo
      */
     private function perform_upload_tus(string $file_path, $file_size, array $attempt, ?int $override_chunk_size = null): string
     {
-        $default_chunk_size = (100 * 1024 * 1024); // 100 MB
+        $chunk_size = (100 * 1024 * 1024); // 100 MB
         if ($override_chunk_size) {
-            $default_chunk_size = $override_chunk_size;
+            $chunk_size = $override_chunk_size;
         }
 
         $url = $attempt['body']['upload']['upload_link'];
@@ -600,7 +600,6 @@ class Vimeo
 
         $bytes_uploaded = 0;
         $failures = 0;
-        $chunk_size = $this->getTusUploadChunkSize($default_chunk_size, (int)$file_size);
 
         $client = $this->_tus_client_factory->getTusClient($base_url, $url);
         $client->setApiPath($api_path);
@@ -626,27 +625,5 @@ class Vimeo
         } while ($bytes_uploaded < $file_size);
 
         return $attempt['body']['uri'];
-    }
-
-    /**
-     * Enforces the notion that a user may supply any `proposed_chunk_size`, as long as it results in 1024 or less
-     * proposed chunks. In the event it does not, then the chunk size becomes the file size divided by 1024.
-     *
-     * @param int $proposed_chunk_size
-     * @param int $file_size
-     * @return int
-     */
-    private function getTusUploadChunkSize(int $proposed_chunk_size, int $file_size): int
-    {
-        $proposed_chunk_size = ($proposed_chunk_size <= 0) ? 1 : $proposed_chunk_size;
-        $chunks = floor($file_size / $proposed_chunk_size);
-        $divides_evenly = $file_size % $proposed_chunk_size === 0;
-        $number_of_chunks_proposed = ($divides_evenly) ? $chunks : $chunks + 1;
-
-        if ($number_of_chunks_proposed > 1024) {
-            return (int)floor($file_size / 1024) + 1;
-        }
-
-        return $proposed_chunk_size;
     }
 }
