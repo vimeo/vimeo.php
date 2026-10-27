@@ -426,7 +426,6 @@ class Vimeo
             throw new VimeoUploadException($error);
         }
 
-        curl_close($curl);
 
         if ($curl_info['http_code'] !== 200) {
             throw new VimeoUploadException($response);
@@ -497,7 +496,6 @@ class Vimeo
             throw new VimeoUploadException($error);
         }
 
-        curl_close($curl);
         fclose($handle);
 
         if ($curl_info['http_code'] !== 200) {
@@ -536,7 +534,6 @@ class Vimeo
             throw new VimeoRequestException('Unable to complete request.' . $curl_error);
         }
 
-        curl_close($curl);
 
         // Retrieve the info
         $header_size = $curl_info['header_size'];
